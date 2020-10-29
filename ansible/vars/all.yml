@@ -1,0 +1,4 @@
+---
+# Vars that do not need to be changed by user
+dev_url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview
+ga_url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp
