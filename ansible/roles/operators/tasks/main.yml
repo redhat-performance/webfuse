@@ -1,0 +1,6 @@
+---
+- name: Install PAO
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'performance-add-on-operator.yml.j2') }}"
+
