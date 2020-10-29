@@ -1,0 +1,38 @@
+---
+- name: Fail if version is undefined or empty.
+  fail:
+    msg: "The version is undefined or empty. Use a value such as 'latest-4.5' or 'latest-4.6' or an explicit version."
+  when: (version is undefined) or (version|length == 0)
+
+- name: Fail if build is undefined or empty
+  fail:
+    msg: "The build is undefined or empty. Use a value such as 'dev' or 'ga'."
+  when: (build is undefined) or (build|length == 0)
+
+- name: Set release_url for development envs
+  set_fact:
+    release_url: "{{  dev_url }}"
+  when: build == 'dev'
+
+- name: Set release_url for GA envs
+  set_fact:
+    release_url: "{{ ga_url }}"
+  when: build == 'ga'
+
+- name: Get Release.txt File
+  uri:
+    url: "{{ release_url }}/{{ version }}/release.txt"
+    return_content: yes
+  register: result
+  until: result.status == 200
+  retries: 6 # 1 minute (10 * 6)
+  delay: 10 # Every 10 seconds
+  failed_when: result.content|length == 0 or result.status >= 400
+
+- name: Set Fact for Release version
+  set_fact:
+    release_version: "{{ result.content | regex_search('Version:.*') | regex_replace('Version:\\s*(.*)', '\\1') }}"
+
+- name: Print the release version
+  debug:
+    msg: release version is {{ release_version }}

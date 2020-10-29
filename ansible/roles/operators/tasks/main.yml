@@ -1,0 +1,8 @@
+---
+- name: Install Operators
+  k8s:
+    state: present
+    definition: "{{ lookup('template', item + '.yml.j2') }}"
+  with_items:
+    - performance-add-on-operator
+
