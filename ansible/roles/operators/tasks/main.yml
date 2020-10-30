@@ -5,4 +5,5 @@
     definition: "{{ lookup('template', item + '.yml.j2') }}"
   with_items:
     - performance-add-on-operator
+    - sriov-network-operator
 
