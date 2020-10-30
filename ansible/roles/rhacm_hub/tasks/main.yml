@@ -1,0 +1,23 @@
+---
+# Install RHACM hub onto a cluster
+
+- name: Install RHACM
+  k8s:
+    state: present
+    src: "{{ role_path }}/files/rhacm.yml"
+
+# MultiClusterHub CRD won't be instantly available thus retry for around 2 minutes
+- name: Create MultiClusterHub Object
+  k8s:
+    state: present
+    definition:
+      apiVersion: operator.open-cluster-management.io/v1
+      kind: MultiClusterHub
+      metadata:
+        namespace: open-cluster-management
+        name: multiclusterhub
+      spec: {}
+  register: mch_result
+  until: mch_result.failed == false
+  retries: 60
+  delay: 2

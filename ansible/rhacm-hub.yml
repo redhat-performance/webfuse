@@ -1,0 +1,9 @@
+---
+- hosts: orchestration
+  vars_files: 
+    - vars/all.yml
+  pre_tasks:
+    - name: run validations
+      include_tasks: tasks/validation.yml
+  roles:
+    - rhacm_hub
