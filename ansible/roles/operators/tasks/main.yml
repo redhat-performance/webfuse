@@ -8,6 +8,11 @@
     - sriov-network-operator
     - openshift-virtualization-operator
 
+# Takes few seconds to orchestrate namespace and initiate installation
+- name: Wait for few seconds before checking for status
+  wait_for:
+    timeout: 10
+
 - name: Check PAO operator version
   shell: |      
       oc get csv -n openshift-performance-addon --no-headers | awk '{print $1}'
