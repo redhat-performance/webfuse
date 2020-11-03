@@ -1,0 +1,37 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    cluster.open-cluster-management.io/managedCluster: "{{managed_cluster_name}}"
+  name: "{{managed_cluster_name}}"
+---
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  name: "{{managed_cluster_name}}"
+spec:
+  hubAcceptsClient: true
+---
+apiVersion: agent.open-cluster-management.io/v1
+kind: KlusterletAddonConfig
+metadata:
+  name: "{{managed_cluster_name}}"
+  namespace: "{{managed_cluster_name}}"
+spec:
+  clusterName: "{{managed_cluster_name}}"
+  clusterNamespace: "{{managed_cluster_name}}"
+  applicationManager:
+    enabled: true
+  certPolicyController:
+    enabled: true
+  clusterLabels:
+    cloud: auto-detect
+    vendor: auto-detect
+  iamPolicyController:
+    enabled: true
+  policyController:
+    enabled: true
+  searchCollector:
+    enabled: true
+  version: 2.0.0
