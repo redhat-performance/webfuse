@@ -4,7 +4,7 @@
 - name: Install RHACM
   k8s:
     state: present
-    src: "{{ role_path }}/files/rhacm.yml"
+    definition: "{{ lookup('file', 'rhacm.yml') }}"
 
 # MultiClusterHub CRD won't be instantly available thus retry for around 2 minutes
 - name: Create MultiClusterHub Object
@@ -20,4 +20,12 @@
   register: mch_result
   until: mch_result.failed == false
   retries: 60
+  delay: 2
+
+- name: Wait until MultiClusterHub is running status
+  shell: |
+    {%raw%}oc get multiclusterhub -n open-cluster-management multiclusterhub -o go-template='{{.status.phase}}'{%endraw%}
+  register: mch_ready
+  until: mch_ready.stdout == "Running"
+  retries: 150
   delay: 2
