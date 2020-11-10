@@ -6,10 +6,11 @@ version: 4.6.1
 build: ga
 
 ################################################################################
-# rhacm-manage-cluster vars
+# RHACM playbook vars
 ################################################################################
 # All file locations should be on orchestration host and clusters must be accessible
 # by orchestration host
+rhacm_version: 2.1
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"

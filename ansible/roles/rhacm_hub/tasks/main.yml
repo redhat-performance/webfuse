@@ -4,7 +4,7 @@
 - name: Install RHACM
   k8s:
     state: present
-    definition: "{{ lookup('file', 'rhacm.yml') }}"
+    definition: "{{ lookup('template', 'rhacm.yml.j2') }}"
 
 # MultiClusterHub CRD won't be instantly available thus retry for around 2 minutes
 - name: Create MultiClusterHub Object
