@@ -11,6 +11,7 @@ build: ga
 # All file locations should be on orchestration host and clusters must be accessible
 # by orchestration host
 rhacm_version: 2.1
+rhacm_redisgraph_memory_limit: "3Gi"
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
