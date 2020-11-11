@@ -1,0 +1,21 @@
+---
+# Playbook to configure the VM with all the dependencies--python3, pip3, openshift module, etc
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/hosts ansible/rhacm-manage-cluster.yml -e "managed_cluster_name=shiftstack0000"
+#
+
+- hosts: orchestration
+  become: yes
+  vars_files: 
+    - vars/all.yml
+  # pre_tasks:
+  #   - name: run validations
+  #     include_tasks: tasks/validation.yml
+  #   - name: run checks
+  #     include_tasks: tasks/check.yml
+
+  roles:
+    - docker-ce
+

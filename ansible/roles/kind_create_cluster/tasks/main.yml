@@ -1,0 +1,38 @@
+# Use this role to create a set of kind clusters on a given host--baremetal or vm
+---
+
+- name: Install Kind
+  shell: |
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.9.0/kind-linux-amd64
+    chmod +x ./kind
+    cp ./kind /usr/local/bin/kind
+    # for RHEL servers
+    cp ./kind /usr/bin/kind
+  register: output
+
+- name: List all current Kind clusters
+  shell: |
+    kind --version
+    kind get clusters
+  register: output
+
+- name: Log output
+  debug:
+    msg:
+    - "{{ output.stdout_lines }}"
+    - "{{ output.stderr_lines }}"
+
+- name: Delete All Kind Cluster
+  shell: |
+    kind delete clusters --all
+  register: output
+  when: delete_all_kind_clusters is defined
+
+- name: Wait
+  shell: |
+    sleep 10
+  when: delete_all_kind_clusters is defined
+
+- name: Create kind instance
+  include: tasks/kind.yml 
+  loop: "{{ range(0, kind_max_count, kind_step_count)|list }}"

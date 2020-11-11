@@ -1,0 +1,49 @@
+- name: Install docker-ce
+  shell: |
+    sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    sudo dnf install docker-ce --nobest -y
+    sudo systemctl start docker
+    sudo systemctl enable docker
+  register: output
+
+- name: Verify docker
+  shell: |
+    docker ps
+  register: output
+
+- name: Verify docker
+  shell: |
+    ls -al /tmp/hub.kubeconfig
+  register: output
+
+- name: debug
+  debug:
+    msg: "{{ output.stdout_lines }}"
+
+- name: Install Misc Tools
+  shell: |
+    sudo dnf install -y python3
+    sudo pip3 --version
+    sudo alternatives --set python /usr/bin/python3
+  register: output
+
+- name: Ensure openshift module is installed
+  shell: |
+    sudo pip3 install openshift pyyaml kubernetes
+  register: output2
+
+- name: debug
+  debug:
+    msg: "{{ output.stdout_lines }}"
+
+- name: Install Misc Tools
+  shell: |
+    curl -O https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+    tar xvf openshift-client-linux.tar.gz
+    mv oc /usr/bin
+    mv kubectl /usr/bin
+  register: output
+
+- name: debug
+  debug: 
+    msg: "{{ output.stdout_lines }}"

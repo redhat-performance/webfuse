@@ -1,0 +1,15 @@
+---
+#
+# Example Usage:
+#
+# time ansible-playbook ansible/aws.yml -e "aws_create_all=true"
+#
+
+- hosts: localhost
+  connection: local
+  vars_files: 
+    - vars/all.yml
+  
+  roles:
+    - aws
+

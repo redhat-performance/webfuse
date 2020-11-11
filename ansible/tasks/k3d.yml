@@ -1,0 +1,14 @@
+---
+
+- name: Create k3d Cluster
+  shell: |
+    k3d cluster list | grep k3d-{{ item }} || k3d cluster create k3d-{{ item }}
+  register: output
+
+- name: Debug the create output
+  debug: 
+    msg: "{{ output }}"
+
+- name: Pause for 5 minutes to build app cache
+  pause:
+    seconds: 5

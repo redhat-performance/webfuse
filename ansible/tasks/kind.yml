@@ -1,0 +1,53 @@
+---
+
+- name: shell
+  shell: |
+    curl -s http://169.254.169.254/latest/meta-data/public-hostname | cut -d'.' -f1
+  register: output
+  when: vm_provider == "aws"
+
+- name: Set hostname_base for AWS VM
+  set_fact:
+    hostname_base: "{{ output.stdout }}"
+  when: vm_provider == "aws"
+
+- name: Set hostname_base for BM
+  set_fact:
+    hostname_base: "{{ inventory_hostname | regex_replace('[a-zA-Z]\\.(.*)', '') }}"
+  when: vm_provider == "baremetal"
+
+- name: Create Kind Reserved Config
+  shell: |
+    cat > /tmp/kind-config.yaml <<EOF
+    kind: Cluster
+    apiVersion: kind.x-k8s.io/v1alpha4
+    nodes:
+    - role: control-plane
+      kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            system-reserved: memory=8Gi,cpu=1
+    EOF
+  register: output
+
+- name: Create Kind Cluster
+  shell: |
+    kind get clusters | grep kind-{{ item }} || kind create cluster --name kind-{{ item }} --config=/tmp/kind-config.yaml
+  register: output
+
+# - name: Pause for 5 minutes to build app cache
+#   pause:
+#     seconds: 10
+
+- name: Debug the create output
+  debug:
+    msg: "{{ output }}"
+
+- name: "Create Kind Cluster /tmp/{{ hostname_base }}-kind-{{ item }}/kubeconfig"
+  shell: |
+    mkdir -p /tmp/{{ hostname_base }}-kind-{{ item }}
+    kind get kubeconfig --name=kind-{{ item }} > /tmp/{{ hostname_base }}-kind-{{ item }}/kubeconfig
+  register: output
+  

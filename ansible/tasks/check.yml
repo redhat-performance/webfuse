@@ -1,0 +1,10 @@
+- name: check lscpu
+  shell: |
+    lscpu
+    free -m
+    cat /etc/redhat-release
+  register: output
+
+- name: output check
+  debug:
+    msg: "{{ output.stdout_lines }}"

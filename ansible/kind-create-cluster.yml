@@ -1,0 +1,26 @@
+---
+# Playbook to have RHACM manage a cluster
+#
+# Run this playbook such that the orchestration host can reach both the hub cluster
+# as well as the managed cluster. Typically, this means it must run with the undercloud
+# as the orchestration host.
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/hosts ansible/rhacm-manage-cluster.yml -e "managed_cluster_name=shiftstack0000"
+#
+
+- hosts: orchestration
+  become: yes
+  vars_files: 
+    - vars/all.yml
+  pre_tasks:
+    - name: run validations
+      include_tasks: tasks/validation.yml
+    - name: run checks
+      include_tasks: tasks/check.yml
+
+  roles:
+    - kind_create_cluster
+    - loop_manage_cluster
+

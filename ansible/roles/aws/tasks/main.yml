@@ -1,0 +1,9 @@
+---
+
+- name: Create AWS Instances
+  include: create.yml
+  when: aws_present is defined
+
+- name: Stop all 'performance' tagged AWS Instances
+  include: stopped.yml
+  when: aws_stopped is defined
