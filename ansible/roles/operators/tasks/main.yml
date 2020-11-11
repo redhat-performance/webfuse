@@ -7,6 +7,8 @@
     - performance-add-on-operator
     - sriov-network-operator
     - openshift-virtualization-operator
+    - cluster-logging-operator
+    - elasticsearch-operator
 
 # Takes few seconds to orchestrate namespace and initiate installation
 - name: Wait for few seconds before checking for status
@@ -68,3 +70,76 @@
   delay: 60
   until: osv_status.stdout == "Succeeded"
   changed_when: osv_status.stdout == "Succeeded"
+
+- name: Check Cluster logging operator version
+  shell: |      
+      oc get csv -n openshift-logging --no-headers | awk '{print $1}'
+  register: clo_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: clo_version.stdout != ""
+
+- name: Check Cluster logging operator status
+  shell: |
+    oc get csv -n openshift-logging {{ clo_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: clo_status
+  retries: 5 # 5 minutes
+  delay: 60
+  until: clo_status.stdout == "Succeeded"
+  changed_when: clo_status.stdout == "Succeeded" 
+
+- name: Check ES operator version
+  shell: |      
+      oc get csv -n openshift-operators-redhat --no-headers | awk '{print $1}'
+  register: es_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: es_version.stdout != ""
+
+- name: Check ES operator status
+  shell: |
+    oc get csv -n openshift-operators-redhat {{ es_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: es_status
+  retries: 5 # 5 minutes
+  delay: 60
+  until: es_status.stdout == "Succeeded"
+  changed_when: es_status.stdout == "Succeeded" 
+
+- name: Create Cluster logging instance
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'cluster-logging-instance.yml' ) }}"
+
+- name: Check Cluster logging operator status again
+  shell: |
+    oc get csv -n openshift-logging {{ clo_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: clo_status
+  retries: 5 # 5 minutes
+  delay: 60
+  until: clo_status.stdout == "Succeeded"
+  changed_when: clo_status.stdout == "Succeeded" 
+
+- name: Create AMQ namespace
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ amq_namespace }}"
+
+- name: Set AMQ namespace in all manifest file
+  shell: |
+    sed -i 's/namespace: .*/namespace: {{ amq_namespace }}/' {{ role_path }}/files/amq-streams-1.2.0/install/cluster-operator/*RoleBinding*.yaml
+
+- name: Install AMQ operator
+  k8s:
+    state: present
+    namespace: "{{ amq_namespace }}"
+    definition: "{{ lookup('file', item) }}"
+  with_fileglob:
+    - "{{ role_path }}/files/amq-streams-1.2.0/install/cluster-operator/*"
+    - "{{ role_path }}/files/amq-streams-1.2.0/examples/templates/cluster-operator/*"
+
+# TODO
+# Wait and Check AMQ Operator installation status and proceed only if succeeded

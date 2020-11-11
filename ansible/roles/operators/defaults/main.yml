@@ -1,3 +1,4 @@
 ---
 # Openshift Virtualization channel
 osv_channel: 2.4
+amq_namespace: amq

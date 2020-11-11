@@ -1,0 +1,39 @@
+---
+- name: Deploy Kafka cluster
+  k8s:
+    state: present
+    namespace: "{{ amq_namespace }}"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - 01-kafka-ephemeral.yaml
+    - 06-prometheus.yaml
+    - 07-grafana.yaml
+    - kafka-secret.yaml
+
+# TODO
+# Wait and Check if all resources are ready
+
+- name: Get Grafana route
+  shell: |
+    oc get routes grafana-route -n {{ amq_namespace }} --no-headers | awk '{print $2}'
+  register: grafana_ep
+
+- name: Upload Grafana dashboard template
+  grafana_dashboard:
+    grafana_url: "{{ grafana_ep.stdout }}"
+    state: present
+    overwrite: yes
+    path: "{{ role_path }}/files/{{ item }}"
+  with_items:
+    - datasource.json
+    - strimzi-kafka.json
+    - strimzi-zookeeper.json
+
+- name: Deploy Cluster log forwarder
+  k8s:
+    state: present
+    namespace: "{{ amq_namespace }}"
+    definition: "{{ lookup('file', 'clusterforwarder.yaml' ) }}"
+
+# TODO
+# Wait and Check if all resources are ready
