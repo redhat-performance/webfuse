@@ -7,4 +7,4 @@
       include_tasks: tasks/validation.yml
   roles:
     - operators
-  
+    - kafka-logging-setup

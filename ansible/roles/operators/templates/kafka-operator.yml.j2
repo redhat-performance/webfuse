@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "amq"
+  annotations:
+    openshift.io/description: ""
+    openshift.io/display-name: ""        
+  spec:
+    finalizers:
+      - kubernetes
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  namespace: amq
+  name: amq
+  labels:
+    og_label: amq
+spec:
+  targetNamespaces:
+  - amq
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: amq-streams
+  namespace: amq
+spec:
+  channel: "{{ amq_channel }}"
+  installPlanApproval: Automatic
+  name: amq-streams
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
