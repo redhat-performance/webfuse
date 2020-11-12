@@ -1,39 +1,70 @@
 ---
+- name: Create the amq namespace for kafka
+  k8s:
+    name: "{{ amq_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+
 - name: Deploy Kafka cluster
   k8s:
     state: present
     namespace: "{{ amq_namespace }}"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - 01-kafka-ephemeral.yaml
-    - 06-prometheus.yaml
-    - 07-grafana.yaml
-    - kafka-secret.yaml
+    - 02-kafka-og.yaml
+    - 03-kafka-sub-streams.yaml
+    - 04-kafka-cluster.yaml
 
-# TODO
-# Wait and Check if all resources are ready
+- name: Wait 30 seconds
+  pause:
+    seconds: 30
 
-- name: Get Grafana route
+- name: Wait for all pods in the amq namespace to become ready (timeout is 600s, so be patient)
   shell: |
-    oc get routes grafana-route -n {{ amq_namespace }} --no-headers | awk '{print $2}'
-  register: grafana_ep
+    oc wait --namespace=amq --for=condition=Ready pods --all --timeout=600s
 
-- name: Upload Grafana dashboard template
-  grafana_dashboard:
-    grafana_url: "{{ grafana_ep.stdout }}"
+- name: Create Kafka topics 
+  k8s:
     state: present
-    overwrite: yes
-    path: "{{ role_path }}/files/{{ item }}"
+    namespace: "{{ amq_namespace }}"
+    definition: "{{ lookup('file', item ) }}"
   with_items:
-    - datasource.json
-    - strimzi-kafka.json
-    - strimzi-zookeeper.json
+    - 05-kafka-topics.yaml
+
+- name: Create a logging instance 
+  k8s:
+    state: present
+    namespace: "{{ amq_namespace }}"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - 11-cr-cluster-logging.yaml
+
+- name: Retrieve the secret
+  openshift_raw:
+    api: v1
+    kind: Secret
+    name: my-cluster-cluster-ca-cert
+    namespace: amq
+  register: mysecret
+
+- set_fact:
+    my_ca: "{{ mysecret.result.data['ca.crt'] | b64decode}}"
+
+- name: Save the CA certificate
+  copy: content="{{ my_ca }}" dest=./ca.crt
+
+- name: Create the fluentd-kafka secret
+  shell: |
+    oc create secret generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
 
 - name: Deploy Cluster log forwarder
   k8s:
     state: present
     namespace: "{{ amq_namespace }}"
-    definition: "{{ lookup('file', 'clusterforwarder.yaml' ) }}"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - 13-cr-logforwarding-to-kafka-topics.yaml
 
 # TODO
 # Wait and Check if all resources are ready

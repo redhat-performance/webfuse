@@ -1,1 +1,2 @@
-../../operators/defaults/main.yml
+amq_namespace: amq
+
