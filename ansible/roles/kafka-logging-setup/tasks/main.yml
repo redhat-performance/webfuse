@@ -1,0 +1,55 @@
+---
+- name: Deploy Kafka cluster
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - kafka-cluster.yaml
+
+- name: Wait 30 seconds
+  pause:
+    seconds: 30
+
+- name: Wait for all pods in the amq namespace to become ready (timeout is 600s, so be patient)
+  shell: |
+    oc wait -n amq --for=condition=Ready pods --all --timeout=600s
+
+- name: Create Kafka topics 
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - kafka-topics.yaml
+
+- name: Retrieve the secret
+  openshift_raw:
+    api: v1
+    kind: Secret
+    name: my-cluster-cluster-ca-cert
+    namespace: amq
+  register: mysecret
+
+- set_fact:
+    my_ca: "{{ mysecret.result.data['ca.crt'] | b64decode}}"
+
+- name: Save the CA certificate
+  copy: 
+    content: "{{ my_ca }}" 
+    dest: "./ca.crt"
+
+- name: Create the fluentd-kafka secret
+  shell: |
+    oc create secret -n amq generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
+
+- name: Deploy Cluster log forwarder
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - cr-logforwarding-to-kafka-topics.yaml
+
+# TODO
+# Wait and Check if all resources are ready

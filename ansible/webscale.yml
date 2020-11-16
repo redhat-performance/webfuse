@@ -6,5 +6,8 @@
     - name: run validations
       include_tasks: tasks/validation.yml
   roles:
-    - operators
-  
+    - role: operators
+      tags: always
+      
+    - role: kafka-logging-setup
+      tags: logging

@@ -7,6 +7,8 @@
     - performance-add-on-operator
     - sriov-network-operator
     - openshift-virtualization-operator
+    - cluster-logging-operator
+    - kafka-operator
 
 # Takes few seconds to orchestrate namespace and initiate installation
 - name: Wait for few seconds before checking for status
@@ -68,3 +70,51 @@
   delay: 60
   until: osv_status.stdout == "Succeeded"
   changed_when: osv_status.stdout == "Succeeded"
+
+- name: Check Cluster logging operator version
+  shell: |      
+      oc get csv -n openshift-logging --no-headers | awk '{print $1}'
+  register: clo_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: clo_version.stdout != ""
+
+- name: Check Cluster logging operator status
+  shell: |
+    oc get csv -n openshift-logging {{ clo_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: clo_status
+  retries: 5 # 5 minutes
+  delay: 60
+  until: clo_status.stdout == "Succeeded"
+  changed_when: clo_status.stdout == "Succeeded" 
+
+- name: Create Cluster logging instance
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'cluster-logging-instance.yml' ) }}"
+
+- name: Check Cluster logging operator status again
+  shell: |
+    oc get csv -n openshift-logging {{ clo_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: clo_status
+  retries: 5 # 5 minutes
+  delay: 60
+  until: clo_status.stdout == "Succeeded"
+  changed_when: clo_status.stdout == "Succeeded" 
+
+- name: Check Kafka operator version
+  shell: |      
+      oc get csv -n amq --no-headers | awk '{print $1}'
+  register: amq_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: amq_version.stdout != ""
+
+- name: Check Kafka operator status
+  shell: |
+    oc get csv -n amq {{ amq_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: amq_status
+  retries: 5 # 5 minutes
+  delay: 60
+  until: amq_status.stdout == "Succeeded"
+  changed_when: amq_status.stdout == "Succeeded"
