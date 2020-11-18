@@ -1,0 +1,14 @@
+---
+# Playbook to remove local-storage operator
+#
+# Example Usage:
+#
+# export KUBECONFIG=/home/user/kubeconfig
+# time ansible-playbook -i ansible/inventory/hosts ansible/remove-local-storage.yml
+#
+
+- hosts: orchestration
+  vars_files: 
+    - vars/all.yml
+  roles:
+    - remove_local_storage
