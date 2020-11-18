@@ -1,0 +1,21 @@
+---
+apiVersion: hostpathprovisioner.kubevirt.io/v1alpha1
+kind: HostPathProvisioner
+metadata:
+  name: hostpath-provisioner
+  namespace: openshift-cnv
+spec:
+  imagePullPolicy: IfNotPresent
+  pathConfig:
+    path: "{{ bigip_hostpath_dir }}"
+    useNamingPrefix: "false"
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hostpath-provisioner
+  namespace: openshift-cnv
+provisioner: kubevirt.io/hostpath-provisioner
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

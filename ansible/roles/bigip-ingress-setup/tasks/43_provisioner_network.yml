@@ -1,0 +1,37 @@
+- name: Get baremetal bridge slave devices
+  shell: |
+    bridge link | grep baremetal | grep -v vnet | awk '{print $2}' | awk -F: '{print $1}' | uniq
+  become: yes
+  register: baremetal_slave_devices
+
+- name: Check if vlan interface exists
+  shell: |
+    nmcli con show | grep {{ baremetal_slave_devices.stdout }}.{{ bigip_bridges.mgmt.vlan_id }} | awk '{print $1}' | uniq
+  become: yes
+  register: baremetal_slave_connections
+
+- name: Delete VLAN interface
+  nmcli:
+    conn_name: "{{ baremetal_slave_connections.stdout }}"
+    state: absent
+  when: "{{ baremetal_slave_connections.stdout != None }}"
+  become: yes
+
+- name: Create vlan sub-interface 
+  nmcli:
+    conn_name: "{{ baremetal_slave_devices.stdout }}.{{ bigip_bridges.mgmt.vlan_id }}"
+    type: vlan
+    vlanid: "{{ bigip_bridges.mgmt.vlan_id }}"
+    vlandev: "{{ baremetal_slave_devices.stdout }}"
+    autoconnect: yes
+    ip4: "{{ bigip_mgmt_network | next_nth_usable(1) }}/24"
+    dns4: "{{ extcidrnet | next_nth_usable(1) }}"
+    state: present
+  become: yes
+
+- name: Reload vlan interfaces
+  shell: |
+    /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
+  with_items:
+    - "{{ baremetal_slave_devices.stdout }}.{{ bigip_bridges.mgmt.vlan_id }}"
+  become: yes

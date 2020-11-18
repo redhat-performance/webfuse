@@ -10,15 +10,13 @@
     - cluster-logging-operator
     - kafka-operator
 
-# Takes few seconds to orchestrate namespace and initiate installation
-- name: Wait for few seconds before checking for status
-  wait_for:
-    timeout: 10
-
 - name: Check PAO operator version
   shell: |      
       oc get csv -n openshift-performance-addon --no-headers | awk '{print $1}'
   register: pao_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: pao_version.stdout != ""
 
 - name: Check PAO operator status
   shell: |
@@ -33,6 +31,9 @@
   shell: |      
       oc get csv -n openshift-sriov-network-operator  --no-headers | awk '{print $1}'
   register: sriov_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: sriov_version.stdout != ""
 
 - name: Check SRIOV operator status
   shell: |
@@ -47,6 +48,9 @@
   shell: |      
       oc get csv -n openshift-cnv --no-headers | awk '{print $1}'
   register: osv_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: osv_version.stdout != ""
 
 - name: Check OSV operator status
   shell: |
@@ -61,6 +65,11 @@
   k8s:
     state: present
     definition: "{{ lookup('file', 'kubevirt-hyperconverged.yml' ) }}"
+
+# Takes few seconds to initiate installation
+- name: Wait for few seconds before checking for status
+  wait_for:
+    timeout: 10
 
 - name: Check OSV operator status again
   shell: |

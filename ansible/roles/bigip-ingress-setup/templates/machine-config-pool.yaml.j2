@@ -1,0 +1,11 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfigPool
+metadata:
+  name: "{{ bigip_worker_mcp }}"
+spec:
+  machineConfigSelector:
+    matchExpressions:
+      - {key: machineconfiguration.openshift.io/role, operator: In, values: [worker, {{ bigip_worker_mcp }}]}
+  nodeSelector:
+    matchLabels:
+      node-role.kubernetes.io/{{ bigip_worker_mcp }}: ""

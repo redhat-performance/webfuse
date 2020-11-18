@@ -1,0 +1,29 @@
+- name: Download RH-IT-ROOT-CA certificate 
+  get_url:
+    url: https://password.corp.redhat.com/RH-IT-Root-CA.crt
+    dest: "{{ bigip_tempdir.path }}/RH-IT-Root-CA.crt"
+
+- name: Check if registry certificate config map exists
+  shell: |
+    oc -n {{ bigip_namespace }} get configmap my-registry-certs
+  ignore_errors: true
+  register: bigip_registry_configmap
+
+- name: Create registry certificate config map
+  shell: |
+    oc -n {{ bigip_namespace }} create configmap my-registry-certs --from-file {{ bigip_tempdir.path }}/RH-IT-Root-CA.crt
+  when: "'not found' in bigip_registry_configmap.stderr"
+
+- name: Create Data volume
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'datavolume.yaml.j2') }}"
+
+- name: wait until datavolumes are imported
+  shell: |
+    oc -n {{ bigip_namespace }} get dv/{{ item.key }}-volume -o json
+  register: dv_status
+  until: "(dv_status.stdout|from_json).status.phase == 'Succeeded'"
+  retries: 60
+  delay: 30
+  loop: "{{ bigip_vms | dict2items }}"

@@ -1,0 +1,132 @@
+---
+# defaults file for bigip-ingress-setup
+
+########################
+## VM Input Variables ##
+########################
+
+bigip_vms:
+  bigip0:   # Don't change VM name
+    mgmt_ip: "192.168.223.100/24"
+    mgmt_gateway: "192.168.223.1"
+    int_sriov_ip: "192.168.222.100/24"   # Assign an IP from baremetal external CIDR
+    int_sriov_mac: "02:02:02:02:05:01"
+    ext_sriov_mac: "02:02:02:02:05:02"
+    license_key: "SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF"
+    worker_node: "worker000-fc640"
+  bigip1:   # Don't change VM name
+    mgmt_ip: "192.168.223.101/24"
+    mgmt_gateway: "192.168.223.1"
+    int_sriov_ip: "192.168.222.101/24"   # Assign an IP from baremetal external CIDR
+    int_sriov_mac: "02:02:02:02:05:03"
+    ext_sriov_mac: "02:02:02:02:05:04"
+    license_key: "UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB"
+    worker_node: "worker001-fc640"
+
+bigip_bridges:
+  mgmt:
+    interface: "ens2f1"
+    vlan_id: "100"
+  ha:
+    interface: "ens2f1"
+    vlan_id: "101"
+
+bigip_sriov_int: "ens2f1"   # Preferrably external interface
+
+###################
+## IP Allocation ##
+###################
+
+bigip_sriov_network_ipam_address: "192.168.222.0/24"   # baremetal external CIDR
+bigip_sriov_network_ipam_gateway: "192.168.222.1"   # GW of baremetal external CIDR
+
+bigip_upstream_dns_snat_pool: ['192.168.222.160']     # Assign an IP from baremetal external CIDR
+bigip_upstream_dns: "192.168.222.1"   # External or Internal DNS 
+bigip_dns46_vs: "192.168.222.161"     # Assign an IP from baremetal external CIDR
+bigip_upstream_vs: "192.168.222.162"     # Assign an IP from baremetal external CIDR
+
+test_virtual_addr: "192.168.222.180"   # Assign an IP from baremetal external CIDR
+
+############################
+## Other Static Variables ##
+############################
+
+bigip_namespace: "f5-lb"
+
+bigip_worker_mcp: "worker-lb"
+bigip_hostpath_dir: "/var/lib/hppvolumes"
+
+bigip_mgmt_network: "192.168.223.0/24"
+
+bigip_vm_image_url: "docker://docker-registry.upshift.redhat.com/ocp-edge-qe/bigip:15.1.0.3-EHF"
+bigip_user: "admin"
+bigip_password: "Verizon2020"
+
+bigip_ntp_server: "192.168.223.1"
+bigip_ipv6_snat_pool: ['2620:52:0:2e31::20', '2620:52:0:2e31::30']
+test_namespace: "hello-world"
+
+#########################
+## F5 Static Variables ##
+#########################
+
+# Dictionary of traffic groups for quick reference
+traffic_group:
+  self: "/Common/traffic-group-local-only"
+  float: "/Common/traffic-group-1"
+
+##### HA Config #####
+failover: "lb-cluster"
+failover_peer: "bigip0"
+failover_peer_ip: "192.168.229.1"
+
+##########################
+## F5 DYNAMIC VARIABLES ##
+##########################
+# set Jumbo frames for all networks and interfaces, make sure jumbo frames on all tunnels as well
+jumbo_mtu: false
+
+#dictionary of all VLANs and interfaces.  Add addtional items for addtional VLANs/Interfaces
+untagged_vlan_info:
+  - { name: 'HA', mtu: '1372', interface: '1.1', partition: 'Common', tag: '1323' }
+
+tagged_vlan_info: []
+
+vxlan_tunnel_info:
+  bigip0:
+    - { name: 'ocp-ingress-1', local_address: '192.168.222.150', secondary_address: '192.168.222.130', key: '4097', mtu: '1372', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+    - { name: 'ocp-egress-1', local_address: '192.168.222.151', secondary_address: '192.168.222.131', key: '4097', mtu: '1372', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+
+  bigip1:
+    - { name: 'ocp-ingress-1', local_address: '192.168.222.150', secondary_address: '192.168.222.140', key: '4097', mtu: '1372', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+    - { name: 'ocp-egress-1', local_address: '192.168.222.151', secondary_address: '192.168.222.141', key: '4097', mtu: '1372', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+
+under_self_ips:
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.140', mask: '255.255.255.0', allow: 'all' }    # Re-use secondary_address from vxlan_tunnel_info
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.141', mask: '255.255.255.0', allow: 'all' }    # Re-use secondary_address from vxlan_tunnel_info
+
+    - { type: 'float', ip: 'v4', vlan: int-sriov, address: '192.168.222.150', mask: '255.255.255.0', allow: 'all' }    # Re-use local_address from vxlan_tunnel_info
+    - { type: 'float', ip: 'v4', vlan: int-sriov, address: '192.168.222.151', mask: '255.255.255.0', allow: 'all' }    # Re-use local_address from vxlan_tunnel_info
+
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.130', mask: '255.255.255.0', allow: 'all' }    # Re-use secondary_address from vxlan_tunnel_info
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '192.168.222.131', mask: '255.255.255.0', allow: 'all' }    # Re-use secondary_address from vxlan_tunnel_info
+
+over_self_ips:
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.102', mask: '255.255.255.252', allow: 'all' }    # Need not to update IP
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.102', mask: '255.255.255.252', allow: 'all' }    # Need not to update IP
+
+    - { type: 'float', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.100', mask: '255.255.255.252', allow: 'all' }    # Need not to update IP
+    - { type: 'float', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.100', mask: '255.255.255.252', allow: 'all' }    # Need not to update IP
+
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.101', mask: '255.255.255.252', allow: 'all' }    # Need not to update IP
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.101', mask: '255.255.255.252', allow: 'all' }    # Need not to update IP
+
+self_ips:
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: HA, address: '192.168.229.1', mask: '255.255.255.128', allow: 'all' }    # Need not to update IP
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: HA, address: '192.168.229.2', mask: '255.255.255.128', allow: 'all' }    # Need not to update IP
