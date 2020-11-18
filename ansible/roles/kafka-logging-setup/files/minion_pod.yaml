@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: kafka-minion
+  labels:
+    kafka: minion
+spec:
+  securityContext:
+    runAsUser: 99
+  containers:
+  - env:
+    - name: KAFKA_BROKERS
+      value: my-cluster-kafka-bootstrap.amq.svc:9093
+    - name: KAFKA_TLS_ENABLED
+      value: "true"
+    image:  quay.io/google-cloud-tools/kafka-minion:v1.0.0 
+    imagePullPolicy: Always
+    name: kafka-minion
+    restartPolicy: Always
+

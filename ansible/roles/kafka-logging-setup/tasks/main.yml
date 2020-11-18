@@ -51,5 +51,14 @@
   with_items:
     - cr-logforwarding-to-kafka-topics.yaml
 
+- name: Deploy the kafka-minion pod and service
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - minion_pod.yaml 
+    - minion_service.yaml
+
 # TODO
 # Wait and Check if all resources are ready
