@@ -18,7 +18,9 @@ items:
       nicSelector:
         pfNames: ["{{ bigip_sriov_int }}#{{ i.value }}-{{ i.value }}"]
       deviceType: vfio-pci
-      mtu: {{ 9000 if jumbo_mtu else 1500 }}
+{% if jumbo_mtu %}
+      mtu: 9000 
+{% endif %}
 {% set i.value = i.value + 1 %}
 {% endfor %}
 {% endfor %}

@@ -13,13 +13,13 @@
         namespace: {{ bigip_namespace }}
         rawCNIConfig: '{ "cniVersion": "0.3.1", "type": "bridge", "bridge": "bigip-mgmt",
           "ipMasq": false, "isGateway": false, "isDefaultGateway": false, "forceAddress":
-          false, "hairpinMode": false,"promiscMode":false, "mtu": {{ 8900 if jumbo_mtu else 1400 }} }'
+          false, "hairpinMode": false,"promiscMode": false{{ ', "mtu": 8900 }' if jumbo_mtu else " }" }}'
         type: Raw
       - name: bigip-ha
         namespace: {{ bigip_namespace }}
         rawCNIConfig: '{ "cniVersion": "0.3.1", "type": "bridge", "bridge": "bigip-ha",
           "ipMasq": false, "isGateway": false, "isDefaultGateway": false, "forceAddress":
-          false, "hairpinMode": false,"promiscMode":false, "mtu": {{ 8900 if jumbo_mtu else 1400 }} }'
+          false, "hairpinMode": false,"promiscMode": false{{ ', "mtu": 8900 }' if jumbo_mtu else " }" }}'
         type: Raw
     EOF
     )"

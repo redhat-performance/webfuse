@@ -1,12 +1,6 @@
-- name: Get baremetal bridge slave devices
-  shell: |
-    bridge link | grep baremetal | grep -v vnet | awk '{print $2}' | awk -F: '{print $1}' | uniq
-  become: yes
-  register: baremetal_slave_devices
-
 - name: Check if vlan interface exists
   shell: |
-    nmcli con show | grep {{ baremetal_slave_devices.stdout }}.{{ bigip_bridges.mgmt.vlan_id }} | awk '{print $1}' | uniq
+    nmcli con show | grep {{ bigip_bridges.mgmt.interface }}.{{ bigip_bridges.mgmt.vlan_id }} | awk '{print $1}' | uniq
   become: yes
   register: baremetal_slave_connections
 
@@ -19,10 +13,10 @@
 
 - name: Create vlan sub-interface 
   nmcli:
-    conn_name: "{{ baremetal_slave_devices.stdout }}.{{ bigip_bridges.mgmt.vlan_id }}"
+    conn_name: "{{ bigip_bridges.mgmt.interface }}.{{ bigip_bridges.mgmt.vlan_id }}"
     type: vlan
     vlanid: "{{ bigip_bridges.mgmt.vlan_id }}"
-    vlandev: "{{ baremetal_slave_devices.stdout }}"
+    vlandev: "{{ bigip_bridges.mgmt.interface }}"
     autoconnect: yes
     ip4: "{{ bigip_mgmt_network | next_nth_usable(1) }}/24"
     dns4: "{{ extcidrnet | next_nth_usable(1) }}"
@@ -33,5 +27,5 @@
   shell: |
     /usr/bin/nmcli con reload {{ item }}; /usr/bin/nmcli con up {{ item }}
   with_items:
-    - "{{ baremetal_slave_devices.stdout }}.{{ bigip_bridges.mgmt.vlan_id }}"
+    - "{{ bigip_bridges.mgmt.interface }}.{{ bigip_bridges.mgmt.vlan_id }}"
   become: yes

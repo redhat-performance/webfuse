@@ -81,8 +81,10 @@ items:
                       log "Setting up VLANS and selfIPs..."
                       tmsh create net vlan int-sriov interfaces add { 1.2 { untagged } } tag 4093
                       tmsh create net self {{ value.int_sriov_ip }} vlan int-sriov allow-service all
+{% if jumbo_mtu %}
                       log "Setting up mtu to {{ 9000 if jumbo_mtu else 1500 }}"
                       tmsh modify vlan int-sriov mtu {{ 9000 if jumbo_mtu else 1500 }}    
+{% endif %}                   
                       log "Creating paritions.."
                       tmsh create auth partition kubernetes default-route-domain 0
                       log "Changing the root and admin passwords..."
