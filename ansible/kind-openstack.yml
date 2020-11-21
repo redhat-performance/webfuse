@@ -1,0 +1,28 @@
+---
+# Playbook to deploy docker and kind to an inventory of OpenStack VMs
+# - control the batch size by setting `serial` parameter
+# - to add delay between batch, add a sleep role to the amount of time you want to equilibrate
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/hosts ansible/kind-openstack.yml -e vm_provider=openstack --tags docker
+# time ansible-playbook -i ansible/inventory/hosts ansible/kind-openstack.yml -e vm_provider=openstack --skip-tags import
+#
+
+- hosts: openstack
+  become: yes
+  serial: 6
+  vars_files: 
+    - vars/all.yml
+  pre_tasks:
+    - name: run validations
+      include_tasks: tasks/validation.yml
+  roles:
+    - role: docker
+      tags: docker
+    - role: kind
+      tags: kind
+    - role: loop_import
+      tags: import
+    - role: wait
+      tags: wait

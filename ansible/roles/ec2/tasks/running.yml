@@ -1,0 +1,16 @@
+---
+
+- name: Running all 'performance' tagged EC2 Instances
+  amazon.aws.ec2:
+    region: us-west-1
+    instance_tags:
+        Name: scale
+        purpose: performance
+    state: running
+  register: ec2
+
+- name: Started EC2 instances
+  debug:
+    msg: 
+      - "{{ ec2 }}"
+

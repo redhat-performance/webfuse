@@ -1,0 +1,40 @@
+---
+
+- name: Ensure hub kubeconfig is distribute to VM
+  copy:
+    src: "{{ hub_cluster_kubeconfig }}"
+    dest: "{{ hub_cluster_kubeconfig }}"
+        
+- name: Query ec2 public dns name
+  shell: |
+    # aws api to return vm public dns name
+    curl -s http://169.254.169.254/latest/meta-data/public-hostname | cut -d'.' -f1
+  register: output
+  when: vm_provider == "aws"
+
+- name: Set kind cluster base name
+  set_fact:
+    hostname_base: "{{ output.stdout }}"
+  when: vm_provider == "aws"
+
+- name: Set the kind base name using the baremetal hostname
+  set_fact:
+    hostname_base: "{{ inventory_hostname | regex_replace('[a-zA-Z]\\.(.*)', '') }}"
+  when: vm_provider == "baremetal"
+
+- name: Get VM hostname
+  command: "hostname"
+  register: command_output
+
+- name: Set the kind base name using the openstack vm inventory hostname
+  set_fact:
+    hostname_base: "{{ command_output.stdout }}"
+  when: vm_provider is defined and vm_provider == "openstack"
+
+- name: Set managed_cluster_name
+  set_fact:
+    managed_cluster_name: "{{ hostname_base }}-kind-{{ item }}"
+
+- name: Import Kind cluster
+  include_role:
+    name: rhacm_manage_cluster

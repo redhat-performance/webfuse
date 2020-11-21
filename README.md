@@ -6,6 +6,9 @@
 
 `pip3 install openshift`
 
+`ansible-galaxy collection install amazon.aws`
+`ansible-galaxy collection install community.aws`
+
 Ansible >= 2.9
 
 ## Usage

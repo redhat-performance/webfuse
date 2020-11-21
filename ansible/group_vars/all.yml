@@ -15,3 +15,25 @@ rhacm_redisgraph_memory_limit: "3Gi"
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
+################################################################################
+# kind cluster cs_configuration
+################################################################################
+kind_max_count: 9 # 10 max instance
+kind_step_count: 1
+k3d_max_count: 20 # 22 max instance
+k3d_step_count: 1
+
+################################################################################
+# EC2 settings
+################################################################################
+ec2_key_name: 
+ec2_instance_type: m4.2xlarge
+ec2_image: ami-066df92ac6f03efca
+ec2_security_group: launch-wizard-1
+ec2_vpc_subnet_id: subnet-817895db
+ec2_region: us-west-1
+ec2_volume_size: 100
+ec2_instance_count: 55
+ec2_tags:
+  Name: scale
+  propose: performance

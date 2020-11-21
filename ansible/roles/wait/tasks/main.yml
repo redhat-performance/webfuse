@@ -1,0 +1,53 @@
+---
+
+# between cluster creation, we want to collect some data while we wait and give the platform
+# a chance to complete its work.
+- name: Collect cluster histogram data
+  shell: |
+    #/bin/bash
+
+    if [ ! -f /tmp/managedcluster_i.csv ]; then
+      echo "DATE,VALUE" > /tmp/managedcluster_i.csv
+    fi
+    if [ ! -f /tmp/managedcluster_mc.csv ]; then
+      echo "DATE,VALUE" > /tmp/managedcluster_mc.csv
+    fi
+    if [ ! -f /tmp/managedcluster_a.csv ]; then
+      echo "DATE,VALUE" > /tmp/managedcluster_a.csv
+    fi
+    export HISTO_LOOPS=${HISTO_LOOPS:-20}
+    export HISTO_DELAY=${HISTO_DELAY:-60}
+    echo "LOOPS: ${HISTO_LOOPS}"
+    echo "DELAY: ${HISTO_DELAY}"
+    COUNTER=0
+    while [ $COUNTER -lt $HISTO_LOOPS ];
+    do
+      imported=$(oc get managedclusters -A | grep -v Unknown | wc -l | tr -d " ")
+      managedcluster=$(oc get managedcluster -o custom-columns=NAME:'.metadata.name',AVAIABLE:'.status.conditions[?(@.type=="ManagedClusterConditionAvailable")].status' -A  | grep -v True  | wc -l | tr -d " ")
+      agent=$(oc get managedclusteraddon -o custom-columns=NAMESPACE:'.metadata.namespace',NAME:'.metadata.name',AVAIABLE:'.status.conditions[?(@.type=="Available")].status' -A | grep -v True | wc -l | tr -d " ")
+
+      D=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+      echo "$D managedcluster imported               : $imported"
+      echo "$D managedcluster that are not avaialble : $managedcluster"
+      echo "$D agents that are not avaialble         : $agent"
+
+      echo "$D,$imported" >> /tmp/managedcluster_i.csv
+      echo "$D,$managedcluster" >> /tmp/managedcluster_mc.csv
+      echo "$D,$managedcluster" >> /tmp/managedcluster_a.csv
+
+      sleep $HISTO_DELAY
+      let COUNTER=COUNTER+1 
+    done
+  register: output
+  run_once: true
+  become: false
+  delegate_to: localhost
+  environment:
+    HISTO_LOOPS: "{{ histogram_loops }}"
+    HISTO_DELAY: "{{ histogram_delay }}"
+
+- name: Collect cluster histogram data output
+  debug:
+    msg:
+    - "{{ output.stdout_lines }}"
+  run_once: true
