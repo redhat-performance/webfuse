@@ -11,3 +11,6 @@
       
     - role: kafka-logging-setup
       tags: logging
+     
+- import_playbook: bigip-setup.yml
+  tags: bigip

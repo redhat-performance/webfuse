@@ -1,5 +1,5 @@
 ---
-{%- set i = namespace(value=0) %}
+{% set i = namespace(value=0) %}
 bigip_vms:
 {% for n in range(0, 2) %}
   bigip{{ n }}:

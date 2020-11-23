@@ -14,7 +14,7 @@ bigip_licenses:
   - UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB
 
 bigip_sriov_int: "ens2f1"   # Preferrably external interface
-bigip_bridge_int: "ens2f1    # Preferrably external interface"
+bigip_bridge_int: "ens2f1"    # Preferrably external interface"
 
 jumbo_mtu: false
 
@@ -30,7 +30,7 @@ bigip_mgmt_network: "192.168.223.0/24"
 bigip_ha_network: "192.168.224.0/24"
 
 # Baremetal IP index available to use
-ip_nth: 200
+ip_nth: 200           # No of workers IP + some buffers
 
 #########################
 ## Other Static Inputs ##

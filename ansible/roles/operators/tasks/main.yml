@@ -75,7 +75,7 @@
   shell: |
     oc get csv -n openshift-cnv {{ osv_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
   register: osv_status
-  retries: 5 # 5 minutes
+  retries: 10 # 10 minutes
   delay: 60
   until: osv_status.stdout == "Succeeded"
   changed_when: osv_status.stdout == "Succeeded"
