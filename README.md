@@ -31,10 +31,9 @@ Tested for - OCP 4.5.11, 4.6.3
 2.  Need at least 1 worker node to host bigip Virtual machines
 3.  Install SRIOV and OSV operators in the cluster, so obviously Hardware must support SRIOV and enable BIOs configuration. script for shared lab - https://github.com/mukrishn/sriov-prep
 4.  Procure License and update details in `ansible/roles/bigip-ingress-setup/default/main.yml`
-5.  Assign worker, IP and interface names under `VM Input Variables` section
-6.  Assign IP from baremetal network for all variables under `IP Allocation` section.
-7.  Assign IP from baremetal network for all tunnels under `F5 DYNAMIC VARIABLES` section
-8.  This playbook must be executed from cluster provisioner node, as it creates VLAN sub-interface with private network to connect to VMs.
+5.  Assign worker, License and interface names under `VM Input Variables` section
+6.  Assign Network variables under `IP Allocation` section.
+7.  This playbook must be executed from cluster provisioner node, as it creates VLAN sub-interface with private network to connect to VMs.
 
 `ansible-playbook -i inventory/hosts bigip-setup.yml`
 

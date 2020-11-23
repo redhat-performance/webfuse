@@ -1,5 +1,8 @@
 ---
 # tasks file for bigip-ingress-setup
+- name: Load a variable file from a template
+  include_vars: "{{ lookup('template', 'bigip-vars.yml.j2') }}"
+
 - name: Setup Worker LB role
   include_tasks: 10_machine_setup.yml
 
