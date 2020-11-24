@@ -6,6 +6,33 @@ version: 4.6.1
 build: ga
 
 ################################################################################
+# BigIP playbook vars
+################################################################################
+
+bigip_worker:
+  - worker000
+  - worker001
+
+bigip_licenses:
+  - SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF
+  - UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB
+
+bigip_sriov_int: "ens2f1"   # Preferrably external interface
+bigip_bridge_int: "ens2f1"    # Preferrably external interface"
+
+jumbo_mtu: false
+
+# Baremetal external CIDR
+extcidrnet: "192.168.222.0/24"
+extcidrnetgw: "192.168.222.1"
+
+bigip_mgmt_network: "192.168.230.0/24"
+bigip_ha_network: "192.168.231.0/24"
+
+# Baremetal IP index available to use
+ip_nth: 200           # No of workers IP + some buffers
+
+################################################################################
 # RHACM playbook vars
 ################################################################################
 # All file locations should be on orchestration host and clusters must be accessible
