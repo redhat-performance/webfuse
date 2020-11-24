@@ -1,0 +1,105 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ test_namespace }}
+  annotations:
+    k8s.ovn.org/hybrid-overlay-external-gw: '{{ (over_self_ips['bigip1'] | selectattr("vlan", "equalto", "ocp-egress-1") | list | selectattr("type", "equalto", "float") | list)[0].address  }}'
+    k8s.ovn.org/hybrid-overlay-vtep: '{{ (under_self_ips['bigip1'] | selectattr("vlan", "equalto", "int-sriov") | list | selectattr("type", "equalto", "float") | list)[-1].address }}'
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: f5-{{ test_namespace }}
+  namespace: {{ test_namespace }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: f5-{{ test_namespace }}
+  template:
+    metadata:
+      labels:
+        app: f5-{{ test_namespace }}
+    spec:
+      containers:
+      - env:
+        - name: service_name
+          value: f5-{{ test_namespace }}
+        image: rhscl/httpd-24-rhel7:latest
+        imagePullPolicy: Always
+        name: f5-{{ test_namespace }}
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: f5-{{ test_namespace }}
+  namespace: {{ test_namespace }}
+  labels:
+    app: f5-{{ test_namespace }}
+    cis.f5.com/as3-tenant: OCP_Tenant1
+    cis.f5.com/as3-app: f5-{{ test_namespace }}
+    cis.f5.com/as3-pool: web_pool
+spec:
+  ports:
+  - name: f5-{{ test_namespace }}
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  type: NodePort
+  selector:
+    app: f5-{{ test_namespace }}
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: f5-as3-declaration
+  namespace: {{ test_namespace }}
+  labels:
+    f5type: virtual-server
+    as3: "true"
+data:
+  template: |
+    {
+        "class": "AS3",
+        "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.13.0",
+            "id": "{{ test_namespace }}-namespace",
+            "label": "https",
+            "remark": "AS3 Template",
+            "OCP_Tenant1": {
+                "class": "Tenant",
+                "f5-{{ test_namespace }}": {
+                    "class": "Application",
+                    "template": "generic",
+                    "service_80_vs": {
+                        "class": "Service_HTTP",
+                        "remark": "service f5-{{ test_namespace }}",
+                        "virtualAddresses": [
+                            "{{ test_virtual_addr }}"
+                        ],
+                        "pool": "web_pool"
+                    },
+                    "web_pool": {
+                        "class": "Pool",
+                        "monitors": [
+                            "http"
+                        ],
+                        "members": [
+                            {
+                                "servicePort": 8080,
+                                "serverAddresses": []
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }

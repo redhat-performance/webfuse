@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+{% for key, value in bigip_vms.items() %}
+{% for tunnel in cis_tunnels %}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: {{ key }}-{{ test_namespace }}-cis-{{ tunnel }}
+      namespace: kube-system
+    spec:
+      selector:
+        matchLabels:
+          app: {{ key }}-{{ test_namespace }}-cis-{{ tunnel }}
+      # DO NOT INCREASE REPLICA COUNT Please
+      replicas: 1
+      template:
+        metadata:
+          name: {{ key }}-{{ test_namespace }}-cis-{{ tunnel }}
+          labels:
+            app: {{ key }}-{{ test_namespace }}-cis-{{ tunnel }}
+        spec:
+          # Name of the Service Account bound to a Cluster Role with the required
+          # permissions
+          serviceAccountName: k8s-bigip-ctlr
+          containers:
+            - name: k8s-bigip-ctlr
+              image: "quay.io/mukrishn/k8s-bigip-ctlr:2"
+              imagePullPolicy: Always
+              env:
+                - name: BIGIP_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      # Replace with the name of the Secret containing your login
+                      # credentials
+                      name: bigip-login
+                      key: username
+                - name: BIGIP_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      # Replace with the name of the Secret containing your login
+                      # credentials
+                      name: bigip-login
+                      key: password
+              command: ["/app/bin/k8s-bigip-ctlr"]
+              args: [
+                # See the k8s-bigip-ctlr documentation for information about
+                # all config options
+                # https://clouddocs.f5.com/products/connectors/k8s-bigip-ctlr/latest
+                "--bigip-username=$(BIGIP_USERNAME)",
+                "--bigip-password=$(BIGIP_PASSWORD)",
+                "--bigip-url={{ value.mgmt_ip | ipaddr('address') }}",
+                "--bigip-partition=kubernetes",
+                "--insecure=true",
+                "--as3-validation=true",
+                "--manage-ingress=false",
+                "--manage-routes=false",
+                "--custom-resource-mode=false",
+                "--manage-configmaps=true",
+                "--log-level=DEBUG",
+                "--log-as3-response=true",
+                "--pool-member-type=cluster",
+                "--namespace={{ test_namespace }}",
+                "--openshift-sdn-name=/Common/{{ tunnel }}"
+                ]
+{% endfor %}
+{% endfor %}

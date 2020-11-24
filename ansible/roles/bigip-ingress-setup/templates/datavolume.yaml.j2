@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+{% for key, value in bigip_vms.items() %}
+  - apiVersion: cdi.kubevirt.io/v1alpha1
+    kind: DataVolume
+    metadata:
+      name: {{ key }}-volume
+      namespace: {{ bigip_namespace }}
+      annotations:
+        kubevirt.io/provisionOnNode: {{ value.worker_node }}
+    spec:
+      source:
+        registry:
+          url: "{{ bigip_vm_image_url }}"
+          certConfigMap: my-registry-certs
+      pvc:
+        storageClassName: "hostpath-provisioner"
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 53Gi       
+{% endfor %}

@@ -1,0 +1,58 @@
+- name: Patch network operator with bridge networks
+  shell: |
+    oc patch dns.operator/default --type='merge' -p "$(cat <<- EOF
+      spec:
+        servers:
+        - forwardPlugin:
+            upstreams:
+            - {{ bigip_dns46_vs }}
+          name: f5nat64dns
+          zones:
+          - nat64.{{ bigip_base_domain.split('apps.')[1] }}
+    EOF
+    )"
+
+- name: check if bigip-login secret exists
+  shell: |
+    oc -n kube-system  get secret/bigip-login
+  ignore_errors: true
+  register: bigip_login_secret
+
+- name: create bigip-login secret
+  shell: |
+    oc create secret generic bigip-login -n kube-system --from-literal=username=admin --from-literal=password={{ bigip_password }}
+  when: "'not found' in bigip_login_secret.stderr"
+
+- name: check if k8s-bigip-ctlr serviceaccount exists
+  shell: |
+    oc -n kube-system  get serviceaccount/k8s-bigip-ctlr
+  ignore_errors: true
+  register: bigip_service_account
+
+- name: create k8s-bigip-ctlr service account
+  shell: |
+    oc create serviceaccount k8s-bigip-ctlr -n kube-system
+  when: "'not found' in bigip_service_account.stderr"
+
+- name: check if k8s-bigip-ctlr-clusteradmin clusterrolebinding exists
+  shell: |
+    oc get clusterrolebinding/k8s-bigip-ctlr-clusteradmin
+  ignore_errors: true
+  register: bigip_clusterrolebinding
+
+- name: create k8s-bigip-ctlr-clusteradmin clusterrolebinding
+  shell: |
+    oc create clusterrolebinding k8s-bigip-ctlr-clusteradmin --clusterrole=cluster-admin --serviceaccount=kube-system:k8s-bigip-ctlr
+  when: "'not found' in bigip_clusterrolebinding.stderr"
+
+- name: Create CIS pods
+  vars:
+    cis_tunnels: ['ocp-ingress-1', 'ocp-egress-1']
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'bigip_cis.yaml.j2') }}"    
+
+- name: Create CIS test namespace and application
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'cis_test_deployment.yaml.j2') }}"

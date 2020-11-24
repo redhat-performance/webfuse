@@ -1,0 +1,9 @@
+- name: Set hostpath-provisioner as default storage class for CDI
+  shell: |
+    oc patch CDIConfig config --type='json' -p='[{"op": "replace", "path": "/spec/scratchSpaceStorageClass", "value": "hostpath-provisioner"}]'
+
+- name: Configure hostpath-provisioner
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'hostpath-prov.yaml.j2') }}"
+  register: hpp

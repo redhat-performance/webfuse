@@ -1,0 +1,120 @@
+---
+{% set i = namespace(value=0) %}
+bigip_vms:
+{% for n in range(0, 2) %}
+  bigip{{ n }}:
+    mgmt_ip: "{{ bigip_mgmt_network | next_nth_usable(n + 100) }}/{{ bigip_mgmt_network | ipaddr('prefix') }}"
+    mgmt_gateway: "{{ bigip_mgmt_network | next_nth_usable(1) }}"
+    int_sriov_ip: "{{ extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) }}/{{ extcidrnet | ipaddr('prefix') }}"   # Assign an IP from baremetal external CIDR
+    int_sriov_mac: "02:02:02:02:05:0{{ n | int + 1}}"
+    ext_sriov_mac: "02:02:02:02:05:0{{ n | int + 2}}"
+    license_key: "{{ bigip_licenses[n] }}"
+    worker_node: "{{ bigip_worker[n] }}"
+{%- set i.value = i.value + 1 %} 
+{% endfor %}
+
+bigip_bridges:
+  mgmt:
+    interface: "{{ bigip_bridge_int }}"
+    vlan_id: "100"
+  ha:
+    interface: "{{ bigip_bridge_int }}"
+    vlan_id: "101"
+
+bigip_sriov_network_ipam_address: "{{ extcidrnet }}"   # baremetal external CIDR
+bigip_sriov_network_ipam_gateway: "{{ extcidrnetgw }}"   # GW of baremetal external CIDR
+
+bigip_ntp_server: "{{ bigip_mgmt_network | next_nth_usable(1) }}"    # GW of BigIP mgmt network
+bigip_upstream_dns: "{{ extcidrnet | next_nth_usable(1) }}"   # GW of baremetal external CIDR or any reachable DNS server
+
+bigip_ipv6_snat_pool: 
+  - "2620:52:0:2e31::20"
+  - "2620:52:0:2e31::30"
+
+bigip_upstream_dns_snat_pool: 
+  - "{{ extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) }}"     # Assign an IP from baremetal external CIDR
+{%- set i.value = i.value + 1 %} 
+
+bigip_dns46_vs: "{{ extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) }}"     # Assign an IP from baremetal external CIDR
+{%- set i.value = i.value + 1 %} 
+
+bigip_upstream_vs: "{{ extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) }}"     # Assign an IP from baremetal external CIDR
+{%- set i.value = i.value + 1 %} 
+
+test_namespace: "hello-world"
+test_virtual_addr: "{{ extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) }}"   # Assign an IP from baremetal external CIDR
+{%- set i.value = i.value + 1 %} 
+
+##################
+## F5 Variables ##
+##################
+
+# Dictionary of traffic groups for quick reference
+traffic_group:
+  self: "/Common/traffic-group-local-only"
+  float: "/Common/traffic-group-1"
+
+# HA configs
+failover: "lb-cluster"
+failover_peer: "bigip0"
+failover_peer_ip: "{{ bigip_ha_network | next_nth_usable(1) }}"
+
+# Dictionary of all VLANs and interfaces.  Add addtional items for addtional VLANs/Interfaces
+untagged_vlan_info:
+  - { name: 'HA', mtu: '{{ 8872 if jumbo_mtu else 1372 }}', interface: '1.1', partition: 'Common', tag: '1323' }
+
+tagged_vlan_info: []
+
+self_ips:
+{% for n in range(0, 2) %}
+  bigip{{ n }}:
+    - { type: 'self', ip: 'v4', vlan: HA, address: '{{ bigip_ha_network | next_nth_usable(n | int + 1) }}', mask: '{{ bigip_ha_network | ipaddr('netmask') }}', allow: 'all' }
+{% endfor %}
+
+{%- set tunnel_float_ip = [] %}
+{%- set tunnel_self_ip = [] %}
+
+{%- for n in range(0, 2) %}
+{%- if tunnel_float_ip.append ( extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) ) %}{% endif %}
+{%- set i.value = i.value + 1 %} 
+{%- endfor %}
+
+{%- for n in range(0, 4) %}
+{%- if tunnel_self_ip.append ( extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) ) %}{% endif %}
+{%- set i.value = i.value + 1 %} 
+{%- endfor %}
+
+{%- set j = namespace(value=0) %}
+vxlan_tunnel_info:
+{% for n in range(0, 2) %}
+  bigip{{ n }}:
+{% for name in ['ocp-ingress-1', 'ocp-egress-1'] %}
+    - { name: '{{ name }}', local_address: '{{ tunnel_float_ip[loop.index0] }}', secondary_address: '{{ tunnel_self_ip[j.value] }}', key: '4097', mtu: '{{ 8872 if jumbo_mtu else 1372 }}', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+{%- set j.value = j.value + 1 %} 
+{% endfor %}
+{% endfor %}
+
+{%- set k = namespace(value=0) %}
+under_self_ips:
+{% for n in range(0, 2) %}
+  bigip{{ n }}:
+{% for m in range(0, 2) %}
+    - { type: 'self', ip: 'v4', vlan: int-sriov, address: '{{ tunnel_self_ip[k.value] }}', mask: '{{ extcidrnet | ipaddr('netmask') }}', allow: 'all' }
+{%- set k.value = k.value + 1 %} 
+{% endfor %}
+{% endfor %}
+
+{% for n in range(0, 2) %}
+    - { type: 'float', ip: 'v4', vlan: int-sriov, address: '{{ tunnel_float_ip[n] }}', mask: '{{ extcidrnet | ipaddr('netmask') }}', allow: 'all' }
+{% endfor %}
+
+over_self_ips:
+  bigip0:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.101', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.101', mask: '255.255.255.252', allow: 'all' }
+  bigip1:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.102', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'self', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.102', mask: '255.255.255.252', allow: 'all' }
+
+    - { type: 'float', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.13.100', mask: '255.255.255.252', allow: 'all' }
+    - { type: 'float', ip: 'v4', vlan: ocp-egress-1, address: '192.168.14.100', mask: '255.255.255.252', allow: 'all' }

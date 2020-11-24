@@ -1,0 +1,46 @@
+---
+# defaults file for bigip-ingress-setup
+
+########################
+## VM Input Variables ##
+########################
+
+bigip_worker:
+  - worker000
+  - worker001
+
+bigip_licenses:
+  - SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF
+  - UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB
+
+bigip_sriov_int: "ens2f1"   # Preferrably external interface
+bigip_bridge_int: "ens2f1"    # Preferrably external interface"
+
+jumbo_mtu: false
+
+###################
+## IP Allocation ##
+###################
+
+# Baremetal external CIDR
+extcidrnet: "192.168.222.0/24"
+extcidrnetgw: "192.168.222.1"
+
+bigip_mgmt_network: "192.168.223.0/24"
+bigip_ha_network: "192.168.224.0/24"
+
+# Baremetal IP index available to use
+ip_nth: 200           # No of workers IP + some buffers
+
+#########################
+## Other Static Inputs ##
+#########################
+
+bigip_namespace: "f5-lb"
+
+bigip_worker_mcp: "worker-lb"
+bigip_hostpath_dir: "/var/lib/hppvolumes"
+
+bigip_vm_image_url: "docker://docker-registry.upshift.redhat.com/ocp-edge-qe/bigip:15.1.0.3-EHF"
+bigip_user: "admin"
+bigip_password: "Verizon2020"

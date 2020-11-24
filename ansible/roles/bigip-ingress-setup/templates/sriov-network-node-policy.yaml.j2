@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+{% set i = namespace(value=0) %}
+{% for vm in bigip_vms %}
+{% for n in range(2) %}
+  - apiVersion: sriovnetwork.openshift.io/v1
+    kind: SriovNetworkNodePolicy
+    metadata:
+      name: {{ vm }}{{ bigip_sriov_int }}vf{{ i.value }}
+      namespace: openshift-sriov-network-operator
+    spec:
+      resourceName: {{ vm }}{{ bigip_sriov_int }}vf{{ i.value }}
+      nodeSelector:
+        node-role.kubernetes.io/{{ bigip_worker_mcp }}: ""
+      numVfs: {{ bigip_vms|length * 2 }}
+      nicSelector:
+        pfNames: ["{{ bigip_sriov_int }}#{{ i.value }}-{{ i.value }}"]
+      deviceType: vfio-pci
+{% if jumbo_mtu %}
+      mtu: 9000 
+{% endif %}
+{% set i.value = i.value + 1 %}
+{% endfor %}
+{% endfor %}

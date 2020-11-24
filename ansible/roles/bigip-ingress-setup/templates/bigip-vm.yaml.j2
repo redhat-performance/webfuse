@@ -1,0 +1,124 @@
+apiVersion: v1
+kind: List
+metadata: {}
+items:
+{% set i = namespace(value=0) %}
+{% set j = namespace(value=0) %}
+{% for key, value in bigip_vms.items() %}
+  - apiVersion: kubevirt.io/v1alpha3
+    kind: VirtualMachine
+    metadata:
+      name: {{ key }}
+      namespace: {{ bigip_namespace }}
+      annotations:
+{% for n in range(2) %}
+        k8s.v1.cni.cncf.io/networks: {{ key }}{{ bigip_sriov_int }}vf{{ i.value }}
+{% set i.value = i.value + 1 %}
+{% endfor %}
+      labels:
+        f5type: bigip-ve
+    spec:
+      runStrategy: Always
+      template:
+        metadata:
+          labels:
+            f5type: bigip-ve
+        spec:
+          nodeSelector:
+            kubernetes.io/hostname: {{ value.worker_node }}
+          domain:
+            resources:
+              requests:
+                memory: "8192Mi"
+                cpu: "4"
+            devices:
+              disks:
+              - name: {{ key }}-volume
+                disk:
+                  bus: sata
+              - name: cloudinitvolume
+                disk:
+                  bus: virtio
+              interfaces:
+              - name: mgmt
+                bridge: {}
+              - name: ha
+                bridge: {}
+              - name: int-sriov
+                macAddress: '{{ value.int_sriov_mac }}'
+                sriov: {}
+              - name: ext-sriov
+                macAddress: '{{ value.ext_sriov_mac }}'
+                sriov: {}
+          volumes:
+          - name: {{ key }}-volume
+            dataVolume:
+              name: {{ key }}-volume
+          - name: cloudinitvolume
+            cloudInitConfigDrive:
+              userData: |-
+                #cloud-config
+                write_files:
+                  - path: /config/cloud/config.sh
+                    permissions: 0755
+                    owner: root:root
+                    content: |
+                      #!/bin/bash
+                      echo "Hello World" >> /var/tmp/cloud-init-output
+                      source /usr/lib/bigstart/bigip-ready-functions
+                      wait_bigip_ready
+                      LOGGER_TAG="OpenShift-cloud-init"
+                              LOGGER_CMD="logger -t $LOGGER_TAG"
+                              function log() {
+                              echo "$1" | eval "$LOGGER_CMD"
+                              }
+                      tmsh save /sys config
+                      log "Setting up mgmt IP address and GW..."
+                      tmsh modify sys global-settings mgmt-dhcp disabled
+                      tmsh create sys management-ip {{ value.mgmt_ip }}
+                      tmsh create sys management-route default gateway {{ value.mgmt_gateway }}
+                      tmsh modify sys global-settings hostname {{ key }}.{{ bigip_base_domain }}
+                      log "Setting up VLANS and selfIPs..."
+                      tmsh create net vlan int-sriov interfaces add { 1.2 { untagged } } tag 4093
+                      tmsh create net self {{ value.int_sriov_ip }} vlan int-sriov allow-service all
+{% if jumbo_mtu %}
+                      log "Setting up mtu to {{ 9000 if jumbo_mtu else 1500 }}"
+                      tmsh modify vlan int-sriov mtu {{ 9000 if jumbo_mtu else 1500 }}    
+{% endif %}                   
+                      log "Creating paritions.."
+                      tmsh create auth partition kubernetes default-route-domain 0
+                      log "Changing the root and admin passwords..."
+                      echo -en "{{ bigip_password }}\n{{ bigip_password }}\n" | tmsh modify auth password root
+                      echo -en "{{ bigip_password }}\n{{ bigip_password }}\n" | tmsh modify auth user admin prompt-for-password
+                      sleep 30
+                      tmsh modify /sys global-settings gui-setup disabled
+                      tmsh modify ltm global-settings general snat-packet-forward enabled
+                      tmsh modify sys db connection.vlankeyed value disable
+                      tmsh modify sys db arp.verifyreturnroute value disable
+                      tmsh modify sys disk directory /shared new-size 10485770
+                      tmsh modify sys disk directory /var new-size 10485770
+                      tmsh save sys config
+                      log "cloud-init configuration is saved..."
+                      sleep 60
+                      reboot
+                runcmd:
+                  # NOTE: Commands must be non-blocking so send long running commands (polling/waiting for mcpd) to the background
+                  - /config/cloud/config.sh &
+          networks:
+          - name: mgmt
+            multus:
+              networkName: bigip-mgmt
+          - name: ha
+            multus:
+              networkName: bigip-ha
+{% for n in range(2) %}
+{% if loop.index is divisibleby 2 %}
+          - name: ext-sriov
+{% else %}
+          - name: int-sriov
+{% endif %}
+            multus:
+              networkName: {{ key }}{{ bigip_sriov_int }}vf{{ j.value }}
+{% set j.value = j.value + 1 %}
+{% endfor %}
+{% endfor %}

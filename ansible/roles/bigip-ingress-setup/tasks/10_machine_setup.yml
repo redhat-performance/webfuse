@@ -1,0 +1,55 @@
+---
+- name: Create temp directory for BIGIP
+  tempfile:
+    state: directory
+  register: bigip_tempdir
+
+- name: Create {{ bigip_worker_mcp }} MC
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'machine-config.yaml.j2') }}"    
+
+- name: Create {{ bigip_worker_mcp }} MCP
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'machine-config-pool.yaml.j2') }}"    
+  register: mcp
+
+- name: Create {{ bigip_worker_mcp }} MCP 
+  block:
+    - name: Wait for {{ bigip_worker_mcp }} MCP to be updated
+      shell: |
+        oc wait --for=condition=Updated --timeout=60s mcp {{ bigip_worker_mcp }}
+      changed_when: false
+      register: mcp_update
+      retries: 18 # 3 minutes * 1 minute(timeout)
+      delay: 10
+      until: not mcp_update.failed
+
+    - name: Set {{ bigip_worker_mcp }} Role to nodes
+      shell: |
+        oc label node {{ item.value.worker_node }} node-role.kubernetes.io/{{ bigip_worker_mcp }}=
+      with_items: "{{ bigip_vms | dict2items }}"
+
+    - name: Wait for {{ bigip_worker_mcp }} MCP to start updating
+      shell: |
+        oc wait --for=condition=Updating --timeout=300s mcp {{ bigip_worker_mcp }}
+      register: mcp_updating
+      changed_when: "'condition met' in mcp_updating.stdout"
+      retries: 3 # 3 minutes * 5 minutes (timeout)
+      delay: 60
+      until: mcp_updating is success
+      ignore_errors: true
+
+    - name: Wait for {{ bigip_worker_mcp }} MCP to be updated
+      shell: |
+        oc wait --for=condition=Updated --timeout=1800s mcp {{ bigip_worker_mcp }}
+      changed_when: false
+      register: mcp_update
+      retries: 3 # 3 minutes * 30 minutes (timeout)
+      delay: 60
+      until: not mcp_update.failed
+      when: mcp_updating is changed
+
+  when: 
+    - mcp is changed
