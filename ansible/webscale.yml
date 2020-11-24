@@ -5,6 +5,7 @@
   pre_tasks:
     - name: run validations
       include_tasks: tasks/validation.yml
+  tags: always
   roles:
     - role: operators
       tags: always
