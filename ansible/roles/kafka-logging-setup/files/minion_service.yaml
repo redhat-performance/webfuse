@@ -1,11 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    app.kubernetes.io/name: kafka-minion
   name: kafka-minion
+  namespace: amq
 spec:
   selector:
-    kafka: minion
+    app.kubernetes.io/name: kafka-minion
   ports:
-  - port: 8080
+  - name: metrics
+    port: 8080
     protocol: TCP
-    targetPort: 8080
+    targetPort: metrics
