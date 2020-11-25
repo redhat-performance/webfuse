@@ -90,7 +90,7 @@
 - name: Deploy the kafka-minion and service
   k8s:
     state: present
-    namespace: "{{ kafka_namespace }}"
+    namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - minion.yaml 

@@ -4,7 +4,7 @@ metadata:
   labels:
     app.kubernetes.io/name: kafka-minion
   name: kafka-minion
-  namespace: "{{ kafka_namespace }}"
+  namespace: amq
 spec:
   selector:
     matchLabels:
