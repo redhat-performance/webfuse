@@ -18,6 +18,12 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'datavolume.yaml.j2') }}"
+  register: dv_create
+
+- name: Wait for few seconds before checking for status
+  wait_for:
+    timeout: 20
+  when: dv_create is changed
 
 - name: wait until datavolumes are imported
   shell: |

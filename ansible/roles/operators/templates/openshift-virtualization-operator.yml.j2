@@ -19,7 +19,7 @@ metadata:
   name: hco-operatorhub
   namespace: openshift-cnv
 spec:
-  source: redhat-operators
+  source: "{{ osv_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace
   name: kubevirt-hyperconverged
-  channel: "{{ osv_channel }}"
+  channel: "{{ osv_nightly_channel | default(osv_channel) }}"

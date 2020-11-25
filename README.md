@@ -30,8 +30,8 @@ Tested for - OCP 4.5.11, 4.6.3
 1.  OVN hybrid plugin is required, it has to be manually patched via cluster manifest file during intial deployment, JetSki would take care of this patch. https://github.com/mukrishn/labf5-setup/blob/main/00-network-manifest.yaml
 2.  Need at least 1 worker node to host bigip Virtual machines
 3.  Install SRIOV and OSV operators in the cluster, so obviously Hardware must support SRIOV and enable BIOs configuration. script for shared lab - https://github.com/mukrishn/sriov-prep
-4.  Procure License and update details in `ansible/group_vars/all.yml` 
-5.  Assign Worker, License, Interface names and Network variables under `BigIP playbook vars` section
+4.  Procure Licenses and update details in `ansible/group_vars/all.yml` 
+5.  Assign Worker and Interface names under `BigIP playbook vars` section
 6.  This playbook must be executed from cluster provisioner node, as it creates VLAN sub-interface with private network to connect to VMs.
 
 `ansible-playbook -i inventory/hosts bigip-setup.yml`

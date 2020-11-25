@@ -13,8 +13,8 @@ bigip_licenses:
   - SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF
   - UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB
 
-bigip_sriov_int: "ens2f1"   # Preferrably external interface
-bigip_bridge_int: "ens2f1"    # Preferrably external interface"
+bigip_sriov_int: "ens2f1"   # Preferrably baremetal network interface
+bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface
 
 jumbo_mtu: false
 
@@ -23,14 +23,14 @@ jumbo_mtu: false
 ###################
 
 # Baremetal external CIDR
-extcidrnet: "192.168.222.0/24"
-extcidrnetgw: "192.168.222.1"
+extcidrnet: "192.168.220.0/22"
+extcidrnetgw: "192.168.220.1"
 
-bigip_mgmt_network: "192.168.223.0/24"
-bigip_ha_network: "192.168.224.0/24"
+bigip_mgmt_network: "192.168.230.0/24"
+bigip_ha_network: "192.168.231.0/24"
 
 # Baremetal IP index available to use
-ip_nth: 200           # No of workers IP + some buffers
+ip_nth: 700           # No of workers IP + some buffers
 
 #########################
 ## Other Static Inputs ##

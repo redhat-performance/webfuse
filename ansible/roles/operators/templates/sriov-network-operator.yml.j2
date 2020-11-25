@@ -22,6 +22,6 @@ metadata:
 spec:
   channel: "{{release_version[0]|int}}.{{release_version[2]|int}}"
   name: sriov-network-operator
-  source: redhat-operators
+  source: "{{ sriov_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace
 
