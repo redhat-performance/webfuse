@@ -39,6 +39,13 @@
     content: "{{ my_ca }}" 
     dest: "./ca.crt"
 
+- name: Ensure the secret doesn't exist
+  k8s:
+    state: absent
+    kind: Secret
+    name: kafka-fluent
+    namespace: openshift-logging
+
 - name: Create the fluentd-kafka secret
   shell: |
     oc create secret -n amq generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
@@ -51,14 +58,51 @@
   with_items:
     - cr-logforwarding-to-kafka-topics.yaml
 
-- name: Deploy the kafka-minion pod and service
+- name: Create the listeners for all 3 topics
   k8s:
     state: present
     namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - minion_pod.yaml 
+    - consumer_infra.yaml
+    - consumer_apps.yaml
+    - consumer_alerts.yaml
+
+- name: Deploy the kafka-minion and service
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - minion.yaml 
     - minion_service.yaml
+
+- name: Enable user workload monitoring
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - user_workload_monitoring.yaml
+    - service_monitor.yaml
+
+- name: Get the token for the prometheus data source
+  shell: |
+    oc sa get-token prometheus-k8s -n openshift-monitoring
+  register: token
+
+- name: Get the URL for the prometheus data source
+  shell: |
+    oc get route -n openshift-monitoring | grep thanos-querier  | awk '{print $2}'
+  register: route
+
+- debug:
+    msg:
+    - "This is the token for the prometheus datasource for kafka metrics: "
+    - "{{ token.stdout }}"
+    - "This is the host for the prometheus datasource for kafka metrics: "
+    - "{{ route.stdout }}"
+
 
 # TODO
 # Wait and Check if all resources are ready

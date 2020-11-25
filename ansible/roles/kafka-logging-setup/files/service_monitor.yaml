@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kafka-servicemonitor
+spec:
+  endpoints:
+  - interval: 1s
+    port: metrics
+    scheme: http
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kafka-minion
+
