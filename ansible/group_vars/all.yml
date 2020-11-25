@@ -5,6 +5,18 @@ version: 4.6.1
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift (must be defined)
 build: ga
 
+# Set to true to install nightly Operators and it is effective only for dev-preview builds, 
+# if set make sure to provide brew registry password and Index Image Build IDs
+nightly_operator: false
+
+# Required only for nightly operator installtion
+brew_reg_password: ""
+
+# Required only for nightly operator installtion
+iib_id:
+  sriov: 25944
+  osv: 26761     #openshift-virtualization 
+
 ################################################################################
 # BigIP playbook vars
 ################################################################################

@@ -76,7 +76,6 @@
     sriov_operator_source: "{{ 'redhat-operators-sriov' if 'sriov' in iib_id.keys() else 'redhat-operators' }}"
     osv_operator_source: "{{ 'redhat-operators-osv' if 'osv' in iib_id.keys() else 'redhat-operators' }}"
     osv_nightly_channel: "{{ 'stable' if 'osv' in iib_id.keys() else 'redhat-operators' }}"
-    nightly_operator: "{{ nightly_operator }}"
 
 # Takes few seconds to initiate catalog source
 - name: Wait for few seconds before installing operators
