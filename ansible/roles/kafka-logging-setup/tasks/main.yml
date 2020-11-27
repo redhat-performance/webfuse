@@ -117,13 +117,18 @@
     oc get route -n openshift-monitoring | grep thanos-querier  | awk '{print $2}'
   register: route
 
-- debug:
-    msg:
-    - "This is the token for the prometheus datasource for kafka metrics: "
-    - "{{ token.stdout }}"
-    - "This is the host for the prometheus datasource for kafka metrics: "
-    - "{{ route.stdout }}"
+- name: Get the URL for the dittybopper / grafana API
+  shell: |
+    oc get route -n dittybopper | grep dittybopper | awk '{print $2}'
+  register: dittybopper_route
 
+- name: template the file for the datasource
+  template: src=templates/datasource.j2 dest=/tmp/datasource.yml
+  delegate_to: localhost
+
+- name: create the datasource for kafka
+  shell: |
+    curl -X POST -H 'Content-Type: application/json' --data @/tmp/datasource.yml http://admin:admin@{{ dittybopper_route.stdout }}/api/datasources
 
 # TODO
 # Wait and Check if all resources are ready

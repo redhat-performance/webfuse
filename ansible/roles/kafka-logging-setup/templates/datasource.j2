@@ -1,0 +1,15 @@
+{
+  "name":"Kafka_Datasource",
+  "type":"prometheus",
+  "url":"https://{{ route.stdout }}",
+  "access":"proxy",
+  "basicAuth":false,
+  "jsonData": {
+       "tlsSkipVerify":true,
+       "httpHeaderName1": "Authorization"
+  },
+  "secureJsonData": {
+       "httpHeaderValue1": "Bearer {{ token.stdout }}"
+  }
+}
+
