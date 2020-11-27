@@ -2,7 +2,7 @@
 - name: Deploy Kafka cluster with ephemeral storage
   k8s:
     state: present
-    namespace: "{{ kafka_namespace }}"
+    namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - kafka-cluster-ephemeral.yaml
@@ -13,7 +13,7 @@
   - name: Create the local volumes for the brokers and zookeepers
     k8s:
       state: present
-      namespace: "{{ kafka_namespace }}"
+      namespace: "amq"
       definition: "{{ lookup('file', item ) }}"
     with_items:
       - kafka-lv-brokers.yaml
@@ -22,7 +22,7 @@
   - name: Deploy the actual Kafka cluster 
     k8s:
       state: present
-      namespace: "{{ kafka_namespace }}"
+      namespace: "amq"
       definition: "{{ lookup('file', item ) }}"
     with_items:
       - kafka-cluster-persistent.yaml
@@ -39,7 +39,7 @@
 - name: Create Kafka topics 
   k8s:
     state: present
-    namespace: "{{ kafka_namespace }}"
+    namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - kafka-topics.yaml
@@ -49,7 +49,7 @@
     api: v1
     kind: Secret
     name: my-cluster-cluster-ca-cert
-    namespace: "{{ kafka_namespace }}"
+    namespace: "amq"
   register: mysecret
 
 - set_fact:
@@ -69,12 +69,12 @@
 
 - name: Create the fluentd-kafka secret
   shell: |
-    oc create secret -n "{{ kafka_namespace }}" generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
+    oc create secret -n amq generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
 
 - name: Deploy Cluster log forwarder
   k8s:
     state: present
-    namespace: "{{ kafka_namespace }}"
+    namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - cr-logforwarding-to-kafka-topics.yaml
@@ -82,7 +82,7 @@
 - name: Create the listeners for all 3 topics
   k8s:
     state: present
-    namespace: "{{ kafka_namespace }}"
+    namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - consumer_infra.yaml

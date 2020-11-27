@@ -69,5 +69,4 @@ shiftstack_thin_volume_size: 140g
 # Kafka playbook vars
 ################################################################################
 
-kafka_namespace: "amq"        # namespace for all the kafka resources to live in
 kafka_storage: "persistent"   # can be either persistent or ephemeral
