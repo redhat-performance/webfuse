@@ -1,15 +1,34 @@
 ---
-- name: Deploy Kafka cluster
+- name: Create the local volumes for the brokers and zookeepers
   k8s:
     state: present
-    namespace: "amq"
+    namespace: "{{ kafka_namespace }}"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - kafka-cluster.yaml
+    - kafka-lv-brokers.yaml
+    - kafka-lv-zookeepers.yaml
 
-- name: Wait 30 seconds
+- name: Deploy Kafka cluster with ephemeral storage
+  k8s:
+    state: present
+    namespace: "{{ kafka_namespace }}"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - kafka-cluster-ephemeral.yaml
+  when: kafka_storage == 'ephemeral'
+
+- name: Deploy Kafka cluster with persistent storage
+  k8s:
+    state: present
+    namespace: "{{ kafka_namespace }}"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - kafka-cluster-persistent.yaml
+  when: kafka_storage == 'persistent'
+
+- name: Wait 50 seconds
   pause:
-    seconds: 30
+    seconds: 50
 
 - name: Wait for all pods in the amq namespace to become ready (timeout is 600s, so be patient)
   shell: |
@@ -18,7 +37,7 @@
 - name: Create Kafka topics 
   k8s:
     state: present
-    namespace: "amq"
+    namespace: "{{ kafka_namespace }}"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - kafka-topics.yaml
@@ -28,7 +47,7 @@
     api: v1
     kind: Secret
     name: my-cluster-cluster-ca-cert
-    namespace: amq
+    namespace: "{{ kafka_namespace }}"
   register: mysecret
 
 - set_fact:
@@ -48,12 +67,12 @@
 
 - name: Create the fluentd-kafka secret
   shell: |
-    oc create secret -n amq generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
+    oc create secret -n "{{ kafka_namespace }}" generic kafka-fluent --from-file=ca-bundle.crt=./ca.crt -n openshift-logging
 
 - name: Deploy Cluster log forwarder
   k8s:
     state: present
-    namespace: "amq"
+    namespace: "{{ kafka_namespace }}"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - cr-logforwarding-to-kafka-topics.yaml
@@ -61,7 +80,7 @@
 - name: Create the listeners for all 3 topics
   k8s:
     state: present
-    namespace: "amq"
+    namespace: "{{ kafka_namespace }}"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - consumer_infra.yaml
@@ -71,7 +90,7 @@
 - name: Deploy the kafka-minion and service
   k8s:
     state: present
-    namespace: "amq"
+    namespace: "{{ kafka_namespace }}"
     definition: "{{ lookup('file', item ) }}"
   with_items:
     - minion.yaml 
