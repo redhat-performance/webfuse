@@ -73,9 +73,13 @@
 
 - name: set operator facts
   set_fact: 
+    pao_operator_source: "{{ 'redhat-operators-pao' if 'pao' in iib_id.keys() else 'redhat-operators' }}"
     sriov_operator_source: "{{ 'redhat-operators-sriov' if 'sriov' in iib_id.keys() else 'redhat-operators' }}"
     osv_operator_source: "{{ 'redhat-operators-osv' if 'osv' in iib_id.keys() else 'redhat-operators' }}"
     osv_channel: "{{ 'stable' if 'osv' in iib_id.keys() else osv_channel }}"
+    clo_operator_source: "{{ 'redhat-operators-clo' if 'clo' in iib_id.keys() else 'redhat-operators' }}"
+    amq_operator_source: "{{ 'redhat-operators-amq' if 'amq' in iib_id.keys() else 'redhat-operators' }}"
+    eso_operator_source: "{{ 'redhat-operators-eso' if 'eso' in iib_id.keys() else 'redhat-operators' }}"
 
 # Takes few seconds to initiate catalog source
 - name: Wait for few seconds before installing operators
