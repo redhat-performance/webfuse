@@ -22,7 +22,7 @@ bigip_bridges:
     vlan_id: "101"
 
 bigip_sriov_network_ipam_address: "{{ extcidrnet }}"   # baremetal external CIDR
-bigip_sriov_network_ipam_gateway: "{{ extcidrnetgw }}"   # GW of baremetal external CIDR
+bigip_sriov_network_ipam_gateway: "{{ extcidrnetgw | default(extcidrnet | next_nth_usable(1)) }}"   # GW of baremetal external CIDR
 
 bigip_ntp_server: "{{ bigip_mgmt_network | next_nth_usable(1) }}"    # GW of BigIP mgmt network
 bigip_upstream_dns: "{{ extcidrnet | next_nth_usable(1) }}"   # GW of baremetal external CIDR or any reachable DNS server
