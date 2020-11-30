@@ -1,6 +1,6 @@
 ---
 # Openshift Virtualization channel
-osv_channel: 2.4
+osv_channel: stable
 
 # AMQ subscription channel
 amq_channel: stable
@@ -12,4 +12,4 @@ brew_reg_password: ""
 
 iib_id:
   sriov: 25944
-  osv: 26761     #openshift-virtualization 
+#  osv: 26761     #openshift-virtualization 

@@ -22,4 +22,4 @@ spec:
   source: "{{ osv_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace
   name: kubevirt-hyperconverged
-  channel: "{{ osv_nightly_channel | default(osv_channel) }}"
+  channel: "{{ osv_channel }}"
