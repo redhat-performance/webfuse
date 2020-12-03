@@ -37,3 +37,31 @@ rhacm_redisgraph_memory_limit: "3Gi"
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
+
+################################################################################
+# Local-storage vars:
+################################################################################
+local_storage_nodes:
+  - storagenode-0
+  - storagenode-1
+  - storagenode-3
+local_storage_node_label: 'localstorage: "true"'
+local_storage_instances:
+  key: localstorage
+  value: "true"
+  volumes:
+  - /dev/vg_ls/lv_tv00
+  - /dev/vg_ls/lv_tv01
+  - /dev/vg_ls/lv_tv02
+  - /dev/vg_ls/lv_tv03
+  - /dev/vg_ls/lv_tv04
+  - /dev/vg_ls/lv_tv05
+
+################################################################################
+# Prepare Shiftstack for Local-storage vars:
+################################################################################
+shiftstack_cluster: vlan608
+shiftstack_local_storage_node_selector: beta.kubernetes.io/instance-type=nvme-8
+shiftstack_local_storage_device: /dev/nvme0n1
+shiftstack_thin_volume_count: 6
+shiftstack_thin_volume_size: 140g

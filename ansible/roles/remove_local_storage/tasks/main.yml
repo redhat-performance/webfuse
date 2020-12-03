@@ -1,0 +1,25 @@
+---
+# Remove local-storage operator
+
+- name: Remove all pvcs
+  shell: |
+    oc delete pvc --all-namespaces --all
+    
+- name: Remove all pvs
+  shell: |
+    oc delete pv --all
+
+- name: Remove LocalVolume resource
+  k8s:
+    state: absent
+    definition: "{{ lookup('template', 'localvolume.yml.j2') }}"
+
+- name: Remove openshift-local-storage namespace
+  k8s:
+    state: absent
+    kind: Namespace
+    name: openshift-local-storage
+
+- name: Remove all pvs after namespace removed
+  shell: |
+    oc delete pv --all

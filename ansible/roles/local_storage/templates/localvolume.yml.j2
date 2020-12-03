@@ -1,0 +1,22 @@
+---
+apiVersion: "local.storage.openshift.io/v1"
+kind: "LocalVolume"
+metadata:
+  name: "local-disks"
+  namespace: "openshift-local-storage" 
+spec:
+  nodeSelector: 
+    nodeSelectorTerms:
+    - matchExpressions:
+      - key: "{{local_storage_instances.key}}"
+        operator: In
+        values:
+        - "{{local_storage_instances.value}}"
+  storageClassDevices:
+  - storageClassName: "local-sc"
+    volumeMode: Filesystem 
+    fsType: xfs 
+    devicePaths:
+{% for volume in local_storage_instances.volumes %}
+      - "{{volume}}"
+{% endfor %}
