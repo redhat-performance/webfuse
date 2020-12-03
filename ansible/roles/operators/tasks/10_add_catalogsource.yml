@@ -1,0 +1,87 @@
+---
+- name: Create temp directory
+  tempfile:
+    state: directory
+  register: cs_tempdir
+
+- name: Get pull secret
+  shell: |
+    oc get secret/pull-secret -n openshift-config -o json | jq -r '.data.".dockerconfigjson"' | base64 -d | jq -r '.auths."brew.registry.redhat.io"'
+  register: pull_secret
+
+- name: Update pull secret
+  block:
+    - name: Save pull secret data
+      shell: |
+        oc get secret/pull-secret -n openshift-config -o json | jq -r '.data.".dockerconfigjson"' | base64 -d > {{ cs_tempdir.path }}/authfile
+        
+    - name: Get brew registry auth token
+      shell: |
+        podman login --authfile {{ cs_tempdir.path }}/authfile --username "|shared-qe-temp.zmns.153b77" --password {{ brew_reg_password }} brew.registry.redhat.io
+      register: login_status
+      failed_when: "'Login Succeeded!' not in login_status.stdout"
+
+    - name: Set pull secret data with new brew registry token
+      shell: |
+        oc set data secret/pull-secret -n openshift-config --from-file=.dockerconfigjson={{ cs_tempdir.path }}/authfile
+
+    - include_tasks: 99_mcp_status.yml
+
+  when: 
+    - pull_secret.stdout == "null"
+
+- name: Create Image content source policy
+  k8s:
+    state: present
+    definition: 
+      apiVersion: operator.openshift.io/v1alpha1
+      kind: ImageContentSourcePolicy
+      metadata:
+        name: brew-registry
+      spec:
+        repositoryDigestMirrors:
+        - mirrors:
+          - brew.registry.redhat.io
+          source: registry.redhat.io
+        - mirrors:
+          - brew.registry.redhat.io
+          source: registry.stage.redhat.io
+        - mirrors:
+          - brew.registry.redhat.io
+          source: registry-proxy.engineering.redhat.com
+  register: icsp_state
+
+- include_tasks: 99_mcp_status.yml
+  when: icsp_state is changed
+
+- name: Add custom catalog source
+  k8s:
+    state: present
+    definition: 
+      apiVersion: operators.coreos.com/v1alpha1
+      kind: CatalogSource
+      metadata:
+        name: redhat-operators-{{ item.key }}
+        namespace: openshift-marketplace
+      spec:
+        sourceType: grpc
+        publisher: Red Hat Brew
+        displayName: Red Hat Operators - Nightly
+        image: brew.registry.redhat.io/rh-osbs/iib:{{ item.value }}
+  with_dict:
+    - "{{ iib_id }}"
+
+- name: set operator facts
+  set_fact: 
+    pao_operator_source: "{{ 'redhat-operators-pao' if 'pao' in iib_id.keys() else 'redhat-operators' }}"
+    sriov_operator_source: "{{ 'redhat-operators-sriov' if 'sriov' in iib_id.keys() else 'redhat-operators' }}"
+    osv_operator_source: "{{ 'redhat-operators-osv' if 'osv' in iib_id.keys() else 'redhat-operators' }}"
+    osv_channel: "{{ 'stable' if 'osv' in iib_id.keys() else osv_channel }}"
+    clo_operator_source: "{{ 'redhat-operators-clo' if 'clo' in iib_id.keys() else 'redhat-operators' }}"
+    amq_operator_source: "{{ 'redhat-operators-amq' if 'amq' in iib_id.keys() else 'redhat-operators' }}"
+    eso_operator_source: "{{ 'redhat-operators-eso' if 'eso' in iib_id.keys() else 'redhat-operators' }}"
+
+# Takes few seconds to initiate catalog source
+- name: Wait for few seconds before installing operators
+  wait_for:
+    timeout: 30

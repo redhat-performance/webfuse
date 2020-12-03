@@ -29,10 +29,10 @@
       delay: 60
       until: not worker_lb_mcp_update.failed
       when: mcp_updating is changed
-
-    - name: Create SRIOV network
-      k8s:
-        state: present
-        definition: "{{ lookup('template', 'sriov-network.yaml.j2') }}"
   when: 
     - sriov_policy is changed
+
+- name: Create SRIOV network
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'sriov-network.yaml.j2') }}"

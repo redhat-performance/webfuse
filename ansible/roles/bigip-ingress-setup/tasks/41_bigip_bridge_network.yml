@@ -4,6 +4,14 @@
     definition: "{{ lookup('template', 'bigip-bridges.yaml.j2') }}"
   register: bridge_network
 
+- name: Check NNCP
+  shell: |      
+    oc get nncp bigip-bridges --no-headers | awk '{print $2}'
+  register: nncp_status
+  retries: 36 # 3 minutes
+  delay: 5
+  until: "'SuccessfullyConfigured' in nncp_status.stdout"
+
 - name: Patch network operator with bridge networks
   shell: |
     oc patch networks.operator.openshift.io/cluster --type='merge' -p "$(cat <<- EOF
