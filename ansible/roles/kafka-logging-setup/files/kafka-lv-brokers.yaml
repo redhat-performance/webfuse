@@ -2,7 +2,7 @@ apiVersion: "local.storage.openshift.io/v1"
 kind: "LocalVolume"
 metadata:
   name: "kafka-local-brokers"
-  namespace: "local-storage"
+  namespace: local-storage
 spec:
   nodeSelector:
     nodeSelectorTerms:

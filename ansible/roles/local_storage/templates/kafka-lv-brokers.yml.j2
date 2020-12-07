@@ -1,22 +1,19 @@
 apiVersion: "local.storage.openshift.io/v1"
 kind: "LocalVolume"
 metadata:
-  name: "kafka-local-zookeepers"
+  name: "kafka-local-brokers"
   namespace: local-storage
 spec:
   nodeSelector:
     nodeSelectorTerms:
     - matchExpressions:
-        - key: kubernetes.io/hostname
+        - key: "{{ kafka_instances.key }}"
           operator: In
           values:
-          - storage001-r640
-          - storage002-r640
-          - storage003-r640
+          - "{{ kafka_instances.value }}"
   storageClassDevices:
-    - storageClassName: "kafka-local-zookeepers"
+    - storageClassName: "kafka-local-brokers"
       volumeMode: Filesystem
       fsType: xfs
       devicePaths:
-        - /dev/nvme1n1
-
+        - "{{ kafka_broker_volume }}"

@@ -2,7 +2,7 @@ apiVersion: kafka.strimzi.io/v1beta1
 kind: Kafka
 metadata:
   name: my-cluster
-  namespace: "amq"
+  namespace: amq
 spec:
   entityOperator:
     topicOperator:

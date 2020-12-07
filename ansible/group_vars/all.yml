@@ -66,6 +66,7 @@ shiftstack_local_storage_device: /dev/nvme0n1
 shiftstack_thin_volume_count: 6
 shiftstack_thin_volume_size: 140g
   
+################################################################################
 # Kafka playbook vars
 ################################################################################
 
@@ -74,5 +75,10 @@ kafka_nodes:
   - storagenode-2
   - storagenode-3
   - storagenode-4
+kafka_instances:
+  key: kafka
+  value: "true"
 kafka_node_label: 'kafka: "true"'
+kafka_broker_volume: /dev/nvme0n1
+kafka_zookeeper_volume: /dev/nvme0n2
 
