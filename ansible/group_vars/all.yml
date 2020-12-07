@@ -70,3 +70,9 @@ shiftstack_thin_volume_size: 140g
 ################################################################################
 
 kafka_storage: "persistent"   # can be either persistent or ephemeral
+kafka_nodes:
+  - storagenode-2
+  - storagenode-3
+  - storagenode-4
+kafka_node_label: 'kafka: "true"'
+

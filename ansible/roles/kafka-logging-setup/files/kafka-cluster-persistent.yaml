@@ -25,7 +25,12 @@ spec:
           type: tls
     replicas: 3
     NodeSelector:
-      node-role.kubernetes.io/infra: ""
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "{{ kafka_instances.key }}"
+          operator: In
+          values:
+          - "{{ kafka_instances.value }}"
     #affinity:
     #  nodeAffinity:
     #    requiredDuringSchedulingIgnoredDuringExecution:
@@ -43,7 +48,12 @@ spec:
     version: 2.5.0
   zookeeper:
     NodeSelector:
-      node-role.kubernetes.io/infra: ""
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: "{{ kafka_instances.key }}"
+          operator: In
+          values:
+          - "{{ kafka_instances.value }}"
     replicas: 3
     storage:
       type: persistent-claim
