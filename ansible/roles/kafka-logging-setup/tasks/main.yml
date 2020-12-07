@@ -14,19 +14,8 @@
     - kafka-cluster-ephemeral.yaml
   when: kafka_storage == 'ephemeral'
 
-- name: Deploy a kafka cluster with persistent storage
-  block:
-  - name: Create the local volumes for the brokers and zookeepers
-    k8s:
-      state: present
-      namespace: "amq"
-      definition: "{{ lookup('file', item ) }}"
-    with_items:
-      - kafka-lv-brokers.yaml
-      - kafka-lv-zookeepers.yaml
-
-  - name: Deploy the actual Kafka cluster 
-    k8s:
+- name: Deploy the actual Kafka cluster 
+  k8s:
       state: present
       namespace: "amq"
       definition: "{{ lookup('file', item ) }}"
