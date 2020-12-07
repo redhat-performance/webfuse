@@ -6,6 +6,19 @@
     state: present
     definition: "{{ lookup('template', 'rhacm.yml.j2') }}"
 
+- name: Get cluster pull-secret
+  shell: |
+    oc get secret -n openshift-config pull-secret -o json
+  register: cluster_pull_secret
+
+- name: Convert cluster_pull_secret to json
+  set_fact:
+    cluster_pull_secret_json: "{{cluster_pull_secret['stdout'] | from_json}}"
+
+- name: Set mch_pull_secret
+  set_fact:
+    mch_pull_secret: "{{cluster_pull_secret_json['data']['.dockerconfigjson']}}"
+
 # MultiClusterHub CRD won't be instantly available thus retry for around 2 minutes
 - name: Create MultiClusterHub Object
   k8s:
@@ -16,7 +29,8 @@
       metadata:
         namespace: open-cluster-management
         name: multiclusterhub
-      spec: {}
+      spec:
+        imagePullSecret: multiclusterhub-operator-pull-secret
   register: mch_result
   until: mch_result.failed == false
   retries: 60

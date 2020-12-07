@@ -26,3 +26,12 @@ spec:
   name: advanced-cluster-management
   source: redhat-operators
   sourceNamespace: openshift-marketplace
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: multiclusterhub-operator-pull-secret
+  namespace: open-cluster-management
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: "{{ mch_pull_secret }}"
