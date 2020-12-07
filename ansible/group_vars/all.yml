@@ -47,15 +47,26 @@ local_storage_nodes:
   - storagenode-3
 local_storage_node_label: 'localstorage: "true"'
 local_storage_instances:
-  key: localstorage
-  value: "true"
-  volumes:
-  - /dev/vg_ls/lv_tv00
-  - /dev/vg_ls/lv_tv01
-  - /dev/vg_ls/lv_tv02
-  - /dev/vg_ls/lv_tv03
-  - /dev/vg_ls/lv_tv04
-  - /dev/vg_ls/lv_tv05
+  - key: localstorage
+    value: "true"
+    storageclassname: local-sc
+    volumes:
+    - /dev/vg_ls/lv_tv00
+    - /dev/vg_ls/lv_tv01
+    - /dev/vg_ls/lv_tv02
+    - /dev/vg_ls/lv_tv03
+    - /dev/vg_ls/lv_tv04
+    - /dev/vg_ls/lv_tv05
+  - key: kafka
+    value: "true"
+    storageclassname: kafka-local-brokers
+    volumes:
+    - /dev/nvme0n1
+  - key: kafka
+    value: "true"
+    storageclassname: kafka-local-zookeepers
+    volumes:
+    - /dev/nvme0n2
 
 ################################################################################
 # Prepare Shiftstack for Local-storage vars:
@@ -79,6 +90,4 @@ kafka_instances:
   key: kafka
   value: "true"
 kafka_node_label: 'kafka: "true"'
-kafka_broker_volume: /dev/nvme0n1
-kafka_zookeeper_volume: /dev/nvme0n2
 

@@ -21,13 +21,3 @@
   until: lv_result.failed == false
   retries: 60
   delay: 2
-
-- name: Create the localvolume for the Kafka brokers
-  k8s: 
-    state: present
-    definition: "{{ lookup('template', 'kafka-lv-brokers.yml.j2)' }}"
-
-- name: Create the localvolume for the Kafka zookeepers
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'kafka-lv-zookeepers.yaml.j2)' }}"
