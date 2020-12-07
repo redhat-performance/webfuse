@@ -11,7 +11,7 @@ kind: ManagedCluster
 metadata:
   name: "{{managed_cluster_name}}"
   labels:
-    vendor: OpenShift
+    vendor: "{{managed_cluster_vendor}}"
 spec:
   hubAcceptsClient: true
 ---
