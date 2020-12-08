@@ -28,7 +28,7 @@
         source /home/stack/ocp_clusters/{{shiftstack_cluster}}/shiftstackrc
         openstack server list -f value -c Name | grep master-0
       register: master0_name
-    
+
     - name: Associate floating ip to master-0
       shell: |
         source /home/stack/ocp_clusters/{{shiftstack_cluster}}/shiftstackrc
@@ -61,6 +61,16 @@
   vars_files: 
     - vars/all.yml
   tasks:
+    - name: Ensure disks are wiped before running any lvm commands
+      become: true
+      shell: |
+        wipefs -a -f {{shiftstack_local_storage_device}}
+      register: disk_wipe
+
+    - name: Show disk wiping output
+      debug:
+        msg: "{{disk_wipe.stdout}}"
+
     - name: Create LVM Volume Group
       become: true
       lvg:

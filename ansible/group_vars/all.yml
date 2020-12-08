@@ -34,6 +34,7 @@ bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface"
 # by orchestration host
 rhacm_version: 2.1
 rhacm_redisgraph_memory_limit: "3Gi"
+rhacm_disableHubSelfManagement: false
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_vendor: OpenShift
