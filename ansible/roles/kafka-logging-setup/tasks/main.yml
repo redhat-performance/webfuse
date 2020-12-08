@@ -2,7 +2,7 @@
 - name: Label Kafka nodes
   k8s:
     state: present
-      definition: "{{ lookup('template', 'node.yml.j2') }}"
+    definition: "{{ lookup('template', 'node.yml.j2') }}"
   with_items: "{{ kafka_nodes | default ([]) }}"
 
 - name: Deploy Kafka cluster with ephemeral storage
