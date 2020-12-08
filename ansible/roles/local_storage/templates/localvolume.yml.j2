@@ -17,6 +17,8 @@ spec:
     volumeMode: Filesystem 
     fsType: xfs 
     devicePaths:
-{% for volume in local_storage_instances.volumes %}
+{% for class in local_storage_instances.key %}
+  {% for volume in class.volumes %}
       - "{{volume}}"
+  {% endfor %}
 {% endfor %}
