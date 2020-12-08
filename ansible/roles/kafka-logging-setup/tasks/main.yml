@@ -1,15 +1,31 @@
 ---
-- name: Deploy Kafka cluster
+- name: Label Kafka nodes
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'node.yml.j2') }}"
+  with_items: "{{ kafka_nodes | default ([]) }}"
+
+- name: Deploy Kafka cluster with ephemeral storage
   k8s:
     state: present
     namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - kafka-cluster.yaml
+    - kafka-cluster-ephemeral.yaml
+  when: kafka_storage == 'ephemeral'
 
-- name: Wait 30 seconds
+- name: Deploy the actual Kafka cluster 
+  k8s:
+      state: present
+      namespace: "amq"
+      definition: "{{ lookup('file', item ) }}"
+    with_items:
+      - kafka-cluster-persistent.yaml
+  when: kafka_storage == 'persistent'
+
+- name: Wait 50 seconds
   pause:
-    seconds: 30
+    seconds: 50
 
 - name: Wait for all pods in the amq namespace to become ready (timeout is 600s, so be patient)
   shell: |
@@ -28,7 +44,7 @@
     api: v1
     kind: Secret
     name: my-cluster-cluster-ca-cert
-    namespace: amq
+    namespace: "amq"
   register: mysecret
 
 - set_fact:
@@ -96,13 +112,18 @@
     oc get route -n openshift-monitoring | grep thanos-querier  | awk '{print $2}'
   register: route
 
-- debug:
-    msg:
-    - "This is the token for the prometheus datasource for kafka metrics: "
-    - "{{ token.stdout }}"
-    - "This is the host for the prometheus datasource for kafka metrics: "
-    - "{{ route.stdout }}"
+- name: Get the URL for the dittybopper / grafana API
+  shell: |
+    oc get route -n dittybopper | grep dittybopper | awk '{print $2}'
+  register: dittybopper_route
 
+- name: template the file for the datasource
+  template: src=templates/datasource.j2 dest=/tmp/datasource.yml
+  delegate_to: localhost
+
+- name: create the datasource for kafka
+  shell: |
+    curl -X POST -H 'Content-Type: application/json' --data @/tmp/datasource.yml http://admin:admin@{{ dittybopper_route.stdout }}/api/datasources
 
 # TODO
 # Wait and Check if all resources are ready

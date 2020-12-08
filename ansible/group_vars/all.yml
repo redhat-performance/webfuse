@@ -48,15 +48,26 @@ local_storage_nodes:
   - storagenode-3
 local_storage_node_label: 'localstorage: "true"'
 local_storage_instances:
-  key: localstorage
-  value: "true"
-  volumes:
-  - /dev/vg_ls/lv_tv00
-  - /dev/vg_ls/lv_tv01
-  - /dev/vg_ls/lv_tv02
-  - /dev/vg_ls/lv_tv03
-  - /dev/vg_ls/lv_tv04
-  - /dev/vg_ls/lv_tv05
+  - key: localstorage
+    value: "true"
+    storageclassname: local-sc
+    volumes:
+    - /dev/vg_ls/lv_tv00
+    - /dev/vg_ls/lv_tv01
+    - /dev/vg_ls/lv_tv02
+    - /dev/vg_ls/lv_tv03
+    - /dev/vg_ls/lv_tv04
+    - /dev/vg_ls/lv_tv05
+  - key: kafka
+    value: "true"
+    storageclassname: kafka-local-brokers
+    volumes:
+    - /dev/nvme0n1
+  - key: kafka
+    value: "true"
+    storageclassname: kafka-local-zookeepers
+    volumes:
+    - /dev/nvme0n2
 
 ################################################################################
 # Prepare Shiftstack for Local-storage vars:
@@ -66,3 +77,18 @@ shiftstack_local_storage_node_selector: beta.kubernetes.io/instance-type=nvme-8
 shiftstack_local_storage_device: /dev/nvme0n1
 shiftstack_thin_volume_count: 6
 shiftstack_thin_volume_size: 140g
+  
+################################################################################
+# Kafka playbook vars
+################################################################################
+
+kafka_storage: "persistent"   # can be either persistent or ephemeral
+kafka_nodes:
+  - storagenode-2
+  - storagenode-3
+  - storagenode-4
+kafka_instances:
+  key: kafka
+  value: "true"
+kafka_node_label: 'kafka: "true"'
+
