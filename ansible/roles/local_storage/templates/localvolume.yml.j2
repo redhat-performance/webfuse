@@ -3,13 +3,13 @@
 apiVersion: "local.storage.openshift.io/v1"
 kind: "LocalVolume"
 metadata:
-  name: "local-disks"
+  name: "lv-{{instance.storageclassname}}"
   namespace: "openshift-local-storage" 
 spec:
   nodeSelector: 
     nodeSelectorTerms:
     - matchExpressions:
-      - key: "{{instances.key}}"
+      - key: "{{instance.key}}"
         operator: In
         values:
         - "{{instance.value}}"
@@ -18,7 +18,7 @@ spec:
     volumeMode: Filesystem 
     fsType: xfs 
     devicePaths:
-  {% for volume in instance.volumes %}
+{%   for volume in instance.volumes %}
       - "{{volume}}"
-  {% endfor %}
+{%   endfor %}
 {% endfor %}
