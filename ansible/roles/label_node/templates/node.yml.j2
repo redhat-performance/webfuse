@@ -1,0 +1,9 @@
+{% for node in item['nodes'] %}
+---
+apiVersion: v1
+kind: Node
+metadata:
+  name: {{node}}
+  labels:
+    {{item.label}}
+{% endfor %}

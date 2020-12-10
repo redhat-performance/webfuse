@@ -41,13 +41,22 @@ managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
 
 ################################################################################
+# Label Node vars:
+################################################################################
+label_node_values:
+  - label: 'localstorage: "true"'
+    nodes:
+      - storagenode-0
+      - storagenode-1
+  - label: 'kafka: "true"'
+    nodes:
+      - storagenode-2
+      - storagenode-3
+      - storagenode-4
+
+################################################################################
 # Local-storage vars:
 ################################################################################
-local_storage_nodes:
-  - storagenode-0
-  - storagenode-1
-  - storagenode-3
-local_storage_node_label: 'localstorage: "true"'
 local_storage_instances:
   - key: localstorage
     value: "true"
@@ -92,10 +101,6 @@ openshift_prometheus_storage_size: 50Gi
 ################################################################################
 
 kafka_storage: "persistent"   # can be either persistent or ephemeral
-kafka_nodes:
-  - storagenode-2
-  - storagenode-3
-  - storagenode-4
 kafka_instances:
   key: kafka
   value: "true"
