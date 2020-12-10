@@ -2,6 +2,10 @@
   shell: |
     oc patch sriovoperatorconfig default --type=merge -n openshift-sriov-network-operator --patch '{ "spec": { "enableOperatorWebhook": false } }'
 
+- name: Wait for few seconds before applying SRIOV network node policy
+  wait_for:
+    timeout: 10
+
 - name: Create SRIOV network node policy
   k8s:
     state: present
