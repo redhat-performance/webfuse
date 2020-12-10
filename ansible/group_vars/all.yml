@@ -78,7 +78,15 @@ shiftstack_local_storage_node_selector: beta.kubernetes.io/instance-type=nvme-8
 shiftstack_local_storage_device: /dev/nvme0n1
 shiftstack_thin_volume_count: 6
 shiftstack_thin_volume_size: 140g
-  
+
+################################################################################
+# Configure OpenShift Monitoring playbook vars
+################################################################################
+openshift_prometheus_retention_period: 30d
+openshift_prometheus_node_selector: "localstorage: true"
+openshift_prometheus_storage_class: local-sc
+openshift_prometheus_storage_size: 50Gi
+
 ################################################################################
 # Kafka playbook vars
 ################################################################################
@@ -92,4 +100,3 @@ kafka_instances:
   key: kafka
   value: "true"
 kafka_node_label: 'kafka: "true"'
-

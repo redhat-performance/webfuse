@@ -1,0 +1,7 @@
+---
+# Configure openshift-monitoring
+
+- name: Create/Configure cluster-monitoring-config using local-storage
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'cluster-monitoring-config.yml.j2') }}"
