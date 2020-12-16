@@ -13,8 +13,8 @@
       state: present
       namespace: "amq"
       definition: "{{ lookup('file', item ) }}"
-    with_items:
-      - kafka-cluster-persistent.yaml
+  with_items:
+    - kafka-cluster-persistent.yaml
   when: kafka_storage == 'persistent'
 
 - name: Wait 50 seconds
