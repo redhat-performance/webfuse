@@ -26,6 +26,10 @@
     - openshift-logging
     - amq
 
+- name: set operator facts
+  set_fact:
+    osv_channel: "{{ osv_channel }}"
+
 - name: Create OSV hyperconverged operator
   k8s:
     state: present
