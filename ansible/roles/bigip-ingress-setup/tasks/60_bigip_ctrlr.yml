@@ -50,7 +50,7 @@
     cis_tunnels: ['ocp-ingress-1', 'ocp-egress-1']
   k8s:
     state: present
-    definition: "{{ lookup('template', 'bigip_cis.yaml.j2') }}"    
+    definition: "{{ lookup('template', 'bigip_cis.yaml.j2') }}"
 
 - name: Create CIS test namespace and application
   k8s:

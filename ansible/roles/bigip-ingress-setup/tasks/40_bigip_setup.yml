@@ -1,7 +1,7 @@
 - name: Create {{ bigip_namespace }} namespace
   k8s:
     state: present
-    definition: 
+    definition:
       apiVersion: v1
       kind: Namespace
       metadata:
@@ -31,7 +31,7 @@
       - 'bigip'
   loop: "{{ bigip_vms | dict2items }}"
 
-- name: Generate stablcurco1_dns46.tcl 
+- name: Generate stablcurco1_dns46.tcl
   template:
     src: stablcurco1_dns46.tcl.j2
     dest: ./roles/bigip-ingress-setup/files/stablcurco1_dns46.tcl

@@ -14,69 +14,69 @@
 
 - hosts: orchestration
   remote_user: stack
-  vars_files: 
+  vars_files:
     - vars/all.yml
   tasks:
     - name: Create temporary floating ip for master-0
       shell: |
-        source /home/stack/ocp_clusters/{{shiftstack_cluster}}/shiftstackrc
+        source /home/stack/ocp_clusters/{{ shiftstack_cluster }}/shiftstackrc
         openstack floating ip create public -f value -c floating_ip_address
       register: tmp_fip
-    
+
     - name: Get master-0 name
       shell: |
-        source /home/stack/ocp_clusters/{{shiftstack_cluster}}/shiftstackrc
+        source /home/stack/ocp_clusters/{{ shiftstack_cluster }}/shiftstackrc
         openstack server list -f value -c Name | grep master-0
       register: master0_name
 
     - name: Associate floating ip to master-0
       shell: |
-        source /home/stack/ocp_clusters/{{shiftstack_cluster}}/shiftstackrc
-        openstack server add floating ip {{master0_name.stdout}} {{tmp_fip.stdout}}
+        source /home/stack/ocp_clusters/{{ shiftstack_cluster }}/shiftstackrc
+        openstack server add floating ip {{ master0_name.stdout }} {{ tmp_fip.stdout }}
 
     - name: Get NVMe worker node ip addresses
       shell: |
-        oc --kubeconfig=/home/stack/ocp_clusters/{{shiftstack_cluster}}/auth/kubeconfig get no -l {{shiftstack_local_storage_node_selector}} -o go-template={%raw%}'{{range .items}}{{range .status.addresses}}{{if eq .type "InternalIP"}}{{printf "%s\n" .address}}{{end}}{{end}}{{end}}'{%endraw%}
+        oc --kubeconfig=/home/stack/ocp_clusters/{{ shiftstack_cluster }}/auth/kubeconfig get no -l {{ shiftstack_local_storage_node_selector }} -o go-template={%raw%}'{{ range .items }}{{ range .status.addresses }}{{ if eq .type "InternalIP" }}{{ printf "%s\n" .address }}{{ end }}{{ end }}{{ end }}'{%endraw%}
       register: worker_node_ips
 
     - name: Get cluster ssh key
       fetch:
         src: /home/stack/.ssh/id_rsa
-        dest: "{{playbook_dir}}/.cluster_key"
+        dest: "{{ playbook_dir }}/.cluster_key"
         flat: true
 
     - name: Add worker to inventory via proxy
       add_host:
-        name: "{{item}}"
+        name: "{{ item }}"
         group: local_storage_workers
-        ansible_host: "{{item}}"
-        ansible_ssh_private_key_file: "{{playbook_dir}}/.cluster_key"
+        ansible_host: "{{ item }}"
+        ansible_ssh_private_key_file: "{{ playbook_dir }}/.cluster_key"
         ansible_user: "core"
         ansible_ssh_common_args: |-
-          -o ControlMaster=no -o ControlPersist=no -o ProxyCommand='ssh -i {{playbook_dir}}/.cluster_key -W %h:%p core@{{tmp_fip.stdout}}'
-      with_items: "{{worker_node_ips.stdout_lines}}"
+          -o ControlMaster=no -o ControlPersist=no -o ProxyCommand='ssh -i {{ playbook_dir }}/.cluster_key -W %h:%p core@{{ tmp_fip.stdout }}'
+      with_items: "{{ worker_node_ips.stdout_lines }}"
 
 - hosts: local_storage_workers
   gather_facts: false
-  vars_files: 
+  vars_files:
     - vars/all.yml
   tasks:
     - name: Ensure disks are wiped before running any lvm commands
       become: true
       shell: |
-        wipefs -a -f {{shiftstack_local_storage_device}}
+        wipefs -a -f {{ shiftstack_local_storage_device }}
       register: disk_wipe
 
     - name: Show disk wiping output
       debug:
-        msg: "{{disk_wipe.stdout}}"
+        msg: "{{ disk_wipe.stdout }}"
 
     - name: Create LVM Volume Group
       become: true
       lvg:
         vg: vg_ls
-        pvs: "{{shiftstack_local_storage_device}}"
-    
+        pvs: "{{ shiftstack_local_storage_device }}"
+
     - name: Create LVM Thin Pool
       become: true
       lvol:
@@ -88,18 +88,18 @@
       become: true
       lvol:
         vg: vg_ls
-        lv: "lv_tv{{item}}"
+        lv: "lv_tv{{ item }}"
         thinpool: lv_tp_ls
-        size: "{{shiftstack_thin_volume_size}}"
-      with_sequence: "start=0 count={{shiftstack_thin_volume_count|int}} format=%02u"
+        size: "{{ shiftstack_thin_volume_size }}"
+      with_sequence: "start=0 count={{ shiftstack_thin_volume_count|int }} format=%02u"
 
 - hosts: orchestration
   remote_user: stack
-  vars_files: 
+  vars_files:
     - vars/all.yml
   tasks:
     - name: Delete temporary floating ip for master-0
       shell: |
-        source /home/stack/ocp_clusters/{{shiftstack_cluster}}/shiftstackrc
-        openstack floating ip delete {{tmp_fip.stdout}}
+        source /home/stack/ocp_clusters/{{ shiftstack_cluster }}/shiftstackrc
+        openstack floating ip delete {{ tmp_fip.stdout }}
       register: tmp_fip

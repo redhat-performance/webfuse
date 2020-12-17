@@ -8,7 +8,7 @@
     - kafka-cluster-ephemeral.yaml
   when: kafka_storage == 'ephemeral'
 
-- name: Deploy the actual Kafka cluster 
+- name: Deploy the actual Kafka cluster
   k8s:
       state: present
       namespace: "amq"
@@ -25,7 +25,7 @@
   shell: |
     oc wait -n amq --for=condition=Ready pods --all --timeout=600s
 
-- name: Create Kafka topics 
+- name: Create Kafka topics
   k8s:
     state: present
     namespace: "amq"
@@ -34,19 +34,20 @@
     - kafka-topics.yaml
 
 - name: Retrieve the secret
-  openshift_raw:
+  k8s_info:
     api: v1
     kind: Secret
     name: my-cluster-cluster-ca-cert
     namespace: "amq"
   register: mysecret
 
-- set_fact:
-    my_ca: "{{ mysecret.result.data['ca.crt'] | b64decode}}"
+- name: set fact for secret
+  set_fact:
+    my_ca: "{{ mysecret.result.data['ca.crt'] | b64decode }}"
 
 - name: Save the CA certificate
-  copy: 
-    content: "{{ my_ca }}" 
+  copy:
+    content: "{{ my_ca }}"
     dest: "./ca.crt"
 
 - name: Ensure the secret doesn't exist
@@ -84,7 +85,7 @@
     namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - minion.yaml 
+    - minion.yaml
     - minion_service.yaml
 
 - name: Enable user workload monitoring

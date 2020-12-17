@@ -5,7 +5,7 @@
   register: bridge_network
 
 - name: Check NNCP
-  shell: |      
+  shell: |
     oc get nncp bigip-bridges --no-headers | awk '{print $2}'
   register: nncp_status
   retries: 36 # 3 minutes

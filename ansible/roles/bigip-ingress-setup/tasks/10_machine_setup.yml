@@ -7,15 +7,15 @@
 - name: Create {{ bigip_worker_mcp }} MC
   k8s:
     state: present
-    definition: "{{ lookup('template', 'machine-config.yaml.j2') }}"    
+    definition: "{{ lookup('template', 'machine-config.yaml.j2') }}"
 
 - name: Create {{ bigip_worker_mcp }} MCP
   k8s:
     state: present
-    definition: "{{ lookup('template', 'machine-config-pool.yaml.j2') }}"    
+    definition: "{{ lookup('template', 'machine-config-pool.yaml.j2') }}"
   register: mcp
 
-- name: Create {{ bigip_worker_mcp }} MCP 
+- name: Create {{ bigip_worker_mcp }} MCP
   block:
     - name: Wait for {{ bigip_worker_mcp }} MCP to be updated
       shell: |
@@ -51,5 +51,5 @@
       until: not mcp_update.failed
       when: mcp_updating is changed
 
-  when: 
+  when:
     - mcp is changed

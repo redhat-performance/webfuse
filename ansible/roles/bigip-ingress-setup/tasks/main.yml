@@ -5,7 +5,8 @@
     src: bigip-vars.yml.j2
     dest: /tmp/bigip-vars.yml
 
-- include_vars: /tmp/bigip-vars.yml
+- name: Include the vars templated out
+  include_vars: /tmp/bigip-vars.yml
 
 - name: Setup Worker LB role
   include_tasks: 10_machine_setup.yml

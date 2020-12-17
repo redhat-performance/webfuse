@@ -1,4 +1,4 @@
-- name: Download RH-IT-ROOT-CA certificate 
+- name: Download RH-IT-ROOT-CA certificate
   get_url:
     url: https://password.corp.redhat.com/RH-IT-Root-CA.crt
     dest: "{{ bigip_tempdir.path }}/RH-IT-Root-CA.crt"

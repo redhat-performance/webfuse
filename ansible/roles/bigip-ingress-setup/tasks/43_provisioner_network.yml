@@ -8,10 +8,10 @@
   nmcli:
     conn_name: "{{ baremetal_slave_connections.stdout }}"
     state: absent
-  when: "{{ baremetal_slave_connections.stdout != None }}"
+  when: baremetal_slave_connections.stdout != None
   become: yes
 
-- name: Create vlan sub-interface 
+- name: Create vlan sub-interface
   nmcli:
     conn_name: "{{ bigip_bridges.mgmt.interface }}.{{ bigip_bridges.mgmt.vlan_id }}"
     type: vlan

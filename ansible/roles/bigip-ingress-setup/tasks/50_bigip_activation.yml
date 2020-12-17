@@ -1,4 +1,5 @@
-- include_vars: /tmp/bigip-vars.yml
+- name: Include vars
+  include_vars: /tmp/bigip-vars.yml
 
 - name: License BIG-IP using a key
   bigip_device_license:
