@@ -1,7 +1,7 @@
 ---
 # Install downstream RHACM hub onto a cluster
 
-- name: Create directories for rhacm downstream deployment
+- name: Create directory for rhacm downstream deployment
   file:
     path: "{{ item }}"
     state: directory

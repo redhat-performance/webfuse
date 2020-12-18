@@ -1,0 +1,98 @@
+---
+# Role to get items to build cluster deployments in shiftstack for RHACM
+
+- name: Ensure admin quotas are unlimited
+  os_quota:
+    cloud: overcloud
+    name: admin
+    server_groups: -1
+    properties: -1
+    ram: -1
+    key_pairs: -1
+    instances: -1
+    cores: -1
+    per_volume_gigabytes: -1
+    gigabytes: -1
+    backup_gigabytes: -1
+    snapshots: -1
+    volumes: -1
+    backups: -1
+    subnetpool: -1
+    port: -1
+    subnet: -1
+    network: -1
+    floating_ips: -1
+    floatingip: -1
+    security_group_rule: -1
+    security_group: -1
+    router: -1
+    rbac_policy: -1
+
+- name: Create clusterdeployments directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /home/stack/clusterdeployments
+    - /home/stack/clusterdeployments/all
+    - /home/stack/clusterdeployments/all/deploy
+    - /home/stack/clusterdeployments/all/objects
+    - /home/stack/clusterdeployments/all/cd
+    - /home/stack/clusterdeployments/all/mc
+    - /home/stack/clusterdeployments/all/delete
+    - /home/stack/clusterdeployments/configs
+
+- name: Get OpenStack auth url
+  shell: |
+    source /home/stack/overcloudrc
+    openstack endpoint list --service keystone --interface public --format value -c URL
+  register: clouds_yaml_auth_url_content
+
+- name: Get OpenStack username
+  shell: |
+    source /home/stack/overcloudrc
+    echo "${OS_USERNAME}"
+  register: clouds_yaml_username_content
+
+- name: Get OpenStack password
+  shell: |
+    source /home/stack/overcloudrc
+    echo "${OS_PASSWORD}"
+  register: clouds_yaml_password_content
+
+- name: Get OpenStack user domain
+  shell: |
+    source /home/stack/overcloudrc
+    openstack user show ${OS_USERNAME} --format value -c domain_id
+  register: clouds_yaml_user_domain_name_content
+
+- name: Get OpenStack project name
+  shell: |
+    source /home/stack/overcloudrc
+    echo "${OS_PROJECT_NAME}"
+  register: clouds_yaml_project_name_content
+
+- name: Get OpenStack project domain name
+  shell: |
+    source /home/stack/overcloudrc
+    echo "${OS_PROJECT_DOMAIN_NAME}"
+  register: clouds_yaml_project_domain_name_content
+
+- name: Read ssh public key file
+  slurp:
+    src: /home/stack/.ssh/id_rsa.pub
+  register: ssh_pub_key_content
+
+- name: Read ssh private key file
+  slurp:
+    src: /home/stack/.ssh/id_rsa
+  register: ssh_private_key_content
+
+- name: Get rhacm hub cluster pull-secret
+  shell: |
+    KUBECONFIG={{ rhacm_clusterdeploy_hub_cluster_kubeconfig }} oc get secret -n openshift-config pull-secret -o json
+  register: cluster_pull_secret
+
+- name: Convert cluster_pull_secret to json
+  set_fact:
+    cluster_pull_secret_json: "{{ cluster_pull_secret['stdout'] | from_json }}"

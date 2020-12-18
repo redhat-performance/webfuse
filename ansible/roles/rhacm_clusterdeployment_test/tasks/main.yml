@@ -1,0 +1,8 @@
+---
+# Deploy the cluster deployment test script
+
+- name: Place cluster deployment test script on host
+  template:
+    src: clusterdeploy.sh.j2
+    dest: /home/stack/clusterdeployments/clusterdeploy.sh
+    mode: a+x

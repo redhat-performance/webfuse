@@ -1,5 +1,6 @@
 {% for cluster_deployment in groups['buildcdconfigs'] %}
 {{ hostvars[cluster_deployment].api_floating_ip }} api.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
+{% if rhacm_clusterdeploy_create_ingress %}
 {{ hostvars[cluster_deployment].ingress_floating_ip }} oauth-openshift.apps.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
 {{ hostvars[cluster_deployment].ingress_floating_ip }} console-openshift-console.apps.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
 {{ hostvars[cluster_deployment].ingress_floating_ip }} downloads-openshift-console.apps.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
@@ -7,4 +8,5 @@
 {{ hostvars[cluster_deployment].ingress_floating_ip }} grafana-openshift-monitoring.apps.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
 {{ hostvars[cluster_deployment].ingress_floating_ip }} prometheus-k8s-openshift-monitoring.apps.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
 {{ hostvars[cluster_deployment].ingress_floating_ip }} thanos-querier-openshift-monitoring.apps.{{ hostvars[cluster_deployment].rhacm_clusterdeployment_name }}.{{ rhacm_clusterdeploy_base_domain }}
+{% endif %}
 {% endfor%}

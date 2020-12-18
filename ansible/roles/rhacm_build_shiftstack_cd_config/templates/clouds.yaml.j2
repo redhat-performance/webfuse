@@ -1,10 +1,10 @@
 clouds:
   overcloud:
     auth:
-      auth_url: "{{ clouds_yaml_auth_url.stdout }}"
-      password: "{{ clouds_yaml_password.stdout }}"
-      project_domain_name: "{{ clouds_yaml_project_domain_name.stdout }}"
-      project_name: "{{ clouds_yaml_project_name.stdout }}"
-      user_domain_name: "{{ clouds_yaml_user_domain_name.stdout }}"
-      username: "{{ clouds_yaml_username.stdout }}"
+      auth_url: "{{ clouds_yaml_auth_url }}"
+      password: "{{ clouds_yaml_password }}"
+      project_domain_name: "{{ clouds_yaml_project_domain_name }}"
+      project_name: "{{ clouds_yaml_project_name }}"
+      user_domain_name: "{{ clouds_yaml_user_domain_name }}"
+      username: "{{ clouds_yaml_username }}"
     identity_api_version: '3'

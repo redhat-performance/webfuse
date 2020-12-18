@@ -5,49 +5,6 @@ metadata:
   name: "{{ rhacm_clusterdeployment_name }}"
 ---
 apiVersion: hive.openshift.io/v1
-kind: ClusterDeployment
-metadata:
-  name: "{{ rhacm_clusterdeployment_name }}"
-  namespace: "{{ rhacm_clusterdeployment_name }}"
-  labels:
-    cloud: OpenStack
-    region: regionOne
-    vendor: OpenShift
-spec:
-  baseDomain: "{{ rhacm_clusterdeploy_base_domain }}"
-  clusterName: "{{ rhacm_clusterdeployment_name }}"
-  controlPlaneConfig:
-    servingCertificates: {}
-  installAttemptsLimit: {{ rhacm_clusterdeploy_install_limit }}
-  installed: false
-  platform:
-    openstack:
-      cloud: overcloud
-      credentialsSecretRef:
-        name: "{{ rhacm_clusterdeployment_name }}-creds"
-  provisioning:
-    installConfigSecretRef:
-      name: "{{ rhacm_clusterdeployment_name }}-install-config"
-    sshPrivateKeySecretRef:
-      name: "{{ rhacm_clusterdeployment_name }}-ssh-private-key"
-    imageSetRef:
-      name: "{{ rhacm_clusterdeploy_cis }}"
-  pullSecretRef:
-    name: "{{ rhacm_clusterdeployment_name }}-pull-secret"
----
-apiVersion: cluster.open-cluster-management.io/v1
-kind: ManagedCluster
-metadata:
-  labels:
-    cloud: OpenStack
-    region: regionOne
-    name: "{{ rhacm_clusterdeployment_name }}"
-    vendor: OpenShift
-  name: "{{ rhacm_clusterdeployment_name }}"
-spec:
-  hubAcceptsClient: true
----
-apiVersion: hive.openshift.io/v1
 kind: MachinePool
 metadata:
   name: "{{ rhacm_clusterdeployment_name }}-worker"

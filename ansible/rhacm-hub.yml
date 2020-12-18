@@ -4,15 +4,12 @@
 # Example Usage:
 #
 # export KUBECONFIG=/home/user/kubeconfig
-# time ansible-playbook -i ansible/inventory/hosts ansible/rhacm-hub.yml -e "rhacm_version=2.1"
+# time ansible-playbook -i ansible/inventory/localhost.local ansible/rhacm-hub.yml -e "rhacm_version=2.1"
 #
 
 - name: Install released version of RHACM
   hosts: orchestration
   vars_files:
     - vars/all.yml
-  pre_tasks:
-    - name: run validations
-      include_tasks: tasks/validation.yml
   roles:
     - rhacm_hub

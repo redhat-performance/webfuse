@@ -10,11 +10,9 @@
 # time ansible-playbook -i ansible/inventory/hosts ansible/rhacm-manage-cluster.yml -e "managed_cluster_name=shiftstack0000"
 #
 
-- hosts: orchestration
+- name: RHACM manage a cluster
+  hosts: orchestration
   vars_files:
     - vars/all.yml
-  pre_tasks:
-    - name: run validations
-      include_tasks: tasks/validation.yml
   roles:
     - rhacm_manage_cluster

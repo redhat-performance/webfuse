@@ -51,12 +51,13 @@ rhacm_clusterdeploy_index_count: 1
 rhacm_clusterdeploy_prefix: sno
 rhacm_clusterdeploy_base_domain: rdu2.scalelab.redhat.com
 rhacm_clusterdeploy_network_type: OVNKubernetes
+rhacm_clusterdeploy_create_ingress: false
 rhacm_clusterdeploy_worker_flavor: sno-8-32-40
 rhacm_clusterdeploy_cis: sno-4.6.6-5
 rhacm_clusterdeploy_image_url: "https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-4.6/46.82.202011260640-0/x86_64/rhcos-46.82.202011260640-0-openstack.x86_64.qcow2.gz"
 rhacm_clusterdeploy_image_name: sno-rhcos
+rhacm_clusterdeploy_install_limit: 1
 shiftstack_clusterdeploy_public_net_name: public
-shiftstack_clusterdeploy_public_cidr: 10.1.57.0/24
 
 rhacm_clusterdeploy_hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 rhacm_clusterdeploy_hub_cluster_name: vlan608

@@ -22,9 +22,14 @@ Populate the inventory file in [inventory](ansible/inventory/hosts)
 localhost ansible_connection=local
 ```
 
-Populate the required [variables](ansible/group_vars/all.yml)
+Create your [variables](ansible/group_vars/all.yml.sample)
 
-Then,
+```console
+$ cp ansible/group_vars/all.yml.sample ansible/group_vars/all.yml
+$ vi ansible/group_vars/all.yml # Adjust any vars to your environment
+```
+
+Then run playbooks
 
 `ansible-playbook -i inventory/hosts webscale.yml`
 
@@ -35,17 +40,17 @@ Tested for - OCP 4.5.11, 4.6.3
 1.  OVN hybrid plugin is required, it has to be manually patched via cluster manifest file during intial deployment, JetSki would take care of this patch. https://github.com/mukrishn/labf5-setup/blob/main/00-network-manifest.yaml
 2.  Need at least 1 worker node to host bigip Virtual machines
 3.  Install SRIOV and OSV operators in the cluster, so obviously Hardware must support SRIOV and enable BIOs configuration. script for shared lab - https://github.com/mukrishn/sriov-prep
-4.  Procure Licenses and update details in `ansible/group_vars/all.yml` 
+4.  Procure Licenses and update details in `ansible/group_vars/all.yml`
 5.  Assign Worker and Interface names under `BigIP playbook vars` section
 6.  This playbook must be executed from cluster provisioner node, as it creates VLAN sub-interface with private network to connect to VMs.
 
 `ansible-playbook -i inventory/hosts bigip-setup.yml`
 
-### Deactivate the license 
+### Deactivate the license
 
-Red Hat procured BigIP Licenses for Dev/Test can be re-used, it has to be revoked properly from existing environment before the expiry date. 
+Red Hat procured BigIP Licenses for Dev/Test can be re-used, it has to be revoked properly from existing environment before the expiry date.
 
-You can use this playbook to do that, 
+You can use this playbook to do that,
 
 `hosts` file
 
@@ -94,10 +99,10 @@ Execute - `ansible-playbook -i hosts playbook.yml` to revoke licenses.
 
 Detailed explaination about nightly operator and installation can be found [here](https://docs.engineering.redhat.com/display/MULTIARCH/How+To+Test+Red+Hat+ART+Operators) and [here](https://gitlab.cee.redhat.com/cf/docs/pipeline/-/blob/master/doc/Operators/Test.md#test)
 
-Vars required to be set in group_vars/all.yml for a nightly build are below, comment/uncomment to update `iib_id` for nightly operators. Script only installs nightly version for provided operators and installs OCP release version for others. 
+Vars required to be set in group_vars/all.yml for a nightly build are below, comment/uncomment to update `iib_id` for nightly operators. Script only installs nightly version for provided operators and installs OCP release version for others.
 
 ```yml
-# Set to true to install nightly Operators and it is effective only for dev-preview builds, 
+# Set to true to install nightly Operators and it is effective only for dev-preview builds,
 # if set make sure to provide brew registry password and Index Image Build IDs
 nightly_operator: true
 
@@ -107,7 +112,7 @@ brew_reg_password: ""
 # Required only for nightly operator installtion
 iib_id:
   sriov: 25944    #openshift-sriov-network-operator
-  osv: 26761     #openshift-virtualization 
+  osv: 26761     #openshift-virtualization
 #  clo: 26761     #cluster-logging-operator
 #  amq: 26761     #amq-operator
 #  pao: 26761     #performance-addon-operator
@@ -133,7 +138,7 @@ Login Succeeded!
 
 $ podman run --name indeximage --rm -p 50051:50051 brew.registry.redhat.io/rh-osbs/iib-pub-pending:26761
 ```
-And GRPCURL it to find the available version, 
+And GRPCURL it to find the available version,
 ```sh
 $ grpcurl -plaintext -d '{"name":"sriov-network-operator"}' localhost:50051 api.Registry/GetPackage
 {
