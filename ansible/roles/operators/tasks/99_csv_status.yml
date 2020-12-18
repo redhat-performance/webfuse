@@ -1,6 +1,6 @@
 ---
 - name: Check {{ namespace }} for operator version
-  shell: |      
+  shell: |
     oc get csv -n {{ namespace }} --no-headers | awk '{print $1}'
   register: csv_version
   retries: 36 # 3 minutes

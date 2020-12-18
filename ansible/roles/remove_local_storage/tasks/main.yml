@@ -4,7 +4,7 @@
 - name: Remove all pvcs
   shell: |
     oc delete pvc --all-namespaces --all
-    
+
 - name: Remove all pvs
   shell: |
     oc delete pv --all

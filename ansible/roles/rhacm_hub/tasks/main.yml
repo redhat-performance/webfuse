@@ -8,11 +8,11 @@
 
 - name: Convert cluster_pull_secret to json
   set_fact:
-    cluster_pull_secret_json: "{{cluster_pull_secret['stdout'] | from_json}}"
+    cluster_pull_secret_json: "{{ cluster_pull_secret['stdout'] | from_json }}"
 
 - name: Set mch_pull_secret
   set_fact:
-    mch_pull_secret: "{{cluster_pull_secret_json['data']['.dockerconfigjson']}}"
+    mch_pull_secret: "{{ cluster_pull_secret_json['data']['.dockerconfigjson'] }}"
 
 - name: Install RHACM
   k8s:
@@ -31,7 +31,7 @@
 
 - name: Wait until MultiClusterHub is running status
   shell: |
-    {%raw%}oc get multiclusterhub -n open-cluster-management multiclusterhub -o go-template='{{.status.phase}}'{%endraw%}
+    {%raw%}oc get multiclusterhub -n open-cluster-management multiclusterhub -o go-template='{{ .status.phase }}'{%endraw%}
   register: mch_ready
   until: mch_ready.stdout == "Running"
   retries: 300
@@ -48,7 +48,7 @@
       apiVersion: v1
       kind: Deployment
       metadata:
-        name: "{{redisgraph_deployment_name.stdout}}"
+        name: "{{ redisgraph_deployment_name.stdout }}"
         namespace: open-cluster-management
       spec:
         template:
@@ -57,4 +57,4 @@
               - name: redisgraph
                 resources:
                   limits:
-                    memory: "{{rhacm_redisgraph_memory_limit}}"
+                    memory: "{{ rhacm_redisgraph_memory_limit }}"

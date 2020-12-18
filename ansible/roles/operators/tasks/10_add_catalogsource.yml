@@ -14,7 +14,7 @@
     - name: Save pull secret data
       shell: |
         oc get secret/pull-secret -n openshift-config -o json | jq -r '.data.".dockerconfigjson"' | base64 -d > {{ cs_tempdir.path }}/authfile
-        
+
     - name: Get brew registry auth token
       shell: |
         podman login --authfile {{ cs_tempdir.path }}/authfile --username "|shared-qe-temp.zmns.153b77" --password {{ brew_reg_password }} brew.registry.redhat.io
@@ -27,13 +27,13 @@
 
     - include_tasks: 99_mcp_status.yml
 
-  when: 
+  when:
     - pull_secret.stdout == "null"
 
 - name: Create Image content source policy
   k8s:
     state: present
-    definition: 
+    definition:
       apiVersion: operator.openshift.io/v1alpha1
       kind: ImageContentSourcePolicy
       metadata:
@@ -57,7 +57,7 @@
 - name: Add custom catalog source
   k8s:
     state: present
-    definition: 
+    definition:
       apiVersion: operators.coreos.com/v1alpha1
       kind: CatalogSource
       metadata:
@@ -72,7 +72,7 @@
     - "{{ iib_id }}"
 
 - name: set operator facts
-  set_fact: 
+  set_fact:
     pao_operator_source: "{{ 'redhat-operators-pao' if 'pao' in iib_id.keys() else 'redhat-operators' }}"
     sriov_operator_source: "{{ 'redhat-operators-sriov' if 'sriov' in iib_id.keys() else 'redhat-operators' }}"
     osv_operator_source: "{{ 'redhat-operators-osv' if 'osv' in iib_id.keys() else 'redhat-operators' }}"

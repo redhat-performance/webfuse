@@ -1,7 +1,7 @@
 ---
 - name: Enable custom registry for nightly operators
   include_tasks: 10_add_catalogsource.yml
-  when: 
+  when:
     - build == "dev"
     - nightly_operator
 

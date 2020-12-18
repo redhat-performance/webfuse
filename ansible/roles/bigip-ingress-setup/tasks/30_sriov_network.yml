@@ -33,7 +33,7 @@
       delay: 60
       until: not worker_lb_mcp_update.failed
       when: mcp_updating is changed
-  when: 
+  when:
     - sriov_policy is changed
 
 - name: Create SRIOV network
