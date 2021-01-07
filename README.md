@@ -89,7 +89,7 @@ Execute - `ansible-playbook -i hosts playbook.yml` to revoke licenses.
 
 Detailed explaination about nightly operator and installation can be found [here](https://docs.engineering.redhat.com/display/MULTIARCH/How+To+Test+Red+Hat+ART+Operators) and [here](https://gitlab.cee.redhat.com/cf/docs/pipeline/-/blob/master/doc/Operators/Test.md#test)
 
-Vars required to be set in group_vars/all.yml for a nightly build are,
+Vars required to be set in group_vars/all.yml for a nightly build are below, comment/uncomment to update `iib_id` for nightly operators. Script only installs nightly version for provided operators and installs OCP release version for others. 
 
 ```yml
 # Set to true to install nightly Operators and it is effective only for dev-preview builds, 
@@ -103,10 +103,10 @@ brew_reg_password: ""
 iib_id:
   sriov: 25944    #openshift-sriov-network-operator
   osv: 26761     #openshift-virtualization 
-  clo: 26761     #cluster-logging-operator
-  amq: 26761     #amq-operator
-  pao: 26761     #performance-addon-operator
-  eso: 26761     #elastic-search-operator
+#  clo: 26761     #cluster-logging-operator
+#  amq: 26761     #amq-operator
+#  pao: 26761     #performance-addon-operator
+#  eso: 26761     #elastic-search-operator
 ```
 
 To get your access to Brew registry, you must email operator-pipeline-wg@redhat.com w/ your email address and GPG key. You will receive an encrypted file which contains your password, use that as `brew_reg_password`
