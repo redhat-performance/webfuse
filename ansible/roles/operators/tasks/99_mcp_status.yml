@@ -17,7 +17,7 @@
     oc wait --for=condition=Updated --timeout=1800s mcp {{ item }}
   changed_when: false
   register: mcp_update
-  retries: 3 # 3 minutes * 30 minutes (timeout)
+  retries: 30 # 30 minutes * 30 minutes (timeout)
   delay: 60
   until: not mcp_update.failed
   with_items:
