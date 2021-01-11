@@ -1,0 +1,108 @@
+---
+# Playbook to concurrently create OpenStack VMs to host kind clusters
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/hosts ansible/create-openstack-kind-vms.yml -e "kind_vm_index_start=0 kind_vm_index_count=10"
+#
+
+- hosts: orchestration
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  tasks:
+    # In order to allow this process to be more concurrent, we leverage creating an
+    # inventory host per kind vm to be created
+    - name: Add host for each vm to be created
+      add_host:
+        name: "orchestration-{{ item }}"
+        group: "buildkindvms"
+        ansible_host: "{{ inventory_hostname }}"
+        kind_vm_name: "{{ kind_vm_prefix }}-{{ item }}"
+      with_sequence: "start={{ kind_vm_index_start|int }} count={{ kind_vm_index_count|int }} format=%03u"
+
+    - name: Set admin quotas to unlimited
+      os_quota:
+        cloud: overcloud
+        name: admin
+        server_groups: -1
+        properties: -1
+        ram: -1
+        key_pairs: -1
+        instances: -1
+        cores: -1
+        per_volume_gigabytes: -1
+        gigabytes: -1
+        backup_gigabytes: -1
+        snapshots: -1
+        volumes: -1
+        backups: -1
+        subnetpool: -1
+        port: -1
+        subnet: -1
+        network: -1
+        floating_ips: -1
+        floatingip: -1
+        security_group_rule: -1
+        security_group: -1
+        router: -1
+        rbac_policy: -1
+
+- name: Create {{ kind_vm_index_count }} Kind vm(s)
+  hosts: buildkindvms
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  tasks:
+    - name: Create kind vm(s)
+      shell: |
+        source /home/stack/overcloudrc
+        openstack server create --image {{ kind_vm_image }} --flavor {{ kind_vm_flavor }} --key-name {{ kind_vm_keypair_name }} --security-group {{ kind_vm_security_group }} --nic net-id={{ kind_vm_network }} --wait {{ kind_vm_name }}
+
+    - name: Create floating ip(s)
+      shell: |
+        source /home/stack/overcloudrc
+        openstack floating ip create public -f value -c floating_ip_address
+      register: fip
+
+    - name: Associate floating ip to kind vm(s)
+      shell: |
+        source /home/stack/overcloudrc
+        openstack server add floating ip {{ kind_vm_name }} {{ fip.stdout }}
+
+    - name: Save new vms to inventory
+      lineinfile:
+        dest: "/home/stack/kind-vm-inventory"
+        create: true
+        line: "{{ fip.stdout }}"
+        insertbefore: "EOF"
+      throttle: 1
+
+    - name: Add vms to /etc/hosts for easier ssh
+      become: true
+      lineinfile:
+        dest: "/etc/hosts"
+        create: true
+        line: "{{ fip.stdout }} {{ kind_vm_name }}"
+        insertbefore: "EOF"
+      throttle: 1
+
+- hosts: orchestration
+  remote_user: stack
+  gather_facts: false
+  vars_files:
+    - vars/all.yml
+  tasks:
+    - name: Read kind inventory
+      slurp:
+        src: /home/stack/kind-vm-inventory
+      register: kind_inventory_file
+
+    - name: Set the set_fact
+      set_fact:
+        kind_inventory: "{{ kind_inventory_file['content'] | b64decode }}"
+
+    - name: Display all kind VMs created
+      run_once: true
+      debug:
+        msg: "{{ kind_inventory.split('\n') }}"

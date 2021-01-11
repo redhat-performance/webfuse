@@ -1,0 +1,59 @@
+---
+# Playbook to concurrently delete OpenStack VMs that host kind clusters
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/hosts ansible/delete-openstack-kind-vms.yml -e "kind_vm_index_start=0 kind_vm_index_count=10"
+#
+
+- hosts: orchestration
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  tasks:
+    # In order to allow this process to be more concurrent, we leverage creating an
+    # inventory host per kind vm to be created
+    - name: Add host for each vm to be deleted
+      add_host:
+        name: "orchestration-{{ item }}"
+        group: "deletekindvms"
+        ansible_host: "{{ inventory_hostname }}"
+        kind_vm_name: "{{ kind_vm_prefix }}-{{ item }}"
+      with_sequence: "start={{ kind_vm_index_start|int }} count={{ kind_vm_index_count|int }} format=%03u"
+
+- name: Delete {{ kind_vm_index_count }} Kind vm(s)
+  hosts: deletekindvms
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  tasks:
+    - name: Get floating ip from kind vm(s)
+      shell: |
+        source /home/stack/overcloudrc
+        openstack server show {{ kind_vm_name }} -f value -c addresses | tr "," "\n" | grep -v "kind"
+      register: fip
+
+    - name: Remove floating ip from kind vm(s)
+      shell: |
+        source /home/stack/overcloudrc
+        openstack floating ip delete {{ fip.stdout | replace(' ', '') }}
+
+    - name: Remove kind vms from inventory
+      lineinfile:
+        dest: "/home/stack/kind-vm-inventory"
+        state: absent
+        line: "{{ fip.stdout | replace(' ', '') }}"
+      throttle: 1
+
+    - name: Remove vms from /etc/hosts
+      become: true
+      lineinfile:
+        dest: "/etc/hosts"
+        state: absent
+        line: "{{ fip.stdout }} {{ kind_vm_name }}"
+      throttle: 1
+
+    - name: Delete kind vm(s)
+      shell: |
+        source /home/stack/overcloudrc
+        openstack server delete {{ kind_vm_name }}

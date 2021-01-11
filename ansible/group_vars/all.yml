@@ -89,6 +89,18 @@ shiftstack_thin_volume_count: 6
 shiftstack_thin_volume_size: 140g
 
 ################################################################################
+# Create Kind VMs vars
+################################################################################
+kind_vm_index_start: 0
+kind_vm_index_count: 1
+kind_vm_prefix: kind2
+kind_vm_image: centos8
+kind_vm_flavor: kind-8-32-60
+kind_vm_keypair_name: kind_private_key
+kind_vm_security_group: kind_security_group
+kind_vm_network: kind_network
+
+################################################################################
 # Configure OpenShift Monitoring playbook vars
 ################################################################################
 openshift_prometheus_retention_period: 30d
