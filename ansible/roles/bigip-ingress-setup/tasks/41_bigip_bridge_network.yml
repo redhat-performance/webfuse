@@ -1,0 +1,33 @@
+- name: Create Bridge networks
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'bigip-bridges.yaml.j2') }}"
+  register: bridge_network
+
+- name: Check NNCP
+  shell: |
+    oc get nncp bigip-bridges --no-headers | awk '{print $2}'
+  register: nncp_status
+  retries: 36 # 3 minutes
+  delay: 5
+  until: "'SuccessfullyConfigured' in nncp_status.stdout"
+
+- name: Patch network operator with bridge networks
+  shell: |
+    oc patch networks.operator.openshift.io/cluster --type='merge' -p "$(cat <<- EOF
+    spec:
+      additionalNetworks:
+      - name: bigip-mgmt
+        namespace: {{ bigip_namespace }}
+        rawCNIConfig: '{ "cniVersion": "0.3.1", "type": "bridge", "bridge": "bigip-mgmt",
+          "ipMasq": false, "isGateway": false, "isDefaultGateway": false, "forceAddress":
+          false, "hairpinMode": false,"promiscMode": false{{ ', "mtu": 8900 }' if jumbo_mtu else " }" }}'
+        type: Raw
+      - name: bigip-ha
+        namespace: {{ bigip_namespace }}
+        rawCNIConfig: '{ "cniVersion": "0.3.1", "type": "bridge", "bridge": "bigip-ha",
+          "ipMasq": false, "isGateway": false, "isDefaultGateway": false, "forceAddress":
+          false, "hairpinMode": false,"promiscMode": false{{ ', "mtu": 8900 }' if jumbo_mtu else " }" }}'
+        type: Raw
+    EOF
+    )"

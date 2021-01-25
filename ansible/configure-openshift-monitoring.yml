@@ -1,0 +1,17 @@
+---
+# Playbook to (re)configure openshift-monitoring components
+#
+# Example Usage:
+#
+# export KUBECONFIG=/home/user/kubeconfig
+# time ansible-playbook -i ansible/inventory/hosts ansible/configure-openshift-monitoring.yml
+#
+
+- hosts: orchestration
+  vars_files:
+    - vars/all.yml
+  pre_tasks:
+    - name: run validations
+      include_tasks: tasks/validation.yml
+  roles:
+    - openshift-monitoring-config

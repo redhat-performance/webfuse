@@ -4,12 +4,12 @@
 - name: Prepare hub cluster to import a cluster
   k8s:
     definition: "{{ lookup('template', 'hub.yml.j2') }}"
-    kubeconfig: "{{hub_cluster_kubeconfig}}"
+    kubeconfig: "{{ hub_cluster_kubeconfig }}"
     state: present
 
-- name: Wait until {{managed_cluster_name}}-import secret is created
+- name: Wait until {{ managed_cluster_name }}-import secret is created
   shell: |
-    oc --kubeconfig="{{hub_cluster_kubeconfig}}" get secret {{managed_cluster_name}}-import -n {{managed_cluster_name}} -o json
+    oc --kubeconfig="{{ hub_cluster_kubeconfig }}" get secret {{ managed_cluster_name }}-import -n {{ managed_cluster_name }} -o json
   register: import_secret_result
   until: import_secret_result.rc != 1
   retries: 60
@@ -17,18 +17,18 @@
 
 - name: Convert import secret to json
   set_fact:
-    import_secret_json:  "{{import_secret_result['stdout'] | from_json}}"
+    import_secret_json:  "{{ import_secret_result['stdout'] | from_json }}"
 
 - name: Set managed cluster Klusterlet CRD and managed cluster import
   set_fact:
-    managed_cluster_klusterlet_crd: "{{import_secret_json['data']['crds.yaml'] | b64decode }}"
-    managed_cluster_import: "{{import_secret_json['data']['import.yaml'] | b64decode }}"
+    managed_cluster_klusterlet_crd: "{{ import_secret_json['data']['crds.yaml'] | b64decode }}"
+    managed_cluster_import: "{{ import_secret_json['data']['import.yaml'] | b64decode }}"
 
 - name: Apply managed cluster Klusterlet CRD and managed cluster import to managed cluster
   k8s:
-    definition: "{{item}}"
-    kubeconfig: "{{managed_cluster_kubeconfig}}"
+    definition: "{{ item }}"
+    kubeconfig: "{{ managed_cluster_kubeconfig }}"
     state: present
   with_items:
-    - "{{managed_cluster_klusterlet_crd}}"
-    - "{{managed_cluster_import}}"
+    - "{{ managed_cluster_klusterlet_crd }}"
+    - "{{ managed_cluster_import }}"

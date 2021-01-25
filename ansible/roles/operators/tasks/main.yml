@@ -1,4 +1,9 @@
 ---
+- name: Enable custom registry for nightly operators
+  include_tasks: 10_add_catalogsource.yml
+  when:
+    - nightly_operator
+
 - name: Install Operators
   k8s:
     state: present
@@ -10,111 +15,38 @@
     - cluster-logging-operator
     - kafka-operator
 
-# Takes few seconds to orchestrate namespace and initiate installation
-- name: Wait for few seconds before checking for status
-  wait_for:
-    timeout: 10
+- include_tasks: 99_csv_status.yml
+  vars:
+    namespace: "{{ item }}"
+  with_items:
+    - openshift-performance-addon
+    - openshift-sriov-network-operator
+    - openshift-cnv
+    - openshift-logging
+    - amq
 
-- name: Check PAO operator version
-  shell: |      
-      oc get csv -n openshift-performance-addon --no-headers | awk '{print $1}'
-  register: pao_version
-
-- name: Check PAO operator status
-  shell: |
-    oc get csv -n openshift-performance-addon {{ pao_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: pao_status
-  retries: 3 # 3 minutes
-  delay: 60
-  until: pao_status.stdout == "Succeeded"
-  changed_when: pao_status.stdout == "Succeeded"
-
-- name: Check SRIOV operator version
-  shell: |      
-      oc get csv -n openshift-sriov-network-operator  --no-headers | awk '{print $1}'
-  register: sriov_version
-
-- name: Check SRIOV operator status
-  shell: |
-    oc get csv -n openshift-sriov-network-operator {{ sriov_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: sriov_status
-  retries: 5 # 5 minutes
-  delay: 60
-  until: sriov_status.stdout == "Succeeded"
-  changed_when: sriov_status.stdout == "Succeeded"
-
-- name: Check OSV operator version
-  shell: |      
-      oc get csv -n openshift-cnv --no-headers | awk '{print $1}'
-  register: osv_version
-
-- name: Check OSV operator status
-  shell: |
-    oc get csv -n openshift-cnv {{ osv_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: osv_status
-  retries: 5 # 5 minutes
-  delay: 60
-  until: osv_status.stdout == "Succeeded"
-  changed_when: osv_status.stdout == "Succeeded"      
+- name: set operator facts
+  set_fact:
+    osv_channel: "{{ osv_channel }}"
 
 - name: Create OSV hyperconverged operator
   k8s:
     state: present
-    definition: "{{ lookup('file', 'kubevirt-hyperconverged.yml' ) }}"
-
-- name: Check OSV operator status again
-  shell: |
-    oc get csv -n openshift-cnv {{ osv_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: osv_status
-  retries: 5 # 5 minutes
-  delay: 60
-  until: osv_status.stdout == "Succeeded"
-  changed_when: osv_status.stdout == "Succeeded"
-
-- name: Check Cluster logging operator version
-  shell: |      
-      oc get csv -n openshift-logging --no-headers | awk '{print $1}'
-  register: clo_version
-  retries: 36 # 3 minutes
-  delay: 5
-  until: clo_version.stdout != ""
-
-- name: Check Cluster logging operator status
-  shell: |
-    oc get csv -n openshift-logging {{ clo_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: clo_status
-  retries: 5 # 5 minutes
-  delay: 60
-  until: clo_status.stdout == "Succeeded"
-  changed_when: clo_status.stdout == "Succeeded" 
+    definition: "{{ lookup('template', 'kubevirt-hyperconverged.yml.j2' ) }}"
 
 - name: Create Cluster logging instance
   k8s:
     state: present
     definition: "{{ lookup('file', 'cluster-logging-instance.yml' ) }}"
 
-- name: Check Cluster logging operator status again
-  shell: |
-    oc get csv -n openshift-logging {{ clo_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: clo_status
-  retries: 5 # 5 minutes
-  delay: 60
-  until: clo_status.stdout == "Succeeded"
-  changed_when: clo_status.stdout == "Succeeded" 
+# Takes few seconds to initiate installation
+- name: Wait for few seconds before checking for status
+  wait_for:
+    timeout: 10
 
-- name: Check Kafka operator version
-  shell: |      
-      oc get csv -n amq --no-headers | awk '{print $1}'
-  register: amq_version
-  retries: 36 # 3 minutes
-  delay: 5
-  until: amq_version.stdout != ""
-
-- name: Check Kafka operator status
-  shell: |
-    oc get csv -n amq {{ amq_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
-  register: amq_status
-  retries: 5 # 5 minutes
-  delay: 60
-  until: amq_status.stdout == "Succeeded"
-  changed_when: amq_status.stdout == "Succeeded"
+- include_tasks: 99_csv_status.yml
+  vars:
+    namespace: "{{ item }}"
+  with_items:
+    - openshift-cnv
+    - openshift-logging

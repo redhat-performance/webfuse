@@ -1,0 +1,37 @@
+- name: Create {{ bigip_namespace }} namespace
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ bigip_namespace }}"
+
+- name: Create bridges and network
+  include_tasks: 41_bigip_bridge_network.yml
+
+- name: Create data volume for VMs
+  include_tasks: 42_bigip_data_volume.yml
+
+- name: Setup BIGIP mgmt VLAN in provisioner
+  include_tasks: 43_provisioner_network.yml
+
+- name: Create BIGIP VMs
+  include_tasks: 45_bigip_vm.yml
+
+- name: Add all bigip hosts to inventory
+  add_host:
+    hostname: "{{ item.key }}.{{ bigip_base_domain }}"
+    ansible_host: "{{ item.value.mgmt_ip | ipaddr('address') }}"
+    license_key: "{{ item.value.license_key }}"
+    bigip_user: "{{ bigip_user }}"
+    bigip_password: "{{ bigip_password }}"
+    bigip_base_domain: "{{ bigip_base_domain }}"
+    groups:
+      - 'bigip'
+  loop: "{{ bigip_vms | dict2items }}"
+
+- name: Generate stablcurco1_dns46.tcl
+  template:
+    src: stablcurco1_dns46.tcl.j2
+    dest: ./roles/bigip-ingress-setup/files/stablcurco1_dns46.tcl

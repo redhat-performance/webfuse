@@ -1,0 +1,21 @@
+---
+# tasks file for bigip-ingress-setup
+- name: Load a variable file from a template
+  template:
+    src: bigip-vars.yml.j2
+    dest: /tmp/bigip-vars.yml
+
+- name: Include the vars templated out
+  include_vars: /tmp/bigip-vars.yml
+
+- name: Setup Worker LB role
+  include_tasks: 10_machine_setup.yml
+
+- name: Setup hostpath Provisioner
+  include_tasks: 20_hostpath_provisioner.yml
+
+- name: Create SRIOV Node policy and networks
+  include_tasks: 30_sriov_network.yml
+
+- name: Create BIGIP Virtual machines
+  include_tasks: 40_bigip_setup.yml

@@ -1,21 +1,31 @@
 ---
-- name: Deploy Kafka cluster
+- name: Deploy Kafka cluster with ephemeral storage
   k8s:
     state: present
     namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - kafka-cluster.yaml
+    - kafka-cluster-ephemeral.yaml
+  when: kafka_storage == 'ephemeral'
 
-- name: Wait 30 seconds
+- name: Deploy the actual Kafka cluster
+  k8s:
+      state: present
+      namespace: "amq"
+      definition: "{{ lookup('file', item ) }}"
+  with_items:
+      - kafka-cluster-persistent.yaml
+  when: kafka_storage == 'persistent'
+
+- name: Wait 50 seconds
   pause:
-    seconds: 30
+    seconds: 50
 
 - name: Wait for all pods in the amq namespace to become ready (timeout is 600s, so be patient)
   shell: |
     oc wait -n amq --for=condition=Ready pods --all --timeout=600s
 
-- name: Create Kafka topics 
+- name: Create Kafka topics
   k8s:
     state: present
     namespace: "amq"
@@ -24,20 +34,28 @@
     - kafka-topics.yaml
 
 - name: Retrieve the secret
-  openshift_raw:
+  k8s_info:
     api: v1
     kind: Secret
     name: my-cluster-cluster-ca-cert
-    namespace: amq
+    namespace: "amq"
   register: mysecret
 
-- set_fact:
-    my_ca: "{{ mysecret.result.data['ca.crt'] | b64decode}}"
+- name: set fact for secret
+  set_fact:
+    my_ca: "{{ mysecret.resources[0].data['ca.crt'] | b64decode }}"
 
 - name: Save the CA certificate
-  copy: 
-    content: "{{ my_ca }}" 
+  copy:
+    content: "{{ my_ca }}"
     dest: "./ca.crt"
+
+- name: Ensure the secret doesn't exist
+  k8s:
+    state: absent
+    kind: Secret
+    name: kafka-fluent
+    namespace: openshift-logging
 
 - name: Create the fluentd-kafka secret
   shell: |
@@ -51,14 +69,56 @@
   with_items:
     - cr-logforwarding-to-kafka-topics.yaml
 
-- name: Deploy the kafka-minion pod and service
+- name: Create the listeners for all 3 topics
   k8s:
     state: present
     namespace: "amq"
     definition: "{{ lookup('file', item ) }}"
   with_items:
-    - minion_pod.yaml 
+    - consumer_infra.yaml
+    - consumer_apps.yaml
+    - consumer_alerts.yaml
+
+- name: Deploy the kafka-minion and service
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - minion.yaml
     - minion_service.yaml
+
+- name: Enable user workload monitoring
+  k8s:
+    state: present
+    namespace: "amq"
+    definition: "{{ lookup('file', item ) }}"
+  with_items:
+    - user_workload_monitoring.yaml
+    - service_monitor.yaml
+
+- name: Get the token for the prometheus data source
+  shell: |
+    oc sa get-token prometheus-k8s -n openshift-monitoring
+  register: token
+
+- name: Get the URL for the prometheus data source
+  shell: |
+    oc get route -n openshift-monitoring | grep thanos-querier  | awk '{print $2}'
+  register: route
+
+- name: Get the URL for the dittybopper / grafana API
+  shell: |
+    oc get route -n dittybopper | grep dittybopper | awk '{print $2}'
+  register: dittybopper_route
+
+- name: template the file for the datasource
+  template: src=templates/datasource.j2 dest=/tmp/datasource.yml
+  delegate_to: localhost
+
+- name: create the datasource for kafka
+  shell: |
+    curl -X POST -H 'Content-Type: application/json' --data @/tmp/datasource.yml http://admin:admin@{{ dittybopper_route.stdout }}/api/datasources
 
 # TODO
 # Wait and Check if all resources are ready

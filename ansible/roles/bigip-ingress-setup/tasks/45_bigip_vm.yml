@@ -1,0 +1,51 @@
+- name: Get cluster domain
+  shell: |
+    oc get routes -n openshift-cnv --no-headers | awk '{print $2}'
+  register: cluster_domain
+
+- name: Set base domain
+  set_fact:
+    bigip_base_domain: "{{ cluster_domain.stdout.split('openshift-cnv.')[1] }}"
+
+- name: Check if VMs exist
+  shell: |
+    oc get vmi -n {{ bigip_namespace }} --no-headers | awk '{print $1}'
+  register: bigip_vms_fact
+
+- name: Create BIGIP virtual machine
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'bigip-vm.yaml.j2') }}"
+
+- name: Wait for SSH to be ready
+  wait_for:
+    port: 22
+    host: "{{ item.value.mgmt_ip | ipaddr('address') }}"
+    search_regex: OpenSSH
+    delay: 10
+  connection: local
+  loop: "{{ bigip_vms | dict2items }}"
+  when:
+    - item.key not in bigip_vms_fact.stdout_lines
+
+- name: Wait for VMs to reboot once
+  command: ping -c1 {{ item.value.mgmt_ip | ipaddr('address') }}
+  ignore_errors: true
+  register: node_down
+  retries: 100
+  delay: 3
+  until: node_down.rc != 0
+  changed_when: false
+  loop: "{{ bigip_vms | dict2items }}"
+  when:
+    - item.key not in bigip_vms_fact.stdout_lines
+
+- name: Check that login page is ready
+  uri:
+    url: https://{{ item.value.mgmt_ip | ipaddr('address') }}/tmui/login.jsp
+    validate_certs: false
+    return_content: yes
+    status_code: ['200', '503']
+  register: ui_console
+  until: "'Configuration Utility' in ui_console.content"
+  loop: "{{ bigip_vms | dict2items }}"

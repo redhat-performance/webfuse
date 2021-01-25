@@ -5,6 +5,28 @@ version: 4.6.1
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift (must be defined)
 build: ga
 
+# Set to true to install nightly Operators and it is effective only for dev-preview builds, 
+# if set make sure to provide brew registry password and Index Image Build IDs
+nightly_operator: false
+
+# Required only for nightly operator installtion
+brew_reg_password: ""
+
+# Required only for nightly operator installtion
+iib_id:
+  sriov: 25944    #openshift-sriov-network-operator
+
+################################################################################
+# BigIP playbook vars
+################################################################################
+
+bigip_worker:
+  - worker002-fc640
+  - worker003-fc640
+
+bigip_sriov_int: "ens2f1"   # Preferrably baremetal network interface
+bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface"
+
 ################################################################################
 # RHACM playbook vars
 ################################################################################
@@ -12,9 +34,72 @@ build: ga
 # by orchestration host
 rhacm_version: 2.1
 rhacm_redisgraph_memory_limit: "3Gi"
+rhacm_disableHubSelfManagement: false
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
+managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
+
+################################################################################
+# Label Node vars:
+################################################################################
+label_node_values:
+  - label: 'localstorage: "true"'
+    nodes:
+      - storagenode-0
+      - storagenode-1
+  - label: 'kafka: "true"'
+    nodes:
+      - storagenode-2
+      - storagenode-3
+      - storagenode-4
+
+################################################################################
+# Local-storage vars:
+################################################################################
+local_storage_instances:
+  - key: localstorage
+    value: "true"
+    storageclassname: local-sc
+    volumes:
+    - /dev/vg_ls/lv_tv00
+    - /dev/vg_ls/lv_tv01
+    - /dev/vg_ls/lv_tv02
+    - /dev/vg_ls/lv_tv03
+    - /dev/vg_ls/lv_tv04
+    - /dev/vg_ls/lv_tv05
+  - key: kafka
+    value: "true"
+    storageclassname: kafka-local-brokers
+    volumes:
+    - /dev/nvme0n1
+  - key: kafka
+    value: "true"
+    storageclassname: kafka-local-zookeepers
+    volumes:
+    - /dev/nvme0n2
+
+################################################################################
+# Prepare Shiftstack for Local-storage vars:
+################################################################################
+shiftstack_cluster: vlan608
+shiftstack_local_storage_node_selector: beta.kubernetes.io/instance-type=nvme-8
+shiftstack_local_storage_device: /dev/nvme0n1
+shiftstack_thin_volume_count: 6
+shiftstack_thin_volume_size: 140g
+
+################################################################################
+# Create Kind VMs vars
+################################################################################
+kind_vm_index_start: 0
+kind_vm_index_count: 1
+kind_vm_prefix: kind2
+kind_vm_image: centos8
+kind_vm_flavor: kind-8-32-60
+kind_vm_keypair_name: kind_private_key
+kind_vm_security_group: kind_security_group
+kind_vm_network: kind_network
+
 ################################################################################
 # kind cluster cs_configuration
 ################################################################################
@@ -37,3 +122,20 @@ ec2_instance_count: 55
 ec2_tags:
   Name: scale
   propose: performance
+
+################################################################################
+# Configure OpenShift Monitoring playbook vars
+################################################################################
+openshift_prometheus_retention_period: 30d
+openshift_prometheus_node_selector: "localstorage: true"
+openshift_prometheus_storage_class: local-sc
+openshift_prometheus_storage_size: 50Gi
+
+################################################################################
+# Kafka playbook vars
+################################################################################
+kafka_storage: "persistent"   # can be either persistent or ephemeral
+kafka_instances:
+  key: kafka
+  value: "true"
+kafka_node_label: 'kafka: "true"'

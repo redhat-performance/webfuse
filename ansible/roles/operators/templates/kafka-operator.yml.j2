@@ -30,5 +30,5 @@ spec:
   channel: "{{ amq_channel }}"
   installPlanApproval: Automatic
   name: amq-streams
-  source: redhat-operators
+  source: "{{ amq_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace

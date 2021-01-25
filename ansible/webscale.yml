@@ -1,13 +1,18 @@
 ---
 - hosts: orchestration
-  vars_files: 
+  vars_files:
     - vars/all.yml
   pre_tasks:
     - name: run validations
       include_tasks: tasks/validation.yml
+      tags:
+        - always
   roles:
     - role: operators
       tags: always
-      
+
     - role: kafka-logging-setup
       tags: logging
+
+- import_playbook: bigip-setup.yml
+  tags: bigip

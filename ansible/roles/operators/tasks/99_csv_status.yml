@@ -1,0 +1,16 @@
+---
+- name: Check {{ namespace }} for operator version
+  shell: |
+    oc get csv -n {{ namespace }} --no-headers | awk '{print $1}'
+  register: csv_version
+  retries: 36 # 3 minutes
+  delay: 5
+  until: csv_version.stdout != ""
+
+- name: Check {{ csv_version.stdout }} status
+  shell: |
+    oc get csv -n {{ namespace }} {{ csv_version.stdout }} --template={{'{{'}}.status.phase{{'}}'}}
+  register: csv_status
+  retries: 10 # 10 minutes
+  delay: 60
+  until: csv_status.stdout == "Succeeded"

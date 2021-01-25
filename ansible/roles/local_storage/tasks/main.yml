@@ -1,0 +1,23 @@
+---
+# Install and setup local-storage operator
+
+- name: Label storage nodes
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'node.yml.j2') }}"
+  with_items: "{{ local_storage_nodes | default([]) }}"
+
+- name: Install local-storage operator
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'localstorage.yml.j2') }}"
+
+# The localvolume resource will not be instantly available, thus retry for around 2 minutes
+- name: Create localvolume resource
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'localvolume.yml.j2') }}"
+  register: lv_result
+  until: lv_result.failed == false
+  retries: 60
+  delay: 2

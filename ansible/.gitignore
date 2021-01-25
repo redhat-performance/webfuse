@@ -1,0 +1,2 @@
+# Ignore the retrieved ssh key
+.cluster_key

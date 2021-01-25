@@ -1,0 +1,377 @@
+- name: Include vars
+  include_vars: /tmp/bigip-vars.yml
+
+- name: License BIG-IP using a key
+  bigip_device_license:
+    accept_eula: true
+    license_key: "{{ license_key }}"
+  register: bigip_activation
+  retries: 5 # 3 minutes
+  delay: 60
+  until: bigip_activation is succeeded
+
+- name: Set some defaults
+  set_fact:
+    lb_host: "{{ inventory_hostname.split('.')[0] }}"
+    primary: false
+  tags: always
+
+- name: Determine if it's Primary
+  set_fact:
+    primary: true
+  when: lb_host == "bigip1"
+  tags: always
+
+- name: Configure default system settings
+  bigip_command:
+    commands:
+      - create cli alias shared sh command show
+      - modify cli global-settings audit enabled
+      - modify auth user admin shell bash
+      - modify sys daemon-log-settings mcpd audit verbose+
+  tags: system
+
+- name: Set the banner for the SSHD service from a string
+  bigip_device_sshd:
+    banner: "enabled"
+    banner_text: "THIS IS A PRIVATE NETWORK AND COMPUTING SYSTEM FOR EXCLUSIVE USE BY AUTHORIZED PERSONNEL ONLY. If you have not been expressly authorized to access this system by Verizon Wireless, please log off immediately. NOTICE TO ALL AUTHORIZED USERS: This is a private and proprietary system owned, operated and monitored by VerizonWireless. Use of this system and any data in transit to or from or stored on this system can be accessed, intercepted, monitored, recorded, copied, audited and inspected by Verizon Wireless and disclosed to third parties and or law enforcement. By continuing to use this system you agree to comply with all applicable policies and procedures and consent to the terms and conditions contained herein. If you do not agree, please log off now."
+  tags: ssh
+
+- name: Disable the setup utility and enable the security banner
+  bigip_sys_global:
+    gui_setup: "off"
+    security_banner: "on"
+    banner_text: "THIS IS A PRIVATE NETWORK AND COMPUTING SYSTEM FOR EXCLUSIVE USE BY AUTHORIZED PERSONNEL ONLY. If you have not been expressly authorized to access this system by Verizon Wireless, please log off immediately. NOTICE TO ALL AUTHORIZED USERS: This is a private and proprietary system owned, operated and monitored by VerizonWireless. Use of this system and any data in transit to or from or stored on this system can be accessed, intercepted, monitored, recorded, copied, audited and inspected by Verizon Wireless and disclosed to third parties and or law enforcement. By continuing to use this system you agree to comply with all applicable policies and procedures and consent to the terms and conditions contained herein. If you do not agree, please log off now."
+    state: "present"
+  tags: globals
+
+- name: Create Untagged Vlans
+  bigip_vlan:
+    partition: "{{ item.partition }}"
+    untagged_interface: "{{ item.interface }}"
+    name: "{{ item.name }}"
+    mtu: "{{ item.mtu }}"
+    tag: "{{ item.tag }}"
+  loop: "{{ untagged_vlan_info }}"
+  tags: untag_vlans
+
+- name: Create tagged Vlans
+  bigip_vlan:
+    partition: "{{ item.partition }}"
+    tagged_interface: "{{ item.interface }}"
+    name: "{{ item.name }}"
+    mtu: "{{ item.mtu }}"
+    tag: "{{ item.tag }}"
+  loop: "{{ tagged_vlan_info }}"
+  tags: tag_vlans
+
+- name: Create Self IPs
+  bigip_selfip:
+    address: "{{ item.address }}"
+    netmask: "{{ item.mask }}"
+    vlan: "{{ item.vlan }}"
+    name: "{{ item.vlan + '-' + item.ip + '-' + item.type }}"
+    traffic_group: "{{ traffic_group[item.type] }}"
+    allow_service:
+      - "{{ item.allow }}"
+  loop: "{{ self_ips[lb_host] }}"
+  tags: self_ip
+
+- name: Create underlay VTEP selfIP
+  bigip_selfip:
+    address: "{{ item.address }}"
+    netmask: "{{ item.mask }}"
+    vlan: "{{ item.vlan }}"
+    name: "under_{{ item.vlan + '-' + item.address + '-' + item.type }}"
+    traffic_group: "{{ traffic_group[item.type] }}"
+    allow_service:
+      - "{{ item.allow }}"
+  loop: "{{ under_self_ips[lb_host] }}"
+  tags: under_self_ip
+
+
+- name: Create vxlan profiles
+  bigip_command:
+    commands:
+      - create net tunnels vxlan ocp-flood flooding-type multipoint
+  tags: create vxlan profiles
+
+- name: Create vxlan tunnel
+  bigip_tunnel:
+    name: "{{ item.name }}"
+    local_address: "{{ item.local_address }}"
+    key: "{{ item.key }}"
+    secondary_address: "{{ item.secondary_address }}"
+    mtu: "{{ item.mtu }}"
+    profile: "{{ item.profile }}"
+    use_pmtu: yes
+    tos: preserve
+    auto_last_hop: default
+    traffic_group: traffic-group-1
+  loop: "{{ vxlan_tunnel_info[lb_host] }}"
+  tags: vxlan_tunnel
+
+- name: Create overlay selfIP
+  bigip_selfip:
+    address: "{{ item.address }}"
+    netmask: "{{ item.mask }}"
+    vlan: "{{ item.vlan }}"
+    name: "over_{{ item.vlan + '-' + item.address + '-' + item.type }}"
+    traffic_group: "{{ traffic_group[item.type] }}"
+    allow_service:
+      - "{{ item.allow }}"
+  loop: "{{ over_self_ips[lb_host] }}"
+  tags: over_self_ip
+
+- name: Setup NTP servers and timezone
+  bigip_device_ntp:
+    ntp_servers:
+      - "{{ bigip_ntp_server }}"
+    timezone: UTC
+
+ ## HA Configuration ##
+- name: Change Config Sync Hostname
+  bigip_command:
+    commands: "mv cm device bigip1 {{ inventory_hostname }}"
+  register: config_sync_hostname
+  tags: failover
+  ignore_errors: yes
+
+- name: Configure device connectivity for standard HA pair
+  bigip_device_connectivity:
+    config_sync_ip: "{{ self_ips[lb_host][0]['address']  }}"
+    unicast_failover:
+      - address: "{{ self_ips[lb_host][0]['address']  }}"
+  tags: failover
+
+- name: Add trusts for all peer devices to Active device
+  bigip_device_trust:
+    peer_server: "{{ failover_peer_ip }}"
+    peer_hostname: "{{ failover_peer }}.{{ bigip_base_domain }}"
+    peer_user: "{{ bigip_user }}"
+    peer_password: "{{ bigip_password }}"
+  when: primary|bool
+  tags: failover
+  ignore_errors: true      # To make it idempotent
+
+- name: Create a sync-failover device group with auto-sync enabled
+  bigip_device_group:
+    name: "{{ failover }}"
+    auto_sync: no
+    full_sync: yes
+    state: present
+    type: sync-failover
+  when: primary|bool
+  tags: failover
+
+- name: Add Primary BigIP to "device_trust_group"
+  bigip_device_group_member:
+    name: "{{ inventory_hostname }}"
+    device_group: "{{ failover }}"
+    state: present
+  when: primary|bool
+  tags: failover
+
+- name: Add Secondary BigIP to "device_trust_group"
+  bigip_device_group_member:
+    name: "{{ failover_peer }}.{{ bigip_base_domain }}"
+    device_group: "{{ failover }}"
+    state: present
+  when: primary|bool
+  tags: failover
+
+- name: Perform an initial sync
+  bigip_configsync_action:
+    device_group: "{{ failover }}"
+    sync_device_to_group: yes
+  when: primary|bool
+  tags:
+    - failover
+    - sync
+
+####VXLAN Tunnel configuration #####
+### DNS46 Configuration####
+
+- name: Add DNS irules
+  bigip_irule:
+    module: ltm
+    name: DNS46
+    src: ./roles/bigip-ingress-setup/files/stablcurco1_dns46.tcl
+  tags: dns_irule
+
+- name: Add NAT irules
+  bigip_irule:
+    module: ltm
+    name: NAT46
+    src: ./roles/bigip-ingress-setup/files/stablcurco1_nat46.tcl
+  tags: nat_irule
+
+- name: Add icall script
+  uri:
+    url: "https://{{ ansible_host }}/mgmt/tm/sys/icall/script/"
+    method: POST
+    validate_certs: no
+    user: "{{ bigip_user|default('admin') }}"
+    password: "{{ bigip_password }}"
+    status_code: 200
+    body_format: json
+    body:
+      name: datagroup_ip_vs_v1
+      partition: Common
+      definition: "{{ icall_definition }}"
+      description: Polling VS to gather destination ip:port -> VS name mapping
+  ignore_errors: yes
+
+- name: Add icall handler
+  bigip_command:
+    commands: "create sys icall handler periodic DG_IP_2_VS { first-occurrence 2020-04-06:00:00:00 interval 30 script datagroup_ip_vs_v1 }"
+
+- name: Create DNS profile
+  bigip_profile_dns:
+    name: dns46
+    enable_dns_express: no
+    enable_dnssec: no
+    enable_gtm: no
+  tags: dns46_proilfe
+
+# - name: create ipv6 SNAT pool
+#   bigip_snat_pool:
+#     name: wsn_ir_ipv6_snatpool
+#     members: "{{ bigip_ipv6_snat_pool }}"
+#   tags: wsn_ir_ipv6_snatpool
+
+- name: create upstsream DNS SNAT pool
+  bigip_snat_pool:
+    name: upstream_dns_snatpool
+    members: "{{ bigip_upstream_dns_snat_pool }}"
+  tags: upstream_dns_snatpool
+
+- name: Create upstream DNS Pool
+  bigip_pool:
+    name: upstream_dns
+    partition: Common
+    lb_method: round-robin
+    monitors:
+      - gateway_icmp
+  tags: upstream_monitor
+
+- name: Add member to DNS pool
+  bigip_pool_member:
+    pool: upstream_dns
+    address: "{{ bigip_upstream_dns }}"
+    port: 53
+  tags: dns46_pool_member
+
+
+- name: Create Default Route for intgress
+  bigip_static_route:
+    destination: 10.128.0.0
+    netmask: 255.252.0.0
+    vlan: ocp-ingress-1
+    name: Ingress_Default
+  tags: Ingress_route
+
+# - name: Create static route to Upstream DNS
+#  bigip_static_route:
+#    destination: 10.46.0.31
+#    netmask: 255.255.255.255
+#    gateway_address: 10.46.29.254
+#    name: upstream_dns
+#  tags: upstream_dns_route
+
+# - name: Create static route to WSN_IR network
+#   bigip_static_route:
+#     destination: "{{ bigip_wsn_ir_route.address }}"
+#     netmask: "{{ bigip_wsn_ir_route.netmask }}"
+#     gateway_address: "{{ bigip_wsn_ir_route.gateway }}"
+#     name: WSN_IR_IPV6_Route
+#   tags: wsn_ir_ipv6_route
+
+- name: Add DNS46 Virtual  Server
+  bigip_virtual_server:
+    name: VS_DNS46
+    type: standard
+    destination: "{{ bigip_dns46_vs }}"
+    port: 53
+    ip_protocol: udp
+    pool: upstream_dns
+    snat: upstream_dns_snatpool
+    irules: DNS46
+    profiles:
+      - dns46
+  tags: dns_46_VS
+
+- name: Add UpStream Virtual  Server
+  bigip_virtual_server:
+    name: VS_Upstream
+    type: standard
+    destination: "{{ bigip_upstream_vs }}"
+    port: 53
+    ip_protocol: udp
+    pool: upstream_dns
+    snat: upstream_dns_snatpool
+    profiles:
+      - dns46
+  tags: upstream_dns_vs
+
+- name: Add NAT46 Virtual  Server
+  bigip_virtual_server:
+    name: VS_NAT46
+    type: performance-l4
+    address_translation: yes
+    mirror: yes
+    destination: 198.19.0.0
+    mask: 255.255.0.0
+    port: 0
+    ip_protocol: any
+    irules: NAT46
+    enabled_vlans:
+    #  - /Common/WSN_EXT_IR
+    #  - /Common/int-sriov
+      - /Common/ocp-egress-1
+    # snat: wsn_ir_ipv6_snatpool
+    profiles:
+      - fastL4
+  tags: nat46_vs
+
+#### Save The Config ####
+- name: Save system settings
+  bigip_command:
+    commands: save sys config
+  tags: save
+
+- name: Give some time to settle down before final sync
+  pause:
+    minutes: 1
+
+### Final Sync between HA Pair###
+- name: Perform a Final  sync on standby node
+  bigip_configsync_action:
+    device_group: "{{ failover }}"
+    sync_device_to_group: yes
+  when: not primary|bool
+  register: standby_node_sync
+  ignore_errors: true
+  tags:
+    - failover
+    - sync
+
+- name: Perform a Final  sync on active node
+  bigip_configsync_action:
+    device_group: "{{ failover }}"
+    sync_device_to_group: yes
+  when: primary|bool
+  tags:
+    - failover
+    - sync
+
+# Added this for performance scale environment only
+- name: Turn on auto-sync
+  bigip_device_group:
+    name: "{{ failover }}"
+    auto_sync: yes
+    full_sync: no
+    state: present
+    type: sync-failover
+  when: primary|bool
+  tags: failover

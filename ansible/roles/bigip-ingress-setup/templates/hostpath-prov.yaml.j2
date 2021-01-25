@@ -1,0 +1,25 @@
+---
+apiVersion: hostpathprovisioner.kubevirt.io/{{ 'v1beta1' if osv_channel == 'stable' else 'v1alpha1' }}
+kind: HostPathProvisioner
+metadata:
+  name: hostpath-provisioner
+  namespace: openshift-cnv
+spec:
+  imagePullPolicy: IfNotPresent
+  pathConfig:
+    path: "{{ bigip_hostpath_dir }}"
+{% if ((release_version[0]|int == 4) and (release_version[2]|int <= 6)) %}
+    useNamingPrefix: "false"
+{% elif ((release_version[0]|int == 4) and (release_version[2]|int > 6)) %}
+    useNamingPrefix: false
+{% endif %}
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hostpath-provisioner
+  namespace: openshift-cnv
+provisioner: kubevirt.io/hostpath-provisioner
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

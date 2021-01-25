@@ -1,0 +1,25 @@
+---
+- name: Wait for MCP to start updating
+  shell: |
+    oc wait --for=condition=Updating --timeout=300s mcp {{ item }}
+  register: mcp_updating
+  changed_when: "'condition met' in mcp_updating.stdout"
+  retries: 3 # 3 minutes * 5 minutes (timeout)
+  delay: 60
+  until: mcp_updating is success
+  ignore_errors: true
+  with_items:
+    - master
+    - worker
+
+- name: Wait for MCP to be updated
+  shell: |
+    oc wait --for=condition=Updated --timeout=1800s mcp {{ item }}
+  changed_when: false
+  register: mcp_update
+  retries: 30 # 30 minutes * 30 minutes (timeout)
+  delay: 60
+  until: not mcp_update.failed
+  with_items:
+    - master
+    - worker

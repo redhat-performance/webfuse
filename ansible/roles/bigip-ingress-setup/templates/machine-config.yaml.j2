@@ -1,0 +1,51 @@
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: "{{ bigip_worker_mcp }}"
+  name: "99-{{ bigip_worker_mcp }}-kernel-argument"
+spec:
+  kernelArguments:
+    - nosmt
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 50-set-selinux-for-hostpath-provisioner
+  labels:
+    machineconfiguration.openshift.io/role: {{ bigip_worker_mcp }}
+spec:
+  config:
+    ignition:
+{% if ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+      version: 2.2.0
+{% elif ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %}
+      version: 3.1.0
+{% endif %}    
+    systemd:
+      units:
+        - contents: |
+            [Unit]
+            Description=Create filesystem for hostpath provisioner
+            Before=kubelet.service
+            [Service]
+            Type=oneshot
+            RemainAfterExit=yes
+            ExecStart=/bin/bash -c "[ -d {{ bigip_hostpath_dir }}  ] || mkdir -p {{ bigip_hostpath_dir }}"
+            [Install]
+            WantedBy=multi-user.target
+          enabled: true
+          name: hostpath-provisioner-mkfs.service
+        - contents: |
+            [Unit]
+            Description=Set SELinux chcon for hostpath provisioner
+            Before=kubelet.service
+            After=hostpath-provisioner-mkfs.service
+            Requires=hostpath-provisioner-mkfs.service
+            [Service]
+            ExecStart=/usr/bin/chcon -Rt container_file_t {{ bigip_hostpath_dir }}
+            [Install]
+            WantedBy=multi-user.target
+          enabled: true
+          name: hostpath-provisioner.service

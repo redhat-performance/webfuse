@@ -1,0 +1,8 @@
+---
+# Simply label nodes
+
+- name: Label node(s)
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'node.yml.j2') }}"
+  with_items: "{{ label_node_values | default([]) }}"

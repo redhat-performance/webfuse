@@ -1,0 +1,29 @@
+---
+apiVersion: nmstate.io/v1alpha1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: bigip-bridges
+spec:
+  nodeSelector:
+    node-role.kubernetes.io/{{ bigip_worker_mcp }}: ""
+  desiredState:
+    interfaces:
+{% for key, value in bigip_bridges.items() %}
+    - name: {{ value.interface }}.{{ value.vlan_id }}
+      type: vlan
+      state: up
+      vlan:
+        base-iface: {{ value.interface }}
+        id: {{ value.vlan_id }}
+
+    - name: bigip-{{ key }}
+      description: Linux bridge with {{ value.interface }} vlan{{ value.vlan_id }} as a port!
+      type: linux-bridge
+      state: up
+      bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: {{ value.interface }}.{{ value.vlan_id }}
+{% endfor %}

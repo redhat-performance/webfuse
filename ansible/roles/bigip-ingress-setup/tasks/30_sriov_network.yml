@@ -1,0 +1,42 @@
+- name: disable SR-IOV Operator admission controller webhook on unsupported cards
+  shell: |
+    oc patch sriovoperatorconfig default --type=merge -n openshift-sriov-network-operator --patch '{ "spec": { "enableOperatorWebhook": false } }'
+
+- name: Wait for few seconds before applying SRIOV network node policy
+  wait_for:
+    timeout: 10
+
+- name: Create SRIOV network node policy
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'sriov-network-node-policy.yaml.j2') }}"
+  register: sriov_policy
+
+- name: Wait till SRIOV network node policy to be updated
+  block:
+    - name: Wait for {{ bigip_worker_mcp }} MCP to start updating
+      shell: |
+        oc wait --for=condition=Updating --timeout=300s mcp {{ bigip_worker_mcp }}
+      register: mcp_updating
+      changed_when: "'condition met' in mcp_updating.stdout"
+      retries: 3 # 3 minutes * 5 minutes (timeout)
+      delay: 60
+      until: mcp_updating is success
+      ignore_errors: true
+
+    - name: Wait for {{ bigip_worker_mcp }} MCP to be updated
+      shell: |
+        oc wait --for=condition=Updated --timeout=1800s mcp {{ bigip_worker_mcp }}
+      changed_when: false
+      register: worker_lb_mcp_update
+      retries: 3 # 3 minutes * 30 minutes (timeout)
+      delay: 60
+      until: not worker_lb_mcp_update.failed
+      when: mcp_updating is changed
+  when:
+    - sriov_policy is changed
+
+- name: Create SRIOV network
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'sriov-network.yaml.j2') }}"
