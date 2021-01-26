@@ -12,7 +12,7 @@
 - hosts: openstack
   become: yes
   serial: 6
-  vars_files: 
+  vars_files:
     - vars/all.yml
   pre_tasks:
     - name: run validations
