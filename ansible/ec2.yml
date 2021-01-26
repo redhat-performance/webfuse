@@ -11,9 +11,7 @@
 #
 
 - hosts: orchestration
-  vars_files: 
+  vars_files:
     - vars/all.yml
-  
   roles:
     - ec2
-
