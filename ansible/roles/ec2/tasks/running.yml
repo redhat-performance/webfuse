@@ -11,6 +11,6 @@
 
 - name: Started EC2 instances
   debug:
-    msg: 
+    msg:
       - "{{ ec2 }}"
 
