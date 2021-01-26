@@ -41,7 +41,7 @@
       register: ec2
 
     - debug:
-        msg: 
+        msg:
         - "{{ ec2 }}"
         - "{{ ec2.tagged_instances | list }}"
 
