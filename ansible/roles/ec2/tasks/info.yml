@@ -2,7 +2,7 @@
 
 - name: Gather information about any VM instances named "scale"
   community.aws.ec2_instance_info:
-    region: us-west-1
+    region: "{{ ec2_region }}"
     filters:
       "tag:Name": scale
   register: ec2
