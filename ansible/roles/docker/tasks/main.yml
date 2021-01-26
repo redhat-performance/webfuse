@@ -1,0 +1,55 @@
+---
+
+- name: Install docker
+  shell: |
+    dnf update -y
+    dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    dnf install docker-ce --nobest -y
+    systemctl start docker
+    systemctl enable docker
+
+- name: Install python3
+  dnf:
+    name: python3
+    state: present
+
+- name: Set python3 as the default python
+  shell: |
+    alternatives --set python /usr/bin/python3
+
+- name: Install openshift python package
+  pip:
+    name:
+    - openshift
+    - kubernetes
+  register: output
+
+- name: Double check that openshift was installed
+  debug:
+    msg:
+    - "{{ output.stdout_lines }}"
+    - "{{ output.stderr_lines }}"
+
+- name: Create pip install script and run
+  shell: |
+    cat > /tmp/pip-hack.sh <<EOF
+    sudo pip3 install openshift
+    EOF
+
+    chmod 755 /tmp/pip-hack.sh
+    /tmp/pip-hack.sh
+  register: output
+
+- name: Output pip install via script
+  debug:
+    msg:
+    - "{{ output.stdout_lines }}"
+    - "{{ output.stderr_lines }}"
+
+- name: Install oc cli
+  shell: |
+    curl -O https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz
+    tar xvf openshift-client-linux.tar.gz
+    mv oc /usr/bin
+    mv kubectl /usr/bin
+

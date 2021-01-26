@@ -1,0 +1,17 @@
+---
+
+- name: Create scale ec2 instances
+  include: create.yml
+  when: ec2_present is defined
+
+- name: Stop all scale ec2 instances
+  include: stopped.yml
+  when: ec2_stopped is defined
+
+- name: Start scale ec2 instances
+  include: running.yml
+  when: ec2_running is defined
+
+- name: Get info on ec2 scale instances
+  include: info.yml
+  when: ec2_info is defined

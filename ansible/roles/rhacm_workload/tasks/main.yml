@@ -1,0 +1,4 @@
+---
+
+- include: policy.yml
+  when: policy is defined

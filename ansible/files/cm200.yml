@@ -1,0 +1,2800 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-1-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-2-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-3-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-4-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-5-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-6-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-7-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-8-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-9-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-10-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-11-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-12-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-13-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-14-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-15-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-16-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-17-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-18-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-19-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-20-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-21-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-22-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-23-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-24-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-25-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-26-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-27-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-28-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-29-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-30-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-31-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-32-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-33-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-34-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-35-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-36-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-37-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-38-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-39-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-40-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-41-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-42-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-43-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-44-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-45-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-46-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-47-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-48-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-49-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-50-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-51-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-52-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-53-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-54-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-55-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-56-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-57-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-58-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-59-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-60-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-61-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-62-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-63-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-64-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-65-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-66-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-67-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-68-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-69-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-70-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-71-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-72-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-73-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-74-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-75-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-76-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-77-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-78-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-79-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-80-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-81-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-82-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-83-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-84-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-85-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-86-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-87-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-88-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-89-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-90-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-91-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-92-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-93-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-94-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-95-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-96-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-97-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-98-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-99-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-100-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-101-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-102-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-103-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-104-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-105-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-106-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-107-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-108-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-109-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-110-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-111-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-112-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-113-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-114-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-115-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-116-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-117-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-118-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-119-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-120-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-121-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-122-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-123-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-124-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-125-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-126-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-127-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-128-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-129-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-130-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-131-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-132-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-133-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-134-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-135-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-136-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-137-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-138-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-139-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-140-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-141-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-142-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-143-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-144-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-145-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-146-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-147-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-148-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-149-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-150-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-151-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-152-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-153-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-154-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-155-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-156-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-157-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-158-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-159-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-160-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-161-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-162-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-163-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-164-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-165-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-166-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-167-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-168-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-169-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-170-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-171-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-172-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-173-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-174-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-175-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-176-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-177-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-178-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-179-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-180-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-181-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-182-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-183-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-184-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-185-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-186-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-187-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-188-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-189-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-190-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-191-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-192-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-193-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-194-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-195-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-196-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-197-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-198-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-199-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "configmap-200-{{ item }}-{{ inner }}"
+  namespace: default
+  labels:
+    purpose: "scale"
+data:
+  foo: |
+    foo: bar
+    one: two
+    three: four
+    five: six

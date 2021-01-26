@@ -1,0 +1,7 @@
+---
+# Monitor script is included outside of playbook for consitnous running in open-cluster-management/qe-toolbelt
+- name: Pause for a specific period of time (defaults to 60 minutes)
+  pause:
+    minutes: "{{ cluster_import_pause | default(60) }}"
+  run_once: true
+  delegate_to: localhost

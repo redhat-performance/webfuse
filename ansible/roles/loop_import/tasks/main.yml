@@ -1,0 +1,11 @@
+---
+
+- name: Copy hub kubeconfig from orchestration node to remote VM
+  copy:
+    # src: /tmp/hub.kubeconfig
+    src: "{{ hub_cluster_kubeconfig }}"
+    dest: /tmp/hub.kubeconfig
+    mode: '0755'
+
+- include_tasks: wrap_manage_cluster.yml
+  loop: "{{ range(0, kind_max_count, kind_step_count)|list }}"

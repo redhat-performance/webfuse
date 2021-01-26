@@ -1,0 +1,4 @@
+---
+
+- include: collect-loadaverage.yml
+  when: loadaverage is defined

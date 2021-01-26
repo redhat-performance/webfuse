@@ -4,7 +4,12 @@
 
 `export KUBECONFIG=<path-to-kubeconfig-on-ansible-controller>`
 
-`pip3 install openshift netaddr`
+```
+pip3 install openshift netaddr
+
+ansible-galaxy collection install amazon.aws
+ansible-galaxy collection install community.aws
+```
 
 Ansible >= 2.9
 

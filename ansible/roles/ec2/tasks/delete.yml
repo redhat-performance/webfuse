@@ -1,0 +1,13 @@
+---
+
+# - name: Delete AWS instances with the tag "purpose=performance"
+#   amazon.aws.ec2:
+#     instance_tags:
+#         purpose: performance
+#     state: absent
+#     instance_ids: instance_ids
+#   register: instances
+
+# - name: Deleted Instances
+#   debug:
+#     msg: "{{ instances }}"

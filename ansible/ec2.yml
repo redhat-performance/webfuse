@@ -1,0 +1,17 @@
+---
+# Playbook to manage EC2 instances--create, start, stop, delete, into which we will deploy kind clusters
+#
+# Set inventory like:
+# [orchestration]
+# localhost ansible_connection=local
+#
+# ansible-playbook -i ansible/inventory/hosts ansible/ec2.yml -e ec2_stopped=true
+#
+# other flags: ec2_present, ec2_stopped, ec2_running, ec2_info
+#
+
+- hosts: orchestration
+  vars_files:
+    - vars/all.yml
+  roles:
+    - ec2

@@ -1,0 +1,44 @@
+---
+# to log the timestamp of each loop task, run ansible-playbook with -v (verbose 1)
+# this will incldue the manifest of the resource createdd, and the creation timestamp
+
+- set_fact:
+    workload_iteration: 2
+    workload_wait: 60 # seconds
+    workload_policy_namespace: policies
+
+- name: Create policies namespace
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        labels:
+          createdby: ansible
+        name: "{{ workload_policy_namespace }}"
+    kubeconfig: "{{ hub_cluster_kubeconfig }}"
+  register: ns_result
+  delegate_to: localhost
+  become: False
+  run_once: True
+  until: ns_result.failed == false
+  retries: 60
+  delay: 2
+
+- name: Create GRC policy via k8s module
+  k8s:
+    definition: "{{ lookup('template', 'policy.yml.j2') }}"
+    namespace: "{{ workload_policy_namespace }}"
+    kubeconfig: "{{ hub_cluster_kubeconfig }}"
+    state: present
+  register: grc_result
+  until: grc_result.failed == false
+  retries: 60
+  delay: 2
+  delegate_to: localhost
+  become: False
+  run_once: True
+  with_sequence: start=1 end={{ workload_iteration }}
+  loop_control:
+    pause: "{{ workload_wait }}"

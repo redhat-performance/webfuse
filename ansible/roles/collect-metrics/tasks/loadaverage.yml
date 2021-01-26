@@ -1,0 +1,16 @@
+---
+
+- name: Check VM load average
+  shell: |
+    data=$(cat /proc/loadavg | tr ' ' ',')
+    echo "{{ ansible_host }},$data"
+  register: lv
+
+- name: Collect loadaverage to file on localhost
+  shell: |
+    if [ ! -f loadaverage.csv ]; then
+      echo "host,1m,5m,15m,x,y" > loadaverage.csv
+    fi
+    echo "{{ lv.stdout }}" >> loadaverage.csv
+  delegate_to: localhost
+  become: False

@@ -101,6 +101,29 @@ kind_vm_security_group: kind_security_group
 kind_vm_network: kind_network
 
 ################################################################################
+# kind cluster cs_configuration
+################################################################################
+kind_max_count: 9 # 10 max instance
+kind_step_count: 1
+k3d_max_count: 20 # 22 max instance
+k3d_step_count: 1
+
+################################################################################
+# EC2 settings
+################################################################################
+ec2_key_name: 
+ec2_instance_type: m4.2xlarge
+ec2_image: ami-066df92ac6f03efca
+ec2_security_group: launch-wizard-1
+ec2_vpc_subnet_id: subnet-817895db
+ec2_region: us-west-1
+ec2_volume_size: 100
+ec2_instance_count: 55
+ec2_tags:
+  Name: scale
+  propose: performance
+
+################################################################################
 # Configure OpenShift Monitoring playbook vars
 ################################################################################
 openshift_prometheus_retention_period: 30d
@@ -111,7 +134,6 @@ openshift_prometheus_storage_size: 50Gi
 ################################################################################
 # Kafka playbook vars
 ################################################################################
-
 kafka_storage: "persistent"   # can be either persistent or ephemeral
 kafka_instances:
   key: kafka

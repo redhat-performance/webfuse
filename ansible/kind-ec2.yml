@@ -1,0 +1,25 @@
+---
+# Playbook to setup EC2 VM with docker, kind, and import the Kind clusters into the hub.
+# This playbook assumes you have updated the [ec2] group in the hosts file with the list of VM host addresses.
+# 
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/hosts ansible/kind.yml --tags "docker"
+#
+
+- hosts: ec2
+  become: yes
+  vars_files:
+    - vars/all.yml
+  pre_tasks:
+    - name: run validations
+      include_tasks: tasks/validation.yml
+    - name: run checks
+      include_tasks: tasks/check.yml
+  roles:
+    - role: docker
+      tags: docker
+    - role: kind
+      tags: kind
+    - role: loop_import
+      tags: import

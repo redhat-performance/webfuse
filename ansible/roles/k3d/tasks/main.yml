@@ -1,0 +1,14 @@
+---
+
+- name: Install k3d
+  shell: |
+    curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | TAG=v3.2.0 bash
+  register: output
+
+- name: Debug k3d install
+  debug:
+    msg: "{{ output.stdout_lines }}"
+
+- name: Create k3d instance
+  include: tasks/k3d.yml
+  loop: "{{ range(0, k3d_max_count, k3d_step_count)|list }}"

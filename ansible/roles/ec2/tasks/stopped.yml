@@ -1,0 +1,15 @@
+---
+
+- name: Stop all 'performance' tagged EC2 Instances
+  amazon.aws.ec2:
+    region: "{{ ec2_region }}"
+    instance_tags:
+        Name: scale
+        purpose: performance
+    state: stopped
+  register: ec2
+
+- name: Stopped EC2 instances
+  debug:
+    msg:
+      - "{{ ec2 }}"
