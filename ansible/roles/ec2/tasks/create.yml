@@ -29,5 +29,5 @@
 
 - name: Created instances
   debug:
-    msg: 
+    msg:
       - "{{ ec2 }}"
