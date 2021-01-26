@@ -26,7 +26,7 @@
 
 - name: Double check that openshift was installed
   debug:
-    msg: 
+    msg:
     - "{{ output.stdout_lines }}"
     - "{{ output.stderr_lines }}"
 
