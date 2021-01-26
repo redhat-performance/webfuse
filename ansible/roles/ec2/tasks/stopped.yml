@@ -11,5 +11,5 @@
 
 - name: Stopped EC2 instances
   debug:
-    msg: 
+    msg:
       - "{{ ec2 }}"
