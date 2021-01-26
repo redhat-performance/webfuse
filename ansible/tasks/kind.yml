@@ -27,21 +27,21 @@
     hostname_base: "{{ command_output.stdout }}"
   when: vm_provider is defined and vm_provider == "openstack"
 
-- name: Create Kind Reserved Config
-  shell: |
-    cat > /tmp/kind-config.yaml <<EOF
-    kind: Cluster
-    apiVersion: kind.x-k8s.io/v1alpha4
-    nodes:
-    - role: control-plane
-      kubeadmConfigPatches:
-      - |
-        kind: InitConfiguration
-        nodeRegistration:
-          kubeletExtraArgs:
-            system-reserved: memory=8Gi,cpu=1
-    EOF
-  when: False
+# - name: Create Kind Reserved Config
+#   shell: |
+#     cat > /tmp/kind-config.yaml <<EOF
+#     kind: Cluster
+#     apiVersion: kind.x-k8s.io/v1alpha4
+#     nodes:
+#     - role: control-plane
+#       kubeadmConfigPatches:
+#       - |
+#         kind: InitConfiguration
+#         nodeRegistration:
+#           kubeletExtraArgs:
+#             system-reserved: memory=8Gi,cpu=1
+#     EOF
+#   when: False
 
 - name: Docker login to track rate limit usage
   shell: |
