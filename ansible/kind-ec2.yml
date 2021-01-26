@@ -9,14 +9,13 @@
 
 - hosts: ec2
   become: yes
-  vars_files: 
+  vars_files:
     - vars/all.yml
   pre_tasks:
     - name: run validations
       include_tasks: tasks/validation.yml
     - name: run checks
       include_tasks: tasks/check.yml
-
   roles:
     - role: docker
       tags: docker
@@ -24,4 +23,3 @@
       tags: kind
     - role: loop_import
       tags: import
-
