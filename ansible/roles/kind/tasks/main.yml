@@ -29,5 +29,5 @@
   when: delete_all_kind_clusters is defined
 
 - name: Create kind instance
-  include: tasks/kind.yml 
+  include: tasks/kind.yml
   loop: "{{ range(0, kind_max_count, kind_step_count)|list }}"
