@@ -5,7 +5,7 @@ version: 4.6.1
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift (must be defined)
 build: ga
 
-# Set to true to install nightly Operators and it is effective only for dev-preview builds, 
+# Set to true to install nightly Operators and it is effective only for dev-preview builds,
 # if set make sure to provide brew registry password and Index Image Build IDs
 nightly_operator: false
 
@@ -39,6 +39,25 @@ hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
+
+################################################################################
+# RHACM Shiftstack prepare cluster deployment vars
+################################################################################
+rhacm_clusterdeploy_index_start: 0
+rhacm_clusterdeploy_index_count: 1
+rhacm_clusterdeploy_prefix: sno
+rhacm_clusterdeploy_base_domain: rdu2.scalelab.redhat.com
+rhacm_clusterdeploy_network_type: OVNKubernetes
+rhacm_clusterdeploy_worker_flavor: sno-8-32-40
+rhacm_clusterdeploy_cis: sno-4.6.6-5
+rhacm_clusterdeploy_image_url: "https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-4.6/46.82.202011260640-0/x86_64/rhcos-46.82.202011260640-0-openstack.x86_64.qcow2.gz"
+rhacm_clusterdeploy_image_name: sno-rhcos
+shiftstack_clusterdeploy_public_net_name: public
+shiftstack_clusterdeploy_public_cidr: 10.1.57.0/24
+
+rhacm_clusterdeploy_hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
+rhacm_clusterdeploy_hub_cluster_name: vlan608
+rhacm_clusterdeploy_hub_base_domain: rdu2.scalelab.redhat.com
 
 ################################################################################
 # Label Node vars:
@@ -83,7 +102,7 @@ local_storage_instances:
 # Prepare Shiftstack for Local-storage vars:
 ################################################################################
 shiftstack_cluster: vlan608
-shiftstack_local_storage_node_selector: beta.kubernetes.io/instance-type=nvme-8
+shiftstack_local_storage_node_selector: localstorage=true
 shiftstack_local_storage_device: /dev/nvme0n1
 shiftstack_thin_volume_count: 6
 shiftstack_thin_volume_size: 140g
@@ -111,7 +130,7 @@ k3d_step_count: 1
 ################################################################################
 # EC2 settings
 ################################################################################
-ec2_key_name: 
+ec2_key_name:
 ec2_instance_type: m4.2xlarge
 ec2_image: ami-066df92ac6f03efca
 ec2_security_group: launch-wizard-1
