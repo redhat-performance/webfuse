@@ -4,7 +4,7 @@
   copy:
     src: "{{ hub_cluster_kubeconfig }}"
     dest: "{{ hub_cluster_kubeconfig }}"
-        
+
 - name: Query ec2 public dns name
   shell: |
     # aws api to return vm public dns name

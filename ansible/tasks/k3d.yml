@@ -6,6 +6,5 @@
   register: output
 
 - name: Debug the create output
-  debug: 
+  debug:
     msg: "{{ output }}"
-

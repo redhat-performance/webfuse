@@ -56,9 +56,13 @@
   debug:
     msg: "{{ output }}"
 
-- name: "Save Kind kubeconfig to /tmp"
+- name: Create directory for kind cluster kubeconfig
+  file:
+    dest: "/home/centos/{{ hostname_base }}-kind-{{ item }}"
+    state: directory
+
+- name: Save Kind kubeconfig to /home/centos/
   shell: |
-    mkdir -p /tmp/{{ hostname_base }}-kind-{{ item }}
     kind get kubeconfig --name=kind-{{ item }} > /tmp/{{ hostname_base }}-kind-{{ item }}/kubeconfig
 
 # - name: Create 4K configmaps
@@ -70,4 +74,3 @@
 #   loop_control:
 #     loop_var: inner
 #   tags: focus
-
