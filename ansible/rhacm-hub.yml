@@ -7,7 +7,8 @@
 # time ansible-playbook -i ansible/inventory/hosts ansible/rhacm-hub.yml -e "rhacm_version=2.1"
 #
 
-- hosts: orchestration
+- name: Install released version of RHACM
+  hosts: orchestration
   vars_files:
     - vars/all.yml
   pre_tasks:
