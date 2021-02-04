@@ -1,0 +1,23 @@
+---
+# Generate a CoreDNS Corefile to provide dns records for cluster-deployments
+# such that RHACM/hive permits provisioning clusters without configurable DNS
+
+- name: Create hub cluster directory for Corefile and MachineConfig
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /home/stack/clusterdeployments_coredns
+    - "/home/stack/clusterdeployments_coredns/{{ rhacm_clusterdeploy_hub_cluster_name }}/"
+
+- name: Prepare Corefile.tmpl
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - src: Corefile.tmpl.j2
+      dest: "/home/stack/clusterdeployments_coredns/{{ rhacm_clusterdeploy_hub_cluster_name }}/Corefile.tmpl"
+    - src: clusterdeploy.hosts.j2
+      dest: "/home/stack/clusterdeployments_coredns/{{ rhacm_clusterdeploy_hub_cluster_name }}/clusterdeploy.hosts"
+    - src: machineconfig.yaml.j2
+      dest: "/home/stack/clusterdeployments_coredns/{{ rhacm_clusterdeploy_hub_cluster_name }}/99-machineconfig-coredns-corefile-hosts.yaml"

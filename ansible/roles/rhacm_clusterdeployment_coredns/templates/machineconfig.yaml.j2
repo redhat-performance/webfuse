@@ -1,0 +1,58 @@
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: master
+  name: 99-master-coredns-corefile-hosts
+spec:
+  config:
+    ignition:
+      config: {}
+      security:
+        tls: {}
+      timeouts: {}
+      version: 3.1.0
+    networkd: {}
+    passwd: {}
+    storage:
+      files:
+        - contents:
+            source: data:text/plain;charset=utf-8;base64,{{ lookup('template', './Corefile.tmpl.j2') | b64encode }}
+          overwrite: true
+          mode: 420
+          path: /etc/kubernetes/static-pod-resources/coredns/Corefile.tmpl
+        - contents:
+            source: data:text/plain;charset=utf-8;base64,{{ lookup('template', './clusterdeploy.hosts.j2') | b64encode }}
+          overwrite: true
+          mode: 420
+          path: /etc/coredns/clusterdeploy.hosts
+---
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: 99-worker-coredns-corefile-hosts
+spec:
+  config:
+    ignition:
+      config: {}
+      security:
+        tls: {}
+      timeouts: {}
+      version: 3.1.0
+    networkd: {}
+    passwd: {}
+    storage:
+      files:
+        - contents:
+            source: data:text/plain;charset=utf-8;base64,{{ lookup('template', './Corefile.tmpl.j2') | b64encode }}
+          overwrite: true
+          mode: 420
+          path: /etc/kubernetes/static-pod-resources/coredns/Corefile.tmpl
+        - contents:
+            source: data:text/plain;charset=utf-8;base64,{{ lookup('template', './clusterdeploy.hosts.j2') | b64encode }}
+          overwrite: true
+          mode: 420
+          path: /etc/coredns/clusterdeploy.hosts

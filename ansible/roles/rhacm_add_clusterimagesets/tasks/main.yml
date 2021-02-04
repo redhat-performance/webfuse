@@ -1,0 +1,38 @@
+---
+# Add ClusterImageSets for SNO to RHACM Hub Cluster
+
+- name: Create directories for ClusterImageSets
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - /home/stack/clusterdeployments_cis
+    - "/home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/"
+
+- name: Template out ClusterImageSets for SNO to RHACM Hub Cluster
+  template:
+    src: cis.yaml.j2
+    dest: "{{ item.dest }}"
+  with_items:
+    - name: sno-4.6.4-3
+      releaseImage: registry.svc.ci.openshift.org/sno-vz-alpha/openshift:4.6.4-3
+      dest: "/home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/sno-4.6.4-3-cis.yaml"
+    - name: sno-4.6.6-5
+      releaseImage: registry.svc.ci.openshift.org/sno-vz-alpha/openshift:4.6.6-5
+      dest: "/home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/sno-4.6.6-5-cis.yaml"
+    # Image pullback with 4.6.6-6
+    # - name: sno-4.6.6-6
+    #   releaseImage: registry.svc.ci.openshift.org/sno-vz-alpha/openshift:4.6.6-6
+    #   dest: "/home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/sno-4.6.6-6-cis.yaml"
+    # 4.7.0.fc-0 fails to complete deployment
+    # - name: sno-4.7.0.fc-0
+    #   releaseImage: quay.io/eranco74/ocp-release:bootstrap-in-place
+    #   dest: "/home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/sno-sno-4.7.0.fc-0.yaml"
+    # Also not working
+    # - name: sno-bip-0.3.0
+    #   releaseImage: registry.svc.ci.openshift.org/sno-dev/openshift-bip:0.3.0
+    #   dest: "/home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/sno-bip-0.3.0-cis.yaml"
+
+- name: Apply ClusterImageSets to RHACM Hub Cluster
+  shell: |
+    KUBECONFIG={{ rhacm_clusterdeploy_hub_cluster_kubeconfig }} oc apply -f /home/stack/clusterdeployments_cis/{{ rhacm_clusterdeploy_hub_cluster_name }}/

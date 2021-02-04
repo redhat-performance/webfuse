@@ -1,0 +1,69 @@
+---
+# Playbook to prepare rhacm shiftstack hub cluster for cluster provisioning
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/undercloud.hosts ansible/rhacm-shiftstack-prepare-cluster-deployment.yml -e "rhacm_clusterdeploy_index_start=0 rhacm_clusterdeploy_index_count=3"
+#
+
+- name: Add clusterimagesets and setup to build multiple cluster-deployment configurations
+  hosts: orchestration
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  pre_tasks:
+    # In order to allow this process to be more concurrent, we leverage creating an
+    # inventory host per provisioned cluster to be created
+    - name: Add host for each cluster to be provisioned
+      add_host:
+        name: "orchestration-{{ item }}"
+        group: "buildcdconfigs"
+        ansible_host: "{{ inventory_hostname }}"
+        rhacm_clusterdeployment_name: "{{ rhacm_clusterdeploy_prefix }}{{ item }}"
+      with_sequence: "start={{ rhacm_clusterdeploy_index_start|int }} count={{ rhacm_clusterdeploy_index_count|int }} format=%05u"
+
+    - name: Ensure admin quotas are unlimited
+      os_quota:
+        cloud: overcloud
+        name: admin
+        server_groups: -1
+        properties: -1
+        ram: -1
+        key_pairs: -1
+        instances: -1
+        cores: -1
+        per_volume_gigabytes: -1
+        gigabytes: -1
+        backup_gigabytes: -1
+        snapshots: -1
+        volumes: -1
+        backups: -1
+        subnetpool: -1
+        port: -1
+        subnet: -1
+        network: -1
+        floating_ips: -1
+        floatingip: -1
+        security_group_rule: -1
+        security_group: -1
+        router: -1
+        rbac_policy: -1
+  roles:
+    - openstack_openshift_image
+    - rhacm_add_clusterimagesets
+
+- name: Create {{ rhacm_clusterdeploy_index_count }} RHACM cluster deployment configuration(s)
+  hosts: buildcdconfigs
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  roles:
+    - rhacm_build_shiftstack_cd_config
+
+- name: Generate MCO object for hub cluster dns for cluster deployments
+  hosts: orchestration
+  remote_user: stack
+  vars_files:
+    - vars/all.yml
+  roles:
+    - rhacm_clusterdeployment_coredns

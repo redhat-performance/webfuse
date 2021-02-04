@@ -1,0 +1,15 @@
+. {
+    errors
+    health :18080
+    mdns {{ rhacm_clusterdeploy_hub_cluster_name }}.{{ rhacm_clusterdeploy_hub_base_domain }} 0 {%raw%}{{.Cluster.Name}} {{.NonVirtualIP}}{%endraw%}
+
+    forward . {%raw%}{{- range $upstream := .DNSUpstreams}} {{$upstream}}{{- end}}{%endraw%} {
+        policy sequential
+    }
+    cache 30
+    reload
+    file /etc/coredns/node-dns-db {{ rhacm_clusterdeploy_hub_cluster_name }}.{{ rhacm_clusterdeploy_hub_base_domain }}
+    hosts /etc/coredns/clusterdeploy.hosts {
+        fallthrough
+    }
+}
