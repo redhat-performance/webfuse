@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Quickly run oc get no against all provisioned clusters
+# Usage: check_provisioned_clusters.sh <clusters-start> <clusters-end>
+cluster_start=$1
+cluster_end=$2
+
+echo "$(date -u +%Y%m%d-%H%M%S) - Check provisioned clusters"
+echo "$(date -u +%Y%m%d-%H%M%S) - Clusters Start: ${cluster_start}"
+echo "$(date -u +%Y%m%d-%H%M%S) - Clusters End: ${cluster_end}"
+
+for idx in `seq -f "%05g" ${cluster_start} ${cluster_end}`; do
+  oc --kubeconfig=/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeploy_prefix }}${idx}/kubeconfig get no
+done
+
+echo "$(date -u +%Y%m%d-%H%M%S) - Finished checking provisioned clusters"
