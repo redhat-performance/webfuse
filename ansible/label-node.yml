@@ -4,14 +4,12 @@
 # Example Usage:
 #
 # export KUBECONFIG=/home/user/kubeconfig
-# time ansible-playbook -i ansible/inventory/hosts ansible/label-node.yml
+# time ansible-playbook -i ansible/inventory/localhost.local ansible/label-node.yml
 #
 
-- hosts: orchestration
+- name: Label nodes
+  hosts: orchestration
   vars_files:
     - vars/all.yml
-  pre_tasks:
-    - name: run validations
-      include_tasks: tasks/validation.yml
   roles:
     - label_node

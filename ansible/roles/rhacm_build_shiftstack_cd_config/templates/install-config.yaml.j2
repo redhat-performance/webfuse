@@ -31,7 +31,9 @@ platform:
     externalNetwork:   "{{ shiftstack_clusterdeploy_public_net_name }}"
     computeFlavor:     "{{ rhacm_clusterdeploy_worker_flavor }}"
     lbFloatingIP:      "{{ api_floating_ip }}"
+{% if rhacm_clusterdeploy_create_ingress %}
     ingressFloatingIP: "{{ ingress_floating_ip }}"
+{% endif %}
     externalDNS: ["{{ ansible_dns.nameservers| join('", "') }}"]
     clusterOSImage: "{{ rhacm_clusterdeploy_image_name }}"
 pullSecret: ""

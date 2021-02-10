@@ -4,14 +4,12 @@
 # Example Usage:
 #
 # export KUBECONFIG=/home/user/kubeconfig
-# time ansible-playbook -i ansible/inventory/hosts ansible/configure-openshift-monitoring.yml
+# time ansible-playbook -i ansible/inventory/localhost.local ansible/configure-openshift-monitoring.yml
 #
 
-- hosts: orchestration
+- name: Configure openshift-monitoring components
+  hosts: orchestration
   vars_files:
     - vars/all.yml
-  pre_tasks:
-    - name: run validations
-      include_tasks: tasks/validation.yml
   roles:
     - openshift-monitoring-config

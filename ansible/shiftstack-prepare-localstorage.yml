@@ -12,7 +12,8 @@
 # lvcreate -l 99%VG -T vg_ls/lv_tp_ls
 # lvcreate -T vg_ls/lv_tp_ls -V100G -n lv_tv00
 
-- hosts: orchestration
+- name: Setup ssh to shiftstack nodes in order to prepare local storage
+  hosts: orchestration
   remote_user: stack
   vars_files:
     - vars/all.yml
@@ -56,7 +57,8 @@
           -o ControlMaster=no -o ControlPersist=no -o ProxyCommand='ssh -i {{ playbook_dir }}/.cluster_key -W %h:%p core@{{ tmp_fip.stdout }}'
       with_items: "{{ worker_node_ips.stdout_lines }}"
 
-- hosts: local_storage_workers
+- name: Prepare local storage on shiftstack nodes
+  hosts: local_storage_workers
   gather_facts: false
   vars_files:
     - vars/all.yml
@@ -93,7 +95,8 @@
         size: "{{ shiftstack_thin_volume_size }}"
       with_sequence: "start=0 count={{ shiftstack_thin_volume_count|int }} format=%02u"
 
-- hosts: orchestration
+- name: Remove temporary floating ip for shiftstack ssh node access
+  hosts: orchestration
   remote_user: stack
   vars_files:
     - vars/all.yml

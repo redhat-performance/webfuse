@@ -29,15 +29,3 @@ spec:
       name: "{{ rhacm_clusterdeploy_cis }}"
   pullSecretRef:
     name: "{{ rhacm_clusterdeployment_name }}-pull-secret"
----
-apiVersion: cluster.open-cluster-management.io/v1
-kind: ManagedCluster
-metadata:
-  labels:
-    cloud: OpenStack
-    region: regionOne
-    name: "{{ rhacm_clusterdeployment_name }}"
-    vendor: OpenShift
-  name: "{{ rhacm_clusterdeployment_name }}"
-spec:
-  hubAcceptsClient: true
