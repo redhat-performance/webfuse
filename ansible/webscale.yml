@@ -9,7 +9,17 @@
         - always
   roles:
     - role: operators
+      when: operators is defined and operators | length > 0
       tags: always
+
+    - role: label_node
+      when: label_node_values is defined and label_node_values | length > 0
+
+    - role: local_storage
+      when: local_storage_instances is defined and local_storage_instances | length > 0
+
+    - role: openshift-monitoring-config
+      when: openshift_prometheus_storage_class is defined
 
     - role: kafka-logging-setup
       tags: logging

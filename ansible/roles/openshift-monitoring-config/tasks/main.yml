@@ -5,3 +5,4 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'cluster-monitoring-config.yml.j2') }}"
+    apply: yes
