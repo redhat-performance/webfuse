@@ -4,9 +4,14 @@
 
 `export KUBECONFIG=<path-to-kubeconfig-on-ansible-controller>`
 
-```
-pip3 install openshift netaddr
+Passwordless sudo for package install
 
+```
+echo "username ALL=(root) NOPASSWD:ALL" | tee -a /etc/sudoers.d/username
+chmod 0440 /etc/sudoers.d/username
+```
+
+```
 ansible-galaxy collection install amazon.aws
 ansible-galaxy collection install community.aws
 ```

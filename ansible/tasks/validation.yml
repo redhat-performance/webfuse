@@ -36,3 +36,10 @@
 - name: Print the release version
   debug:
     msg: release version is {{ release_version }}
+
+- name: Install packages
+  pip:
+    name:
+      - openshift
+      - netaddr
+  become: true

@@ -16,6 +16,19 @@ brew_reg_password: ""
 iib_id:
   sriov: 25944    #openshift-sriov-network-operator
 
+# List of operators to install and namespaces they are installed in
+operators:
+  - name: performance-add-on-operator
+    namespace: openshift-performance-add-on
+  - name: sriov-network-operator
+    namespace: openshift-sriov-network-operator
+  - name: openshift-virtualization-operator
+    namespace: openshift-cnv
+  - name: cluster-logging-operator
+    namespace:  openshift-logging
+  - name: kafka-operator
+    namespace: amq
+
 ################################################################################
 # BigIP playbook vars
 ################################################################################
@@ -76,6 +89,10 @@ label_node_values:
       - storagenode-2
       - storagenode-3
       - storagenode-4
+  - label: 'prom: "true"'
+    nodes:
+      - storagenode-5
+      - storagenode-6
 
 ################################################################################
 # Local-storage vars:
@@ -101,6 +118,11 @@ local_storage_instances:
     storageclassname: kafka-local-zookeepers
     volumes:
     - /dev/nvme0n2
+  - key: prom
+    value: "true"
+    storageclassname: prom-sc
+    volumes:
+    - /dev/nvme0n1
 
 ################################################################################
 # Prepare Shiftstack for Local-storage vars:
@@ -149,9 +171,9 @@ ec2_tags:
 ################################################################################
 # Configure OpenShift Monitoring playbook vars
 ################################################################################
-openshift_prometheus_retention_period: 30d
-openshift_prometheus_node_selector: "localstorage: true"
-openshift_prometheus_storage_class: local-sc
+openshift_prometheus_retention_period: 15d
+openshift_prometheus_node_selector: "prom: true"
+openshift_prometheus_storage_class: prom-sc
 openshift_prometheus_storage_size: 50Gi
 
 ################################################################################
