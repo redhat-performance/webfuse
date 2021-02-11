@@ -16,3 +16,8 @@
 
 - import_playbook: bigip-setup.yml
   tags: bigip
+
+- hosts: trident
+  roles:
+    - role: trident-storage-setup
+      tags: trident

@@ -1,0 +1,10 @@
+{
+    "version": 1,
+    "storageDriverName": "ontap-nas",
+    "managementLIF": "{{ extcidrnet | next_nth_usable(lif_ip_nth) }}",
+    "dataLIF": "192.168.250.240",
+    "svm": "trident_test",
+    "username": "admin",
+    "nfsMountOptions": "nfsvers=4",    
+    "password": "{{ ontap_password | b64decode }}"
+}

@@ -1,0 +1,11 @@
+---
+# vars file for trident-storage-setup
+
+package_list:
+  - tar
+  - libvirt
+  - virt-manager
+  - python3-libvirt
+  - python3-lxml
+  - qemu-kvm
+  - qemu-img

@@ -1,0 +1,30 @@
+---
+# tasks file for trident-storage-setup
+- name: Create {{ trident_namespace }} namespace
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ trident_namespace }}"
+  delegate_to: "{{ groups['orchestration'][0] }}"
+
+- block:
+  - name: Install required packages
+    yum:
+      name: "{{ package_list }}"
+      state: present
+      update_cache: true
+      disable_gpg_check: yes
+    
+  - name: Cleanup existing resources
+    include_tasks: 10-cleanup-vm.yml
+    tags: cleanup
+    
+  - name: Create NetApp VM
+    include_tasks: 20-netapp-vm.yml
+  when: not netapp_osv
+
+- name: Install NetApp Trident Operator and Controller
+  include_tasks: 30-netapp-trident-controller.yml

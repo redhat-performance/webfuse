@@ -1,0 +1,46 @@
+- name: Create local image folder
+  file:
+    state: directory
+    path: "{{ vsim_disk_image_dir }}"
+
+- name: Download image
+  get_url:
+    url: "http://perf1.perf.lab.eng.bos.redhat.com/pub/dwilson/OntapGoldImage.tar.gz"
+    dest: "{{ vsim_disk_image_dir }}"
+  register: netapp_vm_image
+
+- name: Extract tar file
+  unarchive:
+    src: "{{ netapp_vm_image.dest }}"
+    dest: "{{ vsim_disk_image_dir }}"
+    remote_src: yes
+
+- name: Define na-cluster-int network
+  virt_net:
+    command: define
+    name: "na-cluster-int"
+    xml: "{{ lookup('template', 'netapp-ontap-vsim-net.xml.j2') }}"
+
+- name: Start na-cluster-int network
+  virt_net:
+    name: "na-cluster-int"
+    state: active
+    autostart: yes
+
+- name: Define netapp-vsim VM
+  virt:
+    command: define
+    xml: "{{ lookup('template', 'netapp-ontap-vsim.xml.j2') }}"
+
+- name: Start netapp-vsim VM
+  virt:
+    name: "netapp-vsim"
+    state: running
+    autostart: yes
+
+- name: Waiting for VM 
+  wait_for:
+    host: "{{ extcidrnet | next_nth_usable(lif_ip_nth) }}"
+    port: 22
+    search_regex: OpenSSH
+    timeout: 300
