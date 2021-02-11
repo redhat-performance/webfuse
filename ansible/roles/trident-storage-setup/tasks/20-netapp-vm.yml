@@ -38,7 +38,7 @@
     state: running
     autostart: yes
 
-- name: Waiting for VM 
+- name: Waiting for VM
   wait_for:
     host: "{{ extcidrnet | next_nth_usable(lif_ip_nth) }}"
     port: 22

@@ -35,7 +35,7 @@
   delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Generate ONTAP Trident Backend Configuration
-  template: 
+  template:
     src: "backend.json.j2"
     dest: "/tmp/backend.json"
   delegate_to: "{{ groups['orchestration'][0] }}"
@@ -56,5 +56,5 @@
 
 - name: Create ONTAP Trident Backend
   shell: |
-    oc exec -n trident {{ trident_controller_pod_name.stdout }} -c trident-main -- tridentctl --debug --namespace trident create backend --base64 {{ backend_json_base64.stdout }} 
+    oc exec -n trident {{ trident_controller_pod_name.stdout }} -c trident-main -- tridentctl --debug --namespace trident create backend --base64 {{ backend_json_base64.stdout }}
   delegate_to: "{{ groups['orchestration'][0] }}"

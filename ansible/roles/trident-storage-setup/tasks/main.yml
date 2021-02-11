@@ -17,11 +17,11 @@
       state: present
       update_cache: true
       disable_gpg_check: yes
-    
+
   - name: Cleanup existing resources
     include_tasks: 10-cleanup-vm.yml
     tags: cleanup
-    
+
   - name: Create NetApp VM
     include_tasks: 20-netapp-vm.yml
   when: not netapp_osv
