@@ -73,3 +73,11 @@
     /home/stack/rhacm_downstream/deploy/start.sh --silent 2>&1 | tee /home/stack/rhacm_downstream/$(date -u +%Y%m%d-%H%M%S)-start.log
   args:
     chdir: /home/stack/rhacm_downstream/deploy
+
+- name: Wait until MultiClusterHub is running status
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} {%raw%}oc get multiclusterhub -n open-cluster-management multiclusterhub -o go-template='{{ .status.phase }}'{%endraw%}
+  register: mch_ready
+  until: mch_ready.stdout == "Running"
+  retries: 300
+  delay: 2
