@@ -5,7 +5,7 @@
 
 - name: Download image
   get_url:
-    url: "http://perf1.perf.lab.eng.bos.redhat.com/pub/dwilson/OntapGoldImage.tar.gz"
+    url: "{{ vsim_snapshot_image_src }}"
     dest: "{{ vsim_disk_image_dir }}"
   register: netapp_vm_image
 
