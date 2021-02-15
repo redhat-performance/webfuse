@@ -69,8 +69,10 @@
       dest: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/install-config.yaml"
     - src: clouds.yaml.j2
       dest: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/clouds.yaml"
-    - src: cluster-deployment.yaml.j2
-      dest: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/cluster-deployment.yaml"
+    - src: all-cluster-deployment.yaml.j2
+      dest: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/all-cluster-deployment.yaml"
+    - src: hive-cluster-deployment.yaml.j2
+      dest: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/hive-cluster-deployment.yaml"
     - src: deletable-cluster-deployment.yaml.j2
       dest: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/deletable-cluster-deployment.yaml"
     - src: objects.yaml.j2
@@ -86,7 +88,7 @@
     dest: "{{ item.dest }}"
     remote_src: yes
   with_items:
-    - src: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/cluster-deployment.yaml"
+    - src: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/all-cluster-deployment.yaml"
       dest: "/home/stack/clusterdeployments/all/deploy/{{ rhacm_clusterdeployment_name }}-cluster-deployment.yaml"
     - src: "/home/stack/clusterdeployments/configs/{{ rhacm_clusterdeployment_name }}/deletable-cluster-deployment.yaml"
       dest: "/home/stack/clusterdeployments/all/delete/{{ rhacm_clusterdeployment_name }}-deletable-cluster-deployment.yaml"

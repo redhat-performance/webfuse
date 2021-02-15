@@ -1,8 +1,17 @@
 ---
 # Deploy the cluster deployment test script
 
-- name: Place cluster deployment test script on host
+- name: Place cluster deployment test scripts on host
   template:
-    src: clusterdeploy.sh.j2
-    dest: /home/stack/clusterdeployments/clusterdeploy.sh
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: a+x
+  with_items:
+    - src: clusterdeploy.sh.j2
+      dest: /home/stack/clusterdeployments/clusterdeploy.sh
+    - src: clusterdelete.sh.j2
+      dest: /home/stack/clusterdeployments/clusterdelete.sh
+    - src: getkubeconfigs.sh.j2
+      dest: /home/stack/clusterdeployments/getkubeconfigs.sh
+    - src: check_provisioned_clusters.sh.j2
+      dest: /home/stack/clusterdeployments/check_provisioned_clusters.sh
