@@ -27,3 +27,10 @@
 
 - name: Install NetApp Trident Operator and Controller
   include_tasks: 30-netapp-trident-controller.yml
+
+- name: Create test pod
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'test-pod.yaml') }}"
+    namespace: "trident"
+

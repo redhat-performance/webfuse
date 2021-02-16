@@ -1,0 +1,44 @@
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: ontap-sc
+provisioner: netapp.io/trident
+parameters:
+  backendType: "ontap-nas"
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: redis-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ontap-sc
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-test-pod
+spec:
+  containers:
+  - name: redis
+    image: k8s.gcr.io/redis:v1
+    env:
+      - name: MASTER
+        value: "true"
+    ports:
+      - containerPort: 6379
+    volumeMounts:
+    - name: data
+      mountPath: /tmp/redis
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: redis-pvc
+

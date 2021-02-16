@@ -16,7 +16,7 @@
 - name: Get list of all paused VMs
   virt:
     command: list_vms
-    state: pause
+    state: paused
   register: paused_vms
   tags: cleanup
   become: true
