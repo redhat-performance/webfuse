@@ -16,6 +16,7 @@
       state: present
       update_cache: true
       disable_gpg_check: yes
+    become: true
 
   - name: Cleanup existing resources
     include_tasks: 10-cleanup-vm.yml

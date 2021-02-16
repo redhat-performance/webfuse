@@ -3,6 +3,7 @@
     command: list_vms
   register: all_vms
   tags: cleanup
+  become: true
 
 - name: Get list of all running VMs
   virt:
@@ -10,6 +11,7 @@
     state: running
   register: running_vms
   tags: cleanup
+  become: true
 
 - name: Get list of all paused VMs
   virt:
@@ -17,6 +19,7 @@
     state: pause
   register: paused_vms
   tags: cleanup
+  become: true
 
 - name: Destroy old VMs, if any
   virt:
@@ -27,6 +30,7 @@
     - "{{ paused_vms.list_vms }}"
   when: item is search("netapp-vsim")
   tags: cleanup
+  become: true
 
 - name: Undefine old VMs, if any
   virt:
@@ -35,12 +39,14 @@
   with_items: "{{ all_vms.list_vms }}"
   when: item is search("netapp-vsim")
   tags: cleanup
+  become: true
 
 - name: Get all network
   virt_net:
     command: list_nets
   register: defined_nets
   tags: cleanup
+  become: true
 
 - block:
   - name: Remove na-cluster-int network
@@ -48,12 +54,14 @@
       command: destroy
       name: "na-cluster-int"
     tags: cleanup
+    become: true
 
   - name: Undefine na-cluster-int network
     virt_net:
       command: undefine
       name: "na-cluster-int"
     tags: cleanup
+    become: true
   when: "'na-cluster-int' in defined_nets.list_nets"
 
 - name: Find old VM Storage
@@ -62,11 +70,13 @@
     patterns: '*.qcow2'
   register: find_results
   tags: cleanup
+  become: true
 
 - name: Delete old VMs Storage
   file:
     path: "{{ item['path'] }}"
     state: absent
   loop: "{{ find_results['files'] }}"
+  become: true
   tags: cleanup
 
