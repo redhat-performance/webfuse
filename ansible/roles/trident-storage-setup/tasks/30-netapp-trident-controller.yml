@@ -2,13 +2,11 @@
   k8s:
     state: present
     definition: "{{ lookup('file', 'tridentorchestrators_crd.yaml') }}"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create Trident Operator resources and pods
   k8s:
     state: present
     definition: "{{ lookup('template', 'bundle.yaml.j2') }}"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Check and wait for Trident Operator pod state
   shell: |
@@ -17,13 +15,11 @@
   delay: 5
   register: trident_pod
   until: trident_pod.stdout == "Running"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create Trident Controller pods
   k8s:
     state: present
     definition: "{{ lookup('template', 'tridentorchestrator_cr.yaml.j2') }}"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Check and wait for Trident Controller pod state
   shell: |
@@ -32,19 +28,16 @@
   delay: 10
   register: trident_controller_pod
   until: trident_controller_pod.stdout == "Running"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Generate ONTAP Trident Backend Configuration
   template:
     src: "backend.json.j2"
     dest: "/tmp/backend.json"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Get Trident Controller pod
   shell: |
     oc get pod -n trident -l app=controller.csi.trident.netapp.io -o jsonpath='{.items[0].metadata.name}'
   register: trident_controller_pod_name
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Get base64 Encoding of ONTAP Backend Configuration
   shell: "sed 's/[ \t]//g' /tmp/backend.json | tr -d '\n' | base64 -w0"
@@ -57,4 +50,3 @@
 - name: Create ONTAP Trident Backend
   shell: |
     oc exec -n trident {{ trident_controller_pod_name.stdout }} -c trident-main -- tridentctl --debug --namespace trident create backend --base64 {{ backend_json_base64.stdout }}
-  delegate_to: "{{ groups['orchestration'][0] }}"
