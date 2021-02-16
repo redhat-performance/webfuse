@@ -8,7 +8,6 @@
       kind: Namespace
       metadata:
         name: "{{ trident_namespace }}"
-  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - block:
   - name: Install required packages
@@ -20,7 +19,6 @@
 
   - name: Cleanup existing resources
     include_tasks: 10-cleanup-vm.yml
-    tags: cleanup
 
   - name: Create NetApp VM
     include_tasks: 20-netapp-vm.yml
