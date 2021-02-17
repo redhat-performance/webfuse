@@ -60,6 +60,20 @@
   become_user: root
   throttle: 1
 
+- name: Get custom subnet uuid
+  shell: |
+    source /home/stack/overcloudrc
+    openstack subnet show {{ rhacm_clusterdeployment_name }}_subnet -f value -c id
+  register: custom_subnet_uuid
+  when: rhacm_clusterdeploy_custom_network
+
+- name: Get custom subnet cidr
+  shell: |
+    source /home/stack/overcloudrc
+    openstack subnet show {{ rhacm_clusterdeployment_name }}_subnet -f value -c cidr
+  register: custom_subnet_cidr
+  when: rhacm_clusterdeploy_custom_network
+
 - name: Prepare Cluster Deployment configuration files
   template:
     src: "{{ item.src }}"

@@ -61,10 +61,12 @@ rhacm_downstream_build: ''
 ################################################################################
 rhacm_clusterdeploy_index_start: 0
 rhacm_clusterdeploy_index_count: 1
+# Always lower case for clusterdeploy prefix
 rhacm_clusterdeploy_prefix: sno
 rhacm_clusterdeploy_base_domain: rdu2.scalelab.redhat.com
 rhacm_clusterdeploy_network_type: OVNKubernetes
 rhacm_clusterdeploy_create_ingress: false
+rhacm_clusterdeploy_custom_network: true
 rhacm_clusterdeploy_worker_flavor: sno-6-24-40
 rhacm_clusterdeploy_cis: sno-4.6.6-5
 rhacm_clusterdeploy_image_url: "https://releases-art-rhcos.svc.ci.openshift.org/art/storage/releases/rhcos-4.6/46.82.202011260640-0/x86_64/rhcos-46.82.202011260640-0-openstack.x86_64.qcow2.gz"
