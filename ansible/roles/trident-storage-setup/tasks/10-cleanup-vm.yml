@@ -41,29 +41,6 @@
   tags: cleanup
   become: true
 
-- name: Get all network
-  virt_net:
-    command: list_nets
-  register: defined_nets
-  tags: cleanup
-  become: true
-
-- block:
-  - name: Remove na-cluster-int network
-    virt_net:
-      command: destroy
-      name: "na-cluster-int"
-    tags: cleanup
-    become: true
-
-  - name: Undefine na-cluster-int network
-    virt_net:
-      command: undefine
-      name: "na-cluster-int"
-    tags: cleanup
-    become: true
-  when: "'na-cluster-int' in defined_nets.list_nets"
-
 - name: Find old VM Storage
   find:
     paths: "{{ vsim_disk_image_dir }}"

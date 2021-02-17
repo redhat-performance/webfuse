@@ -18,18 +18,6 @@
     remote_src: yes
   become: true
 
-- name: Define na-cluster-int network
-  virt_net:
-    command: define
-    name: "na-cluster-int"
-    xml: "{{ lookup('template', 'netapp-ontap-vsim-net.xml.j2') }}"
-
-- name: Start na-cluster-int network
-  virt_net:
-    name: "na-cluster-int"
-    state: active
-    autostart: yes
-
 - name: Define netapp-vsim VM
   virt:
     command: define
