@@ -21,7 +21,11 @@ networking:
   - cidr: 10.128.0.0/14
     hostPrefix: 23
   machineNetwork:
+{% if rhacm_clusterdeploy_custom_network %}
+  - cidr: "{{ custom_subnet_cidr.stdout }}"
+{% else %}
   - cidr: 10.196.0.0/16
+{% endif %}
   serviceNetwork:
   - 172.30.0.0/16
   networkType: "{{ rhacm_clusterdeploy_network_type }}"
@@ -34,7 +38,11 @@ platform:
 {% if rhacm_clusterdeploy_create_ingress %}
     ingressFloatingIP: "{{ ingress_floating_ip }}"
 {% endif %}
+{% if rhacm_clusterdeploy_custom_network %}
+    machinesSubnet: "{{ custom_subnet_uuid.stdout }}"
+{% else %}
     externalDNS: ["{{ ansible_dns.nameservers| join('", "') }}"]
+{% endif %}
     clusterOSImage: "{{ rhacm_clusterdeploy_image_name }}"
 pullSecret: ""
 sshKey: |
