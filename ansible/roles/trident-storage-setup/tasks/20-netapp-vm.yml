@@ -1,0 +1,37 @@
+- name: Create local image folder
+  file:
+    state: directory
+    path: "{{ vsim_disk_image_dir }}"
+  become: true
+
+- name: Download image
+  get_url:
+    url: "{{ vsim_snapshot_image_src }}"
+    dest: "{{ vsim_disk_image_dir }}"
+  register: netapp_vm_image
+  become: true
+
+- name: Extract tar file
+  unarchive:
+    src: "{{ netapp_vm_image.dest }}"
+    dest: "{{ vsim_disk_image_dir }}"
+    remote_src: yes
+  become: true
+
+- name: Define netapp-vsim VM
+  virt:
+    command: define
+    xml: "{{ lookup('template', 'netapp-ontap-vsim.xml.j2') }}"
+
+- name: Start netapp-vsim VM
+  virt:
+    name: "netapp-vsim"
+    state: running
+    autostart: yes
+
+- name: Waiting for VM
+  wait_for:
+    host: "{{ extcidrnet | next_nth_usable(lif_ip_nth) }}"
+    port: 22
+    search_regex: OpenSSH
+    timeout: 300

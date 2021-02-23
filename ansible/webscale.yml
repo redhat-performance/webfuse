@@ -24,5 +24,9 @@
     - role: kafka-logging-setup
       tags: logging
 
+    - role: trident-storage-setup
+      tags: trident
+
 - import_playbook: bigip-setup.yml
   tags: bigip
+

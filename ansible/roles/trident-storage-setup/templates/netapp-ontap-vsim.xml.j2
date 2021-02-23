@@ -1,0 +1,71 @@
+<domain type="kvm">
+  <name>netapp-vsim</name>
+  <uuid>5e7637d1-13e7-434f-90b1-f0dff9966adc</uuid>
+  <memory>{{ vsim_memory | default(8388608) }}</memory>
+  <currentMemory>{{ vsim_memory | default(8388608) }}</currentMemory>
+  <vcpu>{{ vsim_cpu | default(2) }}</vcpu>
+  <os>
+    <type arch="x86_64" machine="pc-i440fx-rhel7.6.0">hvm</type>
+    <boot dev="hd"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+  </features>
+  <cpu mode="host-passthrough">
+    <topology sockets="{{ vsim_socket | default(1) }}" cores="{{ vsim_cpu | default(2) }}" threads="{{ vsim_thread | default(1) }}"/>
+  </cpu>
+  <clock offset="utc">
+    <timer name="rtc" tickpolicy="catchup"/>
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="hpet" present="no"/>
+  </clock>
+  <pm>
+    <suspend-to-mem enabled="no"/>
+    <suspend-to-disk enabled="no"/>
+  </pm>
+  <devices>
+    <emulator>/usr/libexec/qemu-kvm</emulator>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2"/>
+      <source file="{{ vsim_disk_image_dir }}/netapp-1-disk1.qcow2"/>
+      <target dev="hda" bus="ide"/>
+    </disk>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2"/>
+      <source file="{{ vsim_disk_image_dir }}/netapp-1-disk2.qcow2"/>
+      <target dev="hdb" bus="ide"/>
+    </disk>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2"/>
+      <source file="{{ vsim_disk_image_dir }}/netapp-1-disk3.qcow2"/>
+      <target dev="hdc" bus="ide"/>
+    </disk>
+    <disk type="file" device="disk">
+      <driver name="qemu" type="qcow2"/>
+      <source file="{{ vsim_disk_image_dir }}/netapp-1-disk4.qcow2"/>
+      <target dev="hdd" bus="ide"/>
+    </disk>
+    <controller type="usb" index="0" model="ich9-ehci1"/>
+    <controller type="usb" index="0" model="ich9-uhci1">
+      <master startport="0"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci2">
+      <master startport="2"/>
+    </controller>
+    <controller type="usb" index="0" model="ich9-uhci3">
+      <master startport="4"/>
+    </controller>
+    <interface type="bridge">
+      <source bridge="baremetal"/>
+      <mac address="52:54:00:da:a1:21"/>
+      <model type="e1000"/>
+    </interface>
+    <console type="pty"/>
+    <input type="tablet" bus="usb"/>
+    <graphics type="vnc" port="-1"/>
+    <video>
+      <model type="qxl"/>
+    </video>
+  </devices>
+</domain>
