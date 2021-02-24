@@ -1,0 +1,88 @@
+---
+global:
+  imagePullSecrets:
+  - aspen-mesh-pull-secret
+  hub: quay.io/aspenmesh/carrier-grade-releases
+
+# Namespaces to never consider for Istio injection.
+# These namespaces do not have to exist, but if they do, they will
+# never have Istio sidecars injected (even if they are annotated for injection)
+# This list includes many system namespaces for Kubernetes and OpenShift, you may
+# want to add any namespaces that your organization uses for system operations.
+excludeNamespaces:
+  - f5-lb
+  - amq
+  - trident
+  - openshift-local-storage
+  - openshift-performance-add-on
+  - openshift-logging
+  - istio-system
+  - kube-node-lease
+  - kube-public
+  - kube-system
+  - olm
+  - openshift
+  - openshift-apiserver
+  - openshift-apiserver-operator
+  - openshift-authentication
+  - openshift-authentication-operator
+  - openshift-cloud-credential-operator
+  - openshift-cluster-machine-approver
+  - openshift-cluster-node-tuning-operator
+  - openshift-cluster-samples-operator
+  - openshift-cluster-storage-operator
+  - openshift-cluster-version
+  - openshift-config
+  - openshift-config-managed
+  - openshift-config-operator
+  - openshift-console
+  - openshift-console-operator
+  - openshift-controller-manager
+  - openshift-controller-manager-operator
+  - openshift-cnv
+  - openshift-compliance
+  - openshift-dns
+  - openshift-dns-operator
+  - openshift-etcd
+  - openshift-etcd-operator
+  - openshift-image-registry
+  - openshift-infra
+  - openshift-ingress
+  - openshift-ingress-operator
+  - openshift-insights
+  - openshift-kni-infra
+  - openshift-kube-apiserver
+  - openshift-kube-apiserver-operator
+  - openshift-kube-controller-manager
+  - openshift-kube-controller-manager-operator
+  - openshift-kube-scheduler
+  - openshift-kube-scheduler-operator
+  - openshift-kube-storage-version-migrator
+  - openshift-kube-storage-version-migrator-operator
+  - openshift-machine-api
+  - openshift-machine-config-operator
+  - openshift-marketplace
+  - openshift-monitoring
+  - openshift-multus
+  - openshift-network-operator
+  - openshift-node
+  - openshift-ovn-kubernetes
+  - openshift-openstack-infra
+  - openshift-operator-lifecycle-manager
+  - openshift-operators
+  - openshift-operators-redhat
+  - openshift-ovirt-infra
+  - openshift-logging
+  - openshift-sdn
+  - openshift-sriov-network-operator
+  - openshift-service-ca
+  - openshift-service-ca-operator
+  - openshift-service-catalog-apiserver-operator
+  - openshift-service-catalog-controller-manager-operator
+  - openshift-user-workload-monitoring
+  - openshift-vsphere-infra
+
+sidecarInjectorWebhook:
+  injectedAnnotations:
+    k8s.v1.cni.cncf.io/networks: "istio-cni"
+
