@@ -206,10 +206,10 @@ aspen-mesh-controlplane:
       #redirectUrl:
       # claims can be added here to require claims be present in the JWT
       # (e.g.: `claims: aud=aspenmesh:io,role=k8s:admin`).
-    oauthOpenshift:
+    #oauthOpenshift:
       # Optional: Where the Aspen Mesh dashboard will be exposed.  If provided we will configure
       # an OpenShift route and set up redirect URIs.
-      host: aspenmesh.apps.stablrebco2.ws.vici.verizon.com
+      #host: aspenmesh.apps.stablrebco2.ws.vici.verizon.com
 
   openshiftOauthProxy:
     image: openshift-oauth-proxy-1.6.14-am2
