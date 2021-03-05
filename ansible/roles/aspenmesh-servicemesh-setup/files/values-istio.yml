@@ -1,0 +1,343 @@
+---
+#.Values.pilot for discovery and mesh wide config
+
+## Discovery Settings
+pilot:
+  autoscaleMin: 2
+  autoscaleMax: 5
+  replicaCount: 1
+
+  traceSampling: 100.0
+
+  # Resources for a small pilot install
+  resources:
+    requests:
+      cpu: 500m
+      memory: 2048Mi
+
+  # if protocol sniffing is enabled for outbound
+  enableProtocolSniffingForOutbound: false
+  # if protocol sniffing is enabled for inbound
+  enableProtocolSniffingForInbound: false
+
+  podAntiAffinityLabelSelector:
+  - key: istio
+    operator: In
+    values: citadel
+    topologyKey: "kubernetes.io/hostname"
+
+## Mixer settings
+mixer:
+  telemetry:
+    # Set reportBatchMaxEntries to 0 to use the default batching behavior (i.e., every 100 requests).
+    # A positive value indicates the number of requests that are batched before telemetry data
+    # is sent to the mixer server
+    reportBatchMaxEntries: 100
+
+    # Set reportBatchMaxTime to 0 to use the default batching behavior (i.e., every 1 second).
+    # A positive time value indicates the maximum wait time since the last request will telemetry data
+    # be batched before being sent to the mixer server
+    reportBatchMaxTime: 1s
+
+    sessionAffinityEnabled: false
+  policy:
+    enabled: false
+
+sidecarInjectorWebhook:
+  injectedAnnotations:
+    k8s.v1.cni.cncf.io/networks: istio-cni
+
+  replicaCount: 2
+
+  podAntiAffinityLabelSelector:
+  - key: app
+    operator: In
+    values: sidecarInjectorWebhook
+    topologyKey: "kubernetes.io/hostname"
+
+telemetry:
+  enabled: true
+
+# Revision is set as 'version' label and part of the resource names when installing multiple control planes.
+revision: ""
+
+# Common settings used among istio subcharts.
+global:
+  certificatesTTL:
+    workloadCertTtl: 24h
+
+  certificateCustomFields: true 
+
+  # generate elliptical curve certificates for workloads when the root
+  # CA certificate also uses elliptical curve cryptography
+  enableEccCertificates: true 
+
+  # globally mount certs to sidecar
+  mountMtlsCerts: false 
+
+  imagePullSecrets:
+  - aspen-mesh-pull-secret
+
+  jwtPolicy: "third-party-jwt"
+
+  hub: quay.io/aspenmesh/carrier-grade-releases
+  publicImagesHub: quay.io/aspenmesh/am-istio
+
+  # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
+  # The control plane has different scopes depending on component, but can configure default log level across all components
+  # If empty, default scope and level will be used as configured in code
+  logging:
+    level: "default:info"
+
+  # To output all istio components logs in json format by adding --log_as_json argument to each container argument
+  logAsJson: false
+
+  # Enabled by default in master for maximising testing.
+  istiod:
+    enabled: true
+    enableAnalysis: false
+
+  # One central istiod controls all remote clusters: disabled by default
+  centralIstiod: false
+
+  proxy:
+    # Resources for the sidecar.
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 2000m
+        memory: 1024Mi
+
+    # Controls number of Proxy worker threads.
+    # If set to 0, then start worker thread for each CPU thread/core.
+    concurrency: 2
+
+    accessLogFile: "/dev/stdout"
+    accessLogFormat: ""
+    accessLogEncoding: TEXT
+    # Expected values are: trace|debug|info|warning|error|critical|off
+    logLevel: info
+    # Per Component log level for proxy, applies to gateways and sidecars. If a component level is
+    # not set, then the global "logLevel" will be used.
+    componentLogLevel: "misc:error"
+
+    #If set to true, istio-proxy container will have privileged securityContext
+    privileged: false
+
+    # This controls the 'policy' in the sidecar injector.
+    autoInject: enabled
+
+    # Specify which tracer to use. One of: zipkin, lightstep, datadog, stackdriver.
+    # If using stackdriver tracer outside GCP, set env GOOGLE_APPLICATION_CREDENTIALS to the GCP credential file.
+    tracer: "zipkin"
+
+  proxy_init:
+    # Base name for the proxy_init container, used to configure iptables.
+    resources:
+      limits:
+        cpu: 100m
+        memory: 50Mi
+      requests:
+        cpu: 10m
+        memory: 10Mi
+
+  # EnableTracing sets the value with same name in istio config map, requires pilot restart to take effect.
+  enableTracing: true
+
+  # Configuration for each of the supported tracers
+  tracer:
+    zipkin:
+      # Host:Port for reporting trace data in zipkin format. If not specified, will default to
+      # zipkin service (port 9411) in the same namespace as the other istio components.
+      address: "aspen-mesh-jaeger-collector.istio-system:9411"
+
+  # Default mtls policy. If true, mtls between services will be enabled by default.
+  mtls:
+    enabled: true
+
+  outboundTrafficPolicy:
+    mode: REGISTRY_ONLY
+
+  sds:
+    # SDS enabled. IF set to true, mTLS certificates for the sidecars will be
+    # distributed through the SecretDiscoveryService instead of using K8S secrets to mount the certificates.
+    enabled: false
+    udsPath: ""
+    # The JWT token for SDS and the aud field of such JWT. See RFC 7519, section 4.1.3.
+    # When a CSR is sent from Citadel Agent to the CA (e.g. Citadel), this aud is to make sure the
+    # JWT is intended for the CA.
+    token:
+      aud: istio-ca
+
+  sts:
+    # The service port used by Security Token Service (STS) server to handle token exchange requests.
+    # Setting this port to a non-zero value enables STS server.
+    servicePort: 0
+
+  # AspenMesh istiod trace % of the requests and generate header in the service mesh
+  meshConfig:
+    defaultConfig:
+      tracing:
+        sampling: 10
+
+aspen-mesh-controlplane:
+  enabled: true
+  image: controlplane-1.6.14-am2
+  modelruntimeImage: modelruntime-1.6.14-am2
+
+  imagePullSecrets:
+  - aspenmesh-kubernetes-pull-secret
+
+  replicaCount: 2
+
+  clusterId: stablrebco2 
+
+  userAuth:
+    # "type" can be none, jwt or oauthOpenshift.  Configure details for your chosen type below, others are ignored.
+    type: oauthOpenshift
+    #jwt:
+      # jwks must provide a valid JWKs endpoint.
+      # Required: Valid endpoint to retrieve the JWKS from
+      #jwks:
+      # redirectUrl must provide an unauthenticated redirect URL.
+      # Required: URL to redirect unauthenticated users to (to start the authentication workflow)
+      #redirectUrl:
+      # claims can be added here to require claims be present in the JWT
+      # (e.g.: `claims: aud=aspenmesh:io,role=k8s:admin`).
+    #oauthOpenshift:
+      # Optional: Where the Aspen Mesh dashboard will be exposed.  If provided we will configure
+      # an OpenShift route and set up redirect URIs.
+      #host: aspenmesh.apps.stablrebco2.ws.vici.verizon.com
+
+  openshiftOauthProxy:
+    image: openshift-oauth-proxy-1.6.14-am2
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  modelRuntimeResources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+aspen-mesh-dashboard:
+  enabled: true
+  image: dashboard-1.6.14-am2
+  replicaCount: 2
+
+aspen-mesh-secure-ingress:
+  enabled: true
+  image: secure-ingress-1.6.14-am2
+  # Email to use for Let's Encrypt registration (used for certificate expiry notices)
+  # Leave blank ("") if you wish to manage your own TLS certificates.
+  lets-encrypt-email: ""
+  resources: {}
+  externalDnsAnnotation: "policy.aspenmesh.io/externaldns"
+  externalDnsEnabled: false
+
+aspen-mesh-metrics-collector:
+  serviceImage: metrics-collector-service-1.6.14-am2
+  server:
+    serviceResources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+      limits:
+        memory: "1024Mi"
+        cpu: "1000m"
+    persistentVolume:
+      storageClass: "ontap-sc"
+      size: 20Gi
+  alertmanagerImage: alertmanager-1.6.14-am2
+  configmapReloadImage: configmap-reloader-1.6.14-am2
+  alertmanager:
+    persistentVolume:
+      storageClass: "ontap-sc"
+      size: 2Gi
+
+aspen-mesh-event-storage:
+  enabled: true
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 2
+    limits:
+      memory: 4Gi
+      cpu: 2
+  persistence:
+    storageClass: "ontap-sc"
+    size: 10Gi
+  config:
+    cluster_size: 3
+    max_heap_size: 2048M
+    heap_new_size: 512M
+
+# Don't use built-in tracing, use durable jaeger instead.
+tracing:
+  enabled: false
+
+jaeger:
+  enabled: true
+  schema:
+    traceTtl: 691200
+  cassandra:
+    cluster_size: 3
+    updateStrategy:
+      type: RollingUpdate
+    persistence:
+      storageClass: "ontap-sc"
+      # This setting could cause upgrade errors if modified between deployments
+      # of Aspen Mesh. If you see errors that the StatefulSet cannot be patched
+      # due to updates to forbidden fields, you will have to delete the
+      # "istio-cassandra" StatefulSet resource before performing an upgrade.
+      size: 20Gi
+  # Jaeger smapling rate value 1 indictates 100% capture
+  collector:
+    samplingConfig: |-
+      {
+        "default_strategy": {
+          "type": "probabilistic",
+          "param": 1
+        }
+      }
+
+traffic-claim-enforcer:
+  enabled: true
+  image: traffic-claim-enforcer-1.6.14-am2
+  resources: {}
+
+cert-manager:
+  enabled: true
+  fullnameOverride: aspen-mesh-cert-manager
+
+external-dns:
+  enabled: false
+  fullnameOverride: aspen-mesh-external-dns
+
+  annotationFilter: "policy.aspenmesh.io/externaldns=true"
+  policy: sync
+  provider: aws
+  sources: ["istio-gateway"]
+  txtOwnerId: aspen-mesh-secure-ingress
+
+istio_cni:
+  # To enable CNI-based installations, set this to true and follow additional
+  # CNI installation instructions to install the istio-cni Helm chart. Also
+  # un-comment out the additional settings for sidecarInjectorWebhook for
+  # CNI-based installations to work.
+  enabled: true
+
+citadel:
+  # to enable this feature you must setup a root CA in the istio-system namespace
+  enabled: true
+
+

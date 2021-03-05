@@ -1,0 +1,112 @@
+- name: Create {{ istio_namespace }} namespace
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{ istio_namespace }}"
+        labels:
+          ca.istio.io/override: "true"
+
+- name: check if helm installed
+  shell: "helm version"
+  register: helm_check
+  ignore_errors: true
+
+- name: Create a Working Directory
+  tempfile:
+    state: directory
+  register: work_dir
+
+- block:
+  - name: Download Helm
+    get_url:
+      url: "{{ helm_release }}"
+      dest: "{{ work_dir.path }}"
+    register: helm
+
+  - name: Unarchive helm tar file
+    unarchive:
+      src: "{{ helm.dest }}"
+      dest: "{{ work_dir.path }}"
+      remote_src: yes
+
+  - name: copy binary
+    copy:
+      src: "{{ work_dir.path }}/linux-386/helm"
+      dest: "/usr/local/bin"
+  when: "'command not found' in helm_check.stderr"
+
+- name: Download Aspenmesh
+  get_url:
+    url: "{{ webfuse_images_path }}{{ aspenmesh_release_file }}"
+    dest: "{{ work_dir.path }}"
+  register: aspenmesh_image
+
+- name: Unarchive aspenmesh tar file
+  unarchive:
+    src: "{{ aspenmesh_image.dest }}"
+    dest: "{{ work_dir.path }}"
+    remote_src: yes
+
+- name: Create SCC policy
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'cluster-role-binding.yaml.j2') }}"
+
+- name: Copy variables
+  copy:
+    src: "{{ item }}"
+    dest: "{{ work_dir.path }}/{{ aspenmesh_release_file.split('-linux')[0] }}"
+  with_items:
+    - "values-cni.yml"
+    - "values-istio.yml"
+
+- name: Run Helm upgrade - istio-cni
+  shell: |
+    helm upgrade -i istio-cni manifests/charts/istio-cni --namespace kube-system --set components.cni.enabled=true --values ./values-cni.yml
+  args:
+    chdir: "{{ work_dir.path }}/{{ aspenmesh_release_file.split('-linux')[0] }}"
+
+- name: Create net-attach
+  k8s:
+    state: present
+    definition:
+      apiVersion: "k8s.cni.cncf.io/v1"
+      kind: NetworkAttachmentDefinition
+      metadata:
+        name: istio-cni
+        namespace: default
+        spec:
+          config: ''
+
+- name: Run Helm upgrade - istio-base
+  shell: |
+    helm upgrade -i istio-base manifests/charts/base --namespace istio-system
+  args:
+    chdir: "{{ work_dir.path }}/{{ aspenmesh_release_file.split('-linux')[0] }}"
+
+- name: Check for istio CRD
+  shell: |
+    oc get crd virtualservices.networking.istio.io
+  register: crd_check
+  until: crd_check.rc == 0
+  retries: 30
+  delay: 10
+
+- name: Pause for few seconds before final helm upgrade
+  pause:
+    seconds: 30
+
+- name: Create cacert secret
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'cacerts.yml') }}"
+
+- name: Run Helm upgrade - istio-control
+  shell: |
+    helm upgrade -i istiod manifests/charts/istio-control/istio-discovery --namespace istio-system --values ./values-istio.yml
+  args:
+    chdir: "{{ work_dir.path }}/{{ aspenmesh_release_file.split('-linux')[0] }}"
+

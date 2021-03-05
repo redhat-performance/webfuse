@@ -27,6 +27,9 @@
     - role: trident-storage-setup
       tags: trident
 
+    - role: aspenmesh-servicemesh-setup
+      tags: aspenmesh
+
 - import_playbook: bigip-setup.yml
   tags: bigip
 
