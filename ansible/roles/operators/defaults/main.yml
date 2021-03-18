@@ -5,6 +5,12 @@ osv_channel: 2.4
 # AMQ subscription channel
 amq_channel: stable
 
+# Cluster Logging Operator channel
+cluster_logging_channel: 5.0
+
+# Elasticsearch Operator channel
+elasticsearch_channel: 5.0
+
 # To enable nightly catalog source
 nightly_operator: false
 

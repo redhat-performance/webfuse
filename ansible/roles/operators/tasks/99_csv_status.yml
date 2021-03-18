@@ -1,7 +1,15 @@
 ---
+- name: Get Operator label
+  shell: |
+    oc get operator | grep {{ namespace }} | awk '{print $1}'
+  register: csv_label
+  retries: 36 # 3 minutes
+  delay: 5
+  until: csv_label.stdout != ""
+
 - name: Check {{ namespace }} for operator version
   shell: |
-    oc get csv -n {{ namespace }} --no-headers | awk '{print $1}'
+    oc get csv -n {{ namespace }} -l operators.coreos.com/{{ csv_label.stdout }}="" --no-headers | awk '{print $1}'
   register: csv_version
   retries: 36 # 3 minutes
   delay: 5

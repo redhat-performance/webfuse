@@ -23,7 +23,7 @@ metadata:
   name: cluster-logging
   namespace: openshift-logging 
 spec:
-  channel: "{{release_version[0]|int}}.{{release_version[2]|int}}" 
+  channel: "{{ cluster_logging_channel }}" 
   name: cluster-logging
   source: "{{ clo_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace

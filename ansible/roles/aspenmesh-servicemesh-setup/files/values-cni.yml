@@ -14,7 +14,7 @@ excludeNamespaces:
   - amq
   - trident
   - openshift-local-storage
-  - openshift-performance-add-on
+  - openshift-performance-addon
   - openshift-logging
   - istio-system
   - kube-node-lease

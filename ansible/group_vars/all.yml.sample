@@ -19,7 +19,7 @@ iib_id:
 # List of operators to install and namespaces they are installed in
 operators:
   - name: performance-add-on-operator
-    namespace: openshift-performance-add-on
+    namespace: openshift-performance-addon
   - name: sriov-network-operator
     namespace: openshift-sriov-network-operator
   - name: openshift-virtualization-operator
