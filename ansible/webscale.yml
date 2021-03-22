@@ -9,9 +9,9 @@
         - always
   tasks:
     - name: Include Operator installation
-      include_role: 
+      include_role:
         name: operators
-        defaults_from: "{{release_version[0]|int}}.{{release_version[2]|int}}.yml"
+        defaults_from: "{{ release_version[0]|int }}.{{ release_version[2]|int }}.yml"
       when: operators is defined and operators | length > 0
       tags: always
 

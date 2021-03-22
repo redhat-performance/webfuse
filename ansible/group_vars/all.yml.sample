@@ -28,6 +28,8 @@ operators:
     namespace:  openshift-logging
   - name: kafka-operator
     namespace: amq
+  - name: elasticsearch-operator
+    namespace: openshift-operators-redhat
 
 ################################################################################
 # BigIP playbook vars
