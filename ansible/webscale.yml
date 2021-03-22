@@ -7,11 +7,18 @@
       include_tasks: tasks/validation.yml
       tags:
         - always
-  roles:
-    - role: operators
+  tasks:
+    - name: Include Operator installation
+      include_role:
+        name: operators
+        defaults_from: "{{ release_version[0]|int }}.{{ release_version[2]|int }}.yml"
       when: operators is defined and operators | length > 0
       tags: always
 
+- hosts: orchestration
+  vars_files:
+    - vars/all.yml
+  roles:
     - role: label_node
       when: label_node_values is defined and label_node_values | length > 0
 

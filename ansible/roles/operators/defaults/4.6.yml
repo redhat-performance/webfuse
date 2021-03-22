@@ -1,0 +1,25 @@
+---
+# Openshift Virtualization channel
+osv_channel: 2.4
+
+# AMQ subscription channel
+amq_channel: stable
+
+# Cluster Logging Operator channel
+cluster_logging_channel: 4.6
+
+# Elasticsearch Operator channel
+elasticsearch_channel: 4.6
+
+# To enable nightly catalog source
+nightly_operator: false
+
+brew_reg_password: ""
+
+iib_id:
+  sriov: 25944     #openshift-sriov-network-operator
+#  osv: 26761     #openshift-virtualization 
+#  clo: 26761     #cluster-logging-operator
+#  amq: 26761     #amq-operator
+#  pao: 26761     #performance-addon-operator
+#  eso: 26761     #elastic-search-operator
