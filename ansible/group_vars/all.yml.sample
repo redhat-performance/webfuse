@@ -188,3 +188,15 @@ kafka_instances:
   key: kafka
   value: "true"
 kafka_node_label: 'kafka: "true"'
+
+################################################################################
+# CNF profile
+################################################################################
+ptp_interface: "eno1"
+hugepage_size: "1G"
+hugepage_count "16"
+hugepage_node: "0"
+# temp workaround for RT kernel bugs that consume too much CPU power: add more isolated cores
+isolated: "1,3,5,7,9-51"
+reserved: "0,2,4,6,8"
+realtime_kernel "true"
