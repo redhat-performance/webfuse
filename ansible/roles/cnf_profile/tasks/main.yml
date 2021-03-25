@@ -1,0 +1,8 @@
+---
+- name: Deploy the performance profile for CNF
+  k8s: 
+    state: present
+    defintion: "{{ lookup('template', 'performance-profile.yml.j2' ) }}"
+
+
+  
