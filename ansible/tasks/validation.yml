@@ -1,7 +1,4 @@
 ---
-- debug:
-    var: version
- 
 - name: Fail if version is undefined or empty.
   fail:
     msg: "The version is undefined or empty. Use a value such as 'latest-4.5' or 'latest-4.6' or an explicit version."
