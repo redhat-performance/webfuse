@@ -192,11 +192,17 @@ kafka_node_label: 'kafka: "true"'
 ################################################################################
 # CNF profile
 ################################################################################
+# PTP interface (precision time protocol)
 ptp_interface: "eno1"
+# Hugepages
 hugepage_size: "1G"
 hugepage_count "16"
 hugepage_node: "0"
+# NUMA
 # temp workaround for RT kernel bugs that consume too much CPU power: add more isolated cores
 isolated: "1,3,5,7,9-51"
 reserved: "0,2,4,6,8"
 realtime_kernel "true"
+# MachineConfigPool that gets to run more pods
+max_pod_mcp: "worker"
+max_pods: 500
