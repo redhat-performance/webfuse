@@ -1,8 +1,33 @@
 ---
+- name: Disable chrony
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'disable_chrony.yml') }}"
+
+- name: Apply the PTP grandmaster configuration
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'ptpconfig-grandmaster.yml.j2' ) }}"
+
+- name: Apply the PTP slave configuration
+  k8s: 
+    state: present
+    definition: "{{ lookup('template', 'ptpconfig-slave.yml.j2' ) }}"
+
 - name: Deploy the performance profile for CNF
   k8s: 
     state: present
-    defintion: "{{ lookup('template', 'performance-profile.yml.j2' ) }}"
+    definition: "{{ lookup('template', 'performance-profile.yml.j2' ) }}"
+
+- name: Label the machineconfigpool used for larger numbers of pods
+  shell: |
+    oc label --overwrite machineconfigpool {{ max_pod_mcp }} custom-kubelet=max-pods
+
+- name: Apply the kubelet for larger numbers of pods
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'change-maxPods-cr.yml.j2' ) }}"
+    
 
 
   

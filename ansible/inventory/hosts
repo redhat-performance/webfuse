@@ -1,5 +1,5 @@
 [orchestration]
-
+localhost ansible_connection=local
 
 [ec2]
 

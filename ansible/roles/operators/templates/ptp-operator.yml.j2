@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: "openshift-ptp"
+  labels:
+    name: openshift-ptp
+    openshift.io/cluster-monitoring: "true"
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  namespace: openshift-ptp
+  name: ptp-operators
+spec:
+  targetNamespaces:
+  - openshift-ptp
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: openshift-ptp-subscription
+  namespace: openshift-ptp
+spec:
+  channel: "{{release_version[0]|int}}.{{release_version[2]|int}}"
+  name: ptp-operator
+  source: "{{ ptp_operator_source | default('redhat-operators') }}"
+  sourceNamespace: openshift-marketplace
