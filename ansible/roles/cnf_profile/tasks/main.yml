@@ -10,12 +10,12 @@
     definition: "{{ lookup('template', 'ptpconfig-grandmaster.yml.j2' ) }}"
 
 - name: Apply the PTP slave configuration
-  k8s: 
+  k8s:
     state: present
     definition: "{{ lookup('template', 'ptpconfig-slave.yml.j2' ) }}"
 
 - name: Deploy the performance profile for CNF
-  k8s: 
+  k8s:
     state: present
     definition: "{{ lookup('template', 'performance-profile.yml.j2' ) }}"
 
@@ -27,7 +27,3 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'change-maxPods-cr.yml.j2' ) }}"
-    
-
-
-  

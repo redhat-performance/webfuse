@@ -7,13 +7,8 @@
 # time ansible-playbook -i ansible/inventory/localhost.local ansible/cnf-profile.yml
 #
 
-- name: Deploy cnf-profile 
+- name: Deploy cnf-profile
   hosts: orchestration
-  #vars_files:
-  #  - vars/all.yml
-  #pre_tasks:
-  #  - name: run validations
-  #    include_tasks: tasks/validation.yml
   roles:
     - cnf_profile
     
