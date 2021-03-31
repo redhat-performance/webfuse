@@ -1,9 +1,9 @@
 ---
 # Values accepted: 'latest-4.5', 'latest-4.6', explicit version i.e. 4.3.0-0.nightly-2019-12-09-035405 (must be defined)
-version: latest-4.7
+version: 4.6.1
 
 # Enter whether the build should use 'dev' (nightly builds) or 'ga' for Generally Available version of OpenShift (must be defined)
-build: dev
+build: ga
 
 # Set to true to install nightly Operators and it is effective only for dev-preview builds,
 # if set make sure to provide brew registry password and Index Image Build IDs
