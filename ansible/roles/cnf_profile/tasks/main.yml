@@ -2,7 +2,7 @@
 - name: Disable chrony
   k8s:
     state: present
-    definition: "{{ lookup('file', 'disable_chrony.yml') }}"
+    definition: "{{ lookup('template', 'disable_chrony.yml.j2') }}"
 
 - name: Apply the PTP grandmaster configuration
   k8s:
