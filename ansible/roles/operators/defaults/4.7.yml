@@ -20,9 +20,9 @@ nightly_operator: false
 brew_reg_password: ""
 
 iib_id:
-  sriov: 61726     #openshift-sriov-network-operator
+#  sriov: 25944   #openshift-sriov-network-operator
 #  osv: 26761     #openshift-virtualization 
 #  clo: 26761     #cluster-logging-operator
 #  amq: 26761     #amq-operator
-  pao: 61726     #performance-addon-operator
+#  pao: 61726     #performance-addon-operator
 #  eso: 26761     #elastic-search-operator
