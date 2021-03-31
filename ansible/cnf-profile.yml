@@ -11,4 +11,3 @@
   hosts: orchestration
   roles:
     - cnf_profile
-    
