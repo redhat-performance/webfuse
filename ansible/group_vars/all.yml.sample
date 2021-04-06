@@ -193,6 +193,7 @@ kafka_node_label: 'kafka: "true"'
 # CNF profile
 ################################################################################
 # PTP interface (precision time protocol)
+# This is the interface used for ptp4l, in an OpenShift cluster this typically is the baremetal interface
 ptp_interface: "eno1"
 # Hugepages
 hugepage_size: "1G"
