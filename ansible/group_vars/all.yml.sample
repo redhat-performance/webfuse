@@ -207,3 +207,8 @@ realtime_kernel "true"
 # MachineConfigPool that gets to run more pods
 max_pod_mcp: "worker"
 max_pods: 500
+# NodeSelector and MachineConfigPoolSelector for the PerformanceProfile using realtime kernel 
+# and Hugepages
+perf_mcp_selector: "master: \"\""
+perf_node_selector "master: \"\""
+

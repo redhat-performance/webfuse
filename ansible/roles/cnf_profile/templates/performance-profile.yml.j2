@@ -19,9 +19,9 @@ spec:
       node: {{ hugepage_node }}
   # for 3 node converged master/worker and SNO clusters we use the masters as a selector
   nodeSelector:
-    node-role.kubernetes.io/master: ""
+    node-role.kubernetes.io/{{ perf_node_selector }}
   machineConfigPoolSelector:
-    pools.operator.machineconfiguration.openshift.io/master: ""
+    pools.operator.machineconfiguration.openshift.io/{{ perf_mcp_selector }}
   # this is for larger clusters
   # nodeSelector:
     # Pay attention to the node label, create MCP accordingly
