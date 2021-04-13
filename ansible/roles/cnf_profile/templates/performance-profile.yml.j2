@@ -1,0 +1,33 @@
+apiVersion: performance.openshift.io/v2
+kind: PerformanceProfile
+metadata:
+# This profile is for typical lab DELL R640 with 2 x 26 pcores
+  name: perf-example
+spec:
+  additionalKernelArgs:
+  - nosmt
+  cpu:
+    # Temp. workaround for RT kernel bugs that consume too much 
+    # CPU power: add more isolated cores
+    isolated: {{ isolated }}
+    reserved: {{ reserved }}
+  hugepages:
+    defaultHugepagesSize: 1G
+    pages:
+    - count: {{ hugepage_count }}
+      size: {{ hugepage_size }}
+      node: {{ hugepage_node }}
+  # for 3 node converged master/worker and SNO clusters we use the masters as a selector
+  nodeSelector:
+    node-role.kubernetes.io/{{ perf_node_selector }}
+  machineConfigPoolSelector:
+    pools.operator.machineconfiguration.openshift.io/{{ perf_mcp_selector }}
+  # this is for larger clusters
+  # nodeSelector:
+    # Pay attention to the node label, create MCP accordingly
+    #node-role.kubernetes.io/worker-cnf: ""
+  numa:
+    topologyPolicy: "restricted"
+  realTimeKernel:
+    # For CU should be false
+    enabled: {{ realtime_kernel }}

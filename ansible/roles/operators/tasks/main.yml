@@ -42,3 +42,4 @@
   k8s:
     state: present
     definition: "{{ lookup('file', 'cluster-logging-instance.yml' ) }}"
+  tags: logging

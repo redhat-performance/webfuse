@@ -37,6 +37,9 @@
     - role: aspenmesh-servicemesh-setup
       tags: aspenmesh
 
+    - role: cnf_profile
+      tags: cnf
+
 - import_playbook: bigip-setup.yml
   tags: bigip
 
