@@ -194,6 +194,7 @@ kafka_node_label: 'kafka: "true"'
 ################################################################################
 # PTP interface (precision time protocol)
 # This is the interface used for ptp4l, in an OpenShift cluster this typically is the baremetal interface
+# but can be any interface that points towards a switch with a ptp grand master clock
 ptp_interface: "eno1"
 # Hugepages
 hugepage_size: "1G"
@@ -209,6 +210,6 @@ max_pod_mcp: "worker"
 max_pods: 500
 # NodeSelector and MachineConfigPoolSelector for the PerformanceProfile using realtime kernel 
 # and Hugepages
-perf_mcp_selector: "master: \"\""
-perf_node_selector "master: \"\""
+perf_mcp_selector: "pools.operator.machineconfiguration.openshift.io/master: "
+perf_node_selector "node-role.kubernetes.io/master: "
 
