@@ -48,6 +48,7 @@ bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface"
 # All file locations should be on orchestration host and clusters must be accessible
 # by orchestration host
 rhacm_version: 2.1
+rhacm_install_directory: /home/stack
 rhacm_redisgraph_memory_limit: "3Gi"
 rhacm_disableHubSelfManagement: false
 hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
@@ -208,8 +209,7 @@ realtime_kernel "true"
 # MachineConfigPool that gets to run more pods
 max_pod_mcp: "worker"
 max_pods: 500
-# NodeSelector and MachineConfigPoolSelector for the PerformanceProfile using realtime kernel 
+# NodeSelector and MachineConfigPoolSelector for the PerformanceProfile using realtime kernel
 # and Hugepages
 perf_mcp_selector: "pools.operator.machineconfiguration.openshift.io/master: "
 perf_node_selector "node-role.kubernetes.io/master: "
-

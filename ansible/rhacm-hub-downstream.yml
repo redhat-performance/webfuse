@@ -8,7 +8,6 @@
 
 - name: Install downstream RHACM
   hosts: orchestration
-  remote_user: stack
   vars_files:
     - vars/all.yml
   roles:
