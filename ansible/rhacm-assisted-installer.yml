@@ -1,0 +1,14 @@
+---
+# Playbook to install RHACM Assisted Installer and prepare for clusterdeployments
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/cloud-root.local ansible/rhacm-assisted-installer.yml
+#
+
+- name: Install RHACM Assisted Installer
+  hosts: orchestration
+  vars_files:
+    - vars/all.yml
+  roles:
+    - rhacm_assisted_installer
