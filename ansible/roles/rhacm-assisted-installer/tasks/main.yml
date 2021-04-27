@@ -1,0 +1,100 @@
+---
+# Install assisted-installer onto a cluster with RHACM
+
+# Current workarounds:
+# * If assisted-installer namespace already exists, delete it and recreate
+#   * https://bugzilla.redhat.com/show_bug.cgi?id=1951812
+# * Patch provisioning configuration
+# * Patch Hive configuration
+# * Apply assisted-installer-crb-lease-fix.yml
+# * Disable assisted-service operator
+# * Set SERVE_HTTPS=False on assisted-service deployment
+
+- name: Create directory for rhacm assisted-installer
+  file:
+    path: "{{ rhacm_install_directory }}/rhacm-assisted-installer"
+    state: directory
+
+- name: Template files for rhacm assisted-installer
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - src: assisted-installer.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/assisted-installer.yml"
+  - src: agentserviceconfig.yml
+    dest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/agentserviceconfig.yml"
+  - src: assisted-installer-crb-lease-fix.yml
+    dest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/assisted-installer-crb-lease-fix.yml"
+
+- name: Check if assisted-installer namespace already exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get ns assisted-installer
+  register: get_ai_ns
+  ignore_errors: true
+
+- name: Delete existing assisted-installer namespace
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc delete ns assisted-installer
+  when: not get_ai_ns.failed
+
+- name: Wait until namespace is deleted
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get ns assisted-installer
+  register: get_ai_ns
+  ignore_errors: true
+  until: get_ai_ns.rc == 1
+  retries: 60
+  delay: 2
+
+- name: Patch provisioning configuration
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch provisioning provisioning-configuration --type merge -p '{"spec":{"watchAllNamespaces": true }}'
+
+- name: Patch hive configuration
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch hiveconfig hive  --type merge -p '{"spec":{"targetNamespace":"hive","logLevel":"debug","featureGates":{"custom":{"enabled":["AlphaAgentInstallStrategy"]},"featureSet":"Custom"} }}'
+
+- name: Apply assisted-service manifests
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ item }}
+  loop:
+  - "{{ rhacm_install_directory }}/rhacm-assisted-installer/assisted-installer.yml"
+  - "{{ rhacm_install_directory }}/rhacm-assisted-installer/agentserviceconfig.yml"
+  - "{{ rhacm_install_directory }}/rhacm-assisted-installer/assisted-installer-crb-lease-fix.yml"
+  register: result
+  until: result.failed == false
+  retries: 100
+  delay: 3
+
+- name: Wait for assisted-service pod exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n assisted-installer -l app=assisted-service
+  retries: 150
+  delay: 2
+  register: as_pod
+  until: as_pod.failed == false
+
+- name: Wait for assisted-service pod running
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n assisted-installer -l app=assisted-service -o jsonpath='{.items[0].status.phase}'
+  retries: 150
+  delay: 2
+  register: as_pod
+  until: as_pod.stdout == "Running"
+
+- name: Scale assisted-service operator to 0
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc scale -n assisted-installer --replicas=0 deployment/assisted-service-operator
+
+- name: Wait for assisted-service operator pod no longer exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n assisted-installer -l control-plane=assisted-service-operator --no-headers | wc -l
+  retries: 150
+  delay: 2
+  register: as_operator_pod
+  until: as_operator_pod.stdout|int == 0
+
+- name: Patch assisted-service deployment for SERVE_HTTPS=False
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "SERVE_HTTPS", "value": "False"}]}] }} }}'

@@ -1,7 +1,7 @@
 apiVersion: agent-install.openshift.io/v1beta1
 kind: AgentServiceConfig
 metadata:
- namespace: assisted-installer-2
+ namespace: assisted-installer
  name: agent
 spec:
  databaseStorage:
