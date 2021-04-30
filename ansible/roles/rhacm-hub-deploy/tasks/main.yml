@@ -1,31 +1,31 @@
 ---
-# Install downstream RHACM hub onto a cluster
+# Install upstream/downstream RHACM hub onto a cluster
 
-- name: Create directory for rhacm downstream deployment
+- name: Create directory for rhacm deployment
   file:
-    path: "{{ rhacm_install_directory }}/rhacm_downstream"
+    path: "{{ rhacm_install_directory }}/rhacm-deploy"
     state: directory
 
 - name: Checkout the latest open-cluster-management/deploy repo
   git:
     repo: https://github.com/open-cluster-management/deploy.git
-    dest: "{{ rhacm_install_directory }}/rhacm_downstream/deploy"
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
     force: true
 
 - name: Create deploy/prereq/pull-secret.yaml
   template:
     src: pull-secret.yaml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm_downstream/deploy/prereqs/pull-secret.yaml"
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy/prereqs/pull-secret.yaml"
 
 - name: Create ImageContentSourcePolicy on hub cluster
   copy:
     src: icsp.yaml
-    dest: "{{ rhacm_install_directory }}/rhacm_downstream/icsp.yml"
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/icsp.yml"
 
 - name: Create snapshot.ver
   copy:
-    dest: "{{ rhacm_install_directory }}/rhacm_downstream/deploy/snapshot.ver"
-    content: "{{ rhacm_downstream_build }}"
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy/snapshot.ver"
+    content: "{{ rhacm_build }}"
 
 - name: Check if icsp exists
   shell: |
@@ -35,7 +35,7 @@
 
 - name: Apply ImageContentSourcePolicy to hub cluster
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f "{{ rhacm_install_directory }}/rhacm_downstream/icsp.yml"
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f "{{ rhacm_install_directory }}/rhacm-deploy/icsp.yml"
   when: icsp_exists.rc == 1
 
 - name: Wait until MachineConfigPools are updating
@@ -62,15 +62,24 @@
     - worker
   when: icsp_exists.rc == 1
 
-- name: Run downstream Deployment script
+- name: Run downstream deployment script
   shell: |
     export KUBECONFIG={{ hub_cluster_kubeconfig }}
     export COMPOSITE_BUNDLE=true
     export CUSTOM_REGISTRY_REPO="quay.io:443/acm-d"
     export DOWNSTREAM=true
-    {{ rhacm_install_directory }}/rhacm_downstream/deploy/start.sh --silent 2>&1 | tee {{ rhacm_install_directory }}/rhacm_downstream/$(date -u +%Y%m%d-%H%M%S)-start.log
+    {{ rhacm_install_directory }}/rhacm-deploy/deploy/start.sh --silent 2>&1 | tee {{ rhacm_install_directory }}/rhacm-deploy/$(date -u +%Y%m%d-%H%M%S)-start.log
   args:
-    chdir: "{{ rhacm_install_directory }}/rhacm_downstream/deploy"
+    chdir: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
+  when: rhacm_build is search("DOWNSTREAM")
+
+- name: Run upstream deployment script
+  shell: |
+    export KUBECONFIG={{ hub_cluster_kubeconfig }}
+    {{ rhacm_install_directory }}/rhacm-deploy/deploy/start.sh --silent 2>&1 | tee {{ rhacm_install_directory }}/rhacm-deploy/$(date -u +%Y%m%d-%H%M%S)-start.log
+  args:
+    chdir: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
+  when: not rhacm_build is search("DOWNSTREAM")
 
 - name: Wait until MultiClusterHub is running status
   shell: |

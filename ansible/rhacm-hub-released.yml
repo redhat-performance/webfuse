@@ -4,7 +4,7 @@
 # Example Usage:
 #
 # export KUBECONFIG=/home/user/kubeconfig
-# time ansible-playbook -i ansible/inventory/localhost.local ansible/rhacm-hub.yml -e "rhacm_version=2.1"
+# time ansible-playbook -i ansible/inventory/localhost.local ansible/rhacm-hub-released.yml -e "rhacm_version=2.1"
 #
 
 - name: Install released version of RHACM
@@ -12,4 +12,4 @@
   vars_files:
     - vars/all.yml
   roles:
-    - rhacm_hub
+    - rhacm-hub-released
