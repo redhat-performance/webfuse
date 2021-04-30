@@ -36,6 +36,9 @@
     copy:
       src: "{{ work_dir.path }}/linux-386/helm"
       dest: "/usr/local/bin"
+      mode: 0755
+      remote_src: yes
+    become: true
   when: "'command not found' in helm_check.stderr"
 
 - name: Download Aspenmesh
