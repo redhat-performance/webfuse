@@ -36,25 +36,3 @@
   until: mch_ready.stdout == "Running"
   retries: 300
   delay: 2
-
-- name: Get Redisgraph deployment
-  shell: |
-    oc get deployment -n open-cluster-management -l component=redisgraph --no-headers -o custom-columns=":metadata.name"
-  register: redisgraph_deployment_name
-
-- name: Adjust RHACM Search RedisGraph Memory Limit
-  k8s:
-    definition:
-      apiVersion: v1
-      kind: Deployment
-      metadata:
-        name: "{{ redisgraph_deployment_name.stdout }}"
-        namespace: open-cluster-management
-      spec:
-        template:
-          spec:
-            containers:
-              - name: redisgraph
-                resources:
-                  limits:
-                    memory: "{{ rhacm_redisgraph_memory_limit }}"
