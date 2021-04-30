@@ -1,4 +1,20 @@
 ---
+- name: Create temp directory for dittybopper
+  tempfile:
+    state: directory
+  register: ditty_tempdir
+
+- name: Download performance-dashboard
+  git:
+    repo: https://github.com/cloud-bulldozer/performance-dashboards.git
+    dest: "{{ ditty_tempdir.path }}/performance-dashboards"
+    force: true
+
+- name: Install dittybopper
+  shell: ./deploy.sh
+  args:
+    chdir: "{{ ditty_tempdir.path }}/performance-dashboards/dittybopper"
+
 - name: Deploy Kafka cluster with ephemeral storage
   k8s:
     state: present
