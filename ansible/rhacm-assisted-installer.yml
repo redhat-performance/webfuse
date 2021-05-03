@@ -11,4 +11,5 @@
   vars_files:
     - vars/all.yml
   roles:
-    - rhacm_assisted_installer
+    - rhacm-assisted-installer
+    - rhacm_add_clusterimagesets

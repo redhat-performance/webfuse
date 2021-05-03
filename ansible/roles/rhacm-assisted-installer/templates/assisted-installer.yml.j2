@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  annontations:
+    openshift.io/node-selector: ''
+  name: assisted-installer
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: assisted-installer
+  namespace: assisted-installer
+spec:
+  targetNamespaces:
+  - assisted-installer
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/assisted-service-operator.assisted-installer: ""
+  name: assisted-service-operator
+  namespace: assisted-installer
+spec:
+  channel: alpha
+  config:
+    env:
+    - name: OPENSHIFT_VERSIONS
+      value: '{{ rhacm_ai_ocp_versions }}'
+    - name: INSTALLER_IMAGE
+      value: {{ rhacm_ai_installer_image }}
+    - name: SERVICE_IMAGE
+      value: {{ rhacm_ai_service_image }}
+    - name: DATABASE_IMAGE
+      value: {{ rhacm_ai_database_image }}
+    - name: AGENT_IMAGE
+      value: {{ rhacm_ai_agent_image }}
+    - name: CONTROLLER_IMAGE
+      value: {{ rhacm_ai_controller_image }}
+  installPlanApproval: Automatic
+  name: assisted-service-operator
+  source: community-operators
+  sourceNamespace: openshift-marketplace
+  startingCSV: {{ rhacm_ai_csv }}

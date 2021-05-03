@@ -58,6 +58,14 @@ managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/a
 rhacm_quay_pullsecret: ''
 rhacm_build: ''
 
+rhacm_ai_csv: assisted-service-operator.v0.0.2
+rhacm_ai_ocp_versions: '{"4.8":{"display_name":"4.8.0-fc.2","release_image":"quay.io/openshift-release-dev/ocp-release:4.8.0-fc.2-x86_64","rhcos_image":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.0/rhcos-4.7.0-x86_64-live.x86_64.iso","rhcos_version":"47.83.202102090044-0","support_level":"beta"}}'
+rhacm_ai_installer_image: quay.io/ocpmetal/assisted-installer:latest
+rhacm_ai_service_image: quay.io/ocpmetal/assisted-service:latest
+rhacm_ai_database_image: quay.io/ocpmetal/postgresql-12-centos7:latest
+rhacm_ai_agent_image: quay.io/ocpmetal/assisted-installer-agent:latest
+rhacm_ai_controller_image: quay.io/ocpmetal/assisted-installer-controller:latest
+
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
 ################################################################################
