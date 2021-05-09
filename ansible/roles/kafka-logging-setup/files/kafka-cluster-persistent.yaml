@@ -45,7 +45,7 @@ spec:
       size: 100Gi
       deleteClaim: false
       class: kafka-local-brokers
-    version: 2.5.0
+    version: 2.7.0
   zookeeper:
     NodeSelector:
       nodeSelectorTerms:
