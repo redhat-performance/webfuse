@@ -9,17 +9,8 @@
 - name: Template out ClusterImageSets for SNO to RHACM Hub Cluster
   template:
     src: cis.yaml.j2
-    dest: "{{ item.dest }}"
-  with_items:
-    - name: openshift-4.8.0-fc.0
-      releaseImage: quay.io/openshift-release-dev/ocp-release:4.8.0-fc.0-x86_64
-      dest: "{{ rhacm_install_directory }}/rhacm_cis/openshift-4.8.0-fc.0-cis.yaml"
-    - name: openshift-4.8.0-fc.1
-      releaseImage: quay.io/openshift-release-dev/ocp-release:4.8.0-fc.1-x86_64
-      dest: "{{ rhacm_install_directory }}/rhacm_cis/openshift-4.8.0-fc.1-cis.yaml"
-    - name: openshift-4.8.0-fc.2
-      releaseImage: quay.io/openshift-release-dev/ocp-release:4.8.0-fc.2-x86_64
-      dest: "{{ rhacm_install_directory }}/rhacm_cis/openshift-4.8.0-fc.2-cis.yaml"
+    dest: "{{ rhacm_install_directory }}/rhacm_cis/{{ item.name }}-cis.yaml"
+  with_items: "{{ rhacm_clusterimagesets }}"
 
 - name: Apply ClusterImageSets to RHACM Hub Cluster
   shell: |

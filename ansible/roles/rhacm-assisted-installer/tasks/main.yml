@@ -8,7 +8,12 @@
 # * Patch Hive configuration
 # * Apply assisted-installer-crb-lease-fix.yml
 # * Disable assisted-service operator
-# * Set SERVE_HTTPS=False on assisted-service deployment
+# * Set Assisted-service deployment image
+# * Set Assisted-service deployment env (AGENT_DOCKER_IMAGE, CONTROLLER_IMAGE, INSTALLER_IMAGE, SELF_VERSION)
+# * Set Assisted-service deployment env OPENSHIFT_VERSIONS
+# * Set Assisted-service deployment env HW_VALIDATOR_MIN_CPU_CORES_SNO=4
+# * Set Assisted-service deployment env HW_VALIDATOR_MIN_RAM_GIB_SNO=16
+# * Set Assisted-service deployment env SERVE_HTTPS=False
 
 - name: Create directory for rhacm assisted-installer
   file:
@@ -95,6 +100,40 @@
   register: as_operator_pod
   until: as_operator_pod.stdout|int == 0
 
-- name: Patch assisted-service deployment for SERVE_HTTPS=False
+# The following patches are required because the operator will not update the assisted-service deployment before we scale it down in this play
+- name: Patch assisted-service deployment image
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "image": "{{ rhacm_ai_service_image }}"}] }} }}'
+
+- name: Patch assisted-service deployment env AGENT_DOCKER_IMAGE
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "AGENT_DOCKER_IMAGE", "value": "{{ rhacm_ai_agent_image }}"}]}] }} }}'
+
+- name: Patch assisted-service deployment env CONTROLLER_IMAGE
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "CONTROLLER_IMAGE", "value": "{{ rhacm_ai_controller_image }}"}]}] }} }}'
+
+- name: Patch assisted-service deployment env INSTALLER_IMAGE
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "INSTALLER_IMAGE", "value": "{{ rhacm_ai_installer_image }}"}]}] }} }}'
+
+- name: Patch assisted-service deployment env SELF_VERSION
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "SELF_VERSION", "value": "{{ rhacm_ai_service_image }}"}]}] }} }}'
+
+- name: Patch assisted-service deployment env OPENSHIFT_VERSIONS
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "OPENSHIFT_VERSIONS", "value": "{\"4.8\":{\"display_name\":\"4.8.0-fc.3\",\"release_version\":\"4.8.0-fc.3\",\"release_image\":\"quay.io/openshift-release-dev/ocp-release:4.8.0-fc.3-x86_64\",\"rhcos_image\":\"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/4.8.0-fc.3/rhcos-4.8.0-fc.3-x86_64-live.x86_64.iso\",\"rhcos_version\":\"48.84.202105062123-0\",\"support_level\":\"beta\" }}"}]}] }} }}'
+# End patches due to quickly scaling down the operator
+
+- name: Patch assisted-service deployment env HW_VALIDATOR_MIN_CPU_CORES_SNO=4
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "HW_VALIDATOR_MIN_CPU_CORES_SNO", "value": "4"}]}] }} }}'
+
+- name: Patch assisted-service deployment env HW_VALIDATOR_MIN_RAM_GIB_SNO=16
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "HW_VALIDATOR_MIN_RAM_GIB_SNO", "value": "16"}]}] }} }}'
+
+- name: Patch assisted-service deployment env SERVE_HTTPS=False
   shell: |
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "env": [{"name": "SERVE_HTTPS", "value": "False"}]}] }} }}'
