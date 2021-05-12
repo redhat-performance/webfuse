@@ -1,12 +1,6 @@
 ---
 # Install and setup local-storage operator
 
-- name: Label storage nodes
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'node.yml.j2') }}"
-  with_items: "{{ local_storage_nodes | default([]) }}"
-
 - name: Install local-storage operator
   k8s:
     state: present
