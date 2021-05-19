@@ -26,7 +26,9 @@
       when: local_storage_instances is defined and local_storage_instances | length > 0
 
     - role: openshift-monitoring-config
-      when: openshift_prometheus_storage_class is defined
+      when: 
+        - openshift_prometheus_storage_class is defined
+        - openshift_prometheus_storage_class != ""
 
     - role: kafka-logging-setup
       tags: logging
