@@ -58,6 +58,7 @@ managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/a
 rhacm_quay_pullsecret: ''
 rhacm_build: ''
 
+rhacm_ai_bundle_version: latest
 rhacm_ai_csv: assisted-service-operator.v0.0.2
 rhacm_ai_ocp_versions: '{"4.8":{"display_name":"4.8.0-fc.3","release_version":"4.8.0-fc.3","release_image":"quay.io/openshift-release-dev/ocp-release:4.8.0-fc.3-x86_64","rhcos_image":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/4.8.0-fc.3/rhcos-4.8.0-fc.3-x86_64-live.x86_64.iso","rhcos_version":"48.84.202105062123-0","support_level":"beta"}}'
 rhacm_ai_installer_image: quay.io/ocpmetal/assisted-installer:latest

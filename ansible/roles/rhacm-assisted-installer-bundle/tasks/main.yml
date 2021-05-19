@@ -1,0 +1,139 @@
+---
+# rhacm-assisted-installer-bundle tasks
+
+- name: Create directory for rhacm assisted-installer-bundle
+  file:
+    path: "{{ rhacm_install_directory }}/rhacm-assisted-installer-bundle"
+    state: directory
+
+- name: Template files for rhacm assisted-installer-bundle
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - src: assisted-installer.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-assisted-installer-bundle/assisted-installer.yml"
+
+- name: Check if assisted-installer namespace already exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get ns assisted-installer
+  register: get_ai_ns
+  ignore_errors: true
+
+- name: Delete existing assisted-installer namespace
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc delete ns assisted-installer
+  when: not get_ai_ns.failed
+
+- name: Wait until namespace is deleted
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get ns assisted-installer
+  register: get_ai_ns
+  ignore_errors: true
+  until: get_ai_ns.rc == 1
+  retries: 60
+  delay: 2
+
+- name: Patch provisioning configuration
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch provisioning provisioning-configuration --type merge -p '{"spec":{"watchAllNamespaces": true }}'
+
+- name: Patch hive configuration
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch hiveconfig hive  --type merge -p '{"spec":{"targetNamespace":"hive","logLevel":"debug","featureGates":{"custom":{"enabled":["AlphaAgentInstallStrategy"]},"featureSet":"Custom"} }}'
+
+- name: Apply assisted-installer-bundle manifests
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ item }}
+  loop:
+  - "{{ rhacm_install_directory }}/rhacm-assisted-installer-bundle/assisted-installer.yml"
+  register: result
+  until: result.failed == false
+  retries: 100
+  delay: 3
+
+- name: Wait for assisted-service pod exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n assisted-installer -l app=assisted-service
+  retries: 150
+  delay: 2
+  register: as_pod
+  until: as_pod.failed == false
+
+- name: Wait for assisted-service pod running
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n assisted-installer -l app=assisted-service -o jsonpath='{.items[0].status.phase}'
+  retries: 150
+  delay: 2
+  register: as_pod
+  until: as_pod.stdout == "Running"
+
+- name: Scale assisted-service operator to 0
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc scale -n assisted-installer --replicas=0 deployment/assisted-service-operator
+
+- name: Wait for assisted-service operator pod no longer exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n assisted-installer -l control-plane=assisted-service-operator --no-headers | wc -l
+  retries: 150
+  delay: 2
+  register: as_operator_pod
+  until: as_operator_pod.stdout|int == 0
+
+- name: Get route for SERVICE_BASE_URL
+  shell:
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get route -n assisted-installer assisted-service -o json
+  register: get_route
+
+# Patch the configmap for assisted-service first
+- name: Patch assisted-service configmap env AGENT_DOCKER_IMAGE
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"AGENT_DOCKER_IMAGE": "{{ rhacm_ai_agent_image }}"} }'
+
+- name: Patch assisted-service configmap env CONTROLLER_IMAGE
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"CONTROLLER_IMAGE": "{{ rhacm_ai_controller_image }}"} }'
+
+- name: Patch assisted-service configmap env INSTALLER_IMAGE
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"INSTALLER_IMAGE": "{{ rhacm_ai_installer_image }}"} }'
+
+- name: Patch assisted-service configmap env SELF_VERSION
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"SELF_VERSION": "{{ rhacm_ai_service_image }}"} }'
+
+- name: Patch assisted-service configmap env OPENSHIFT_VERSIONS
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"OPENSHIFT_VERSIONS": "{\"4.8\":{\"rhcos_image\":\"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/4.8.0-fc.3/rhcos-4.8.0-fc.3-x86_64-live.x86_64.iso\",\"rhcos_rootfs\":\"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/4.8.0-fc.3/rhcos-live-rootfs.x86_64.img\",\"rhcos_version\":\"48.84.202105062123-0\",\"support_level\":\"beta\"}}"} }'
+
+- name: Patch assisted-service configmap env HW_VALIDATOR_MIN_CPU_CORES_SNO=4
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"HW_VALIDATOR_MIN_CPU_CORES_SNO": "4"} }'
+
+- name: Patch assisted-service configmap env HW_VALIDATOR_MIN_RAM_GIB_SNO=16
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"HW_VALIDATOR_MIN_RAM_GIB_SNO": "16"} }'
+
+- name: Patch assisted-service configmap env SERVE_HTTPS=False
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"SERVE_HTTPS": "False"} }'
+
+- name: Patch assisted-service configmap env SERVICE_BASE_URL
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch cm -n assisted-installer assisted-service -p '{"data": {"SERVICE_BASE_URL": "http://{{ (get_route.stdout | from_json)['spec']['host'] }}"} }'
+
+- name: Patch assisted-service deployment image
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "image": "{{ rhacm_ai_service_image }}"}] }} }}'
+
+- name: Patch assisted-service deployment livenessProbe
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "livenessProbe": {"httpGet": {"scheme": "HTTP"}}}] }} }}'
+
+- name: Patch assisted-service deployment livenessProbe
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deploy assisted-service -n assisted-installer -p '{"spec":{"template":{"spec":{"containers":[{"name": "assisted-service", "readinessProbe": {"httpGet": {"scheme": "HTTP"}}}] }} }}'
+
+- name: Patch assisted-service route to remove tls
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch route assisted-service -n assisted-installer -p '[{ "op": "remove", "path": "/spec/tls" }]' --type='json'

@@ -1,0 +1,15 @@
+---
+# Playbook to install RHACM Assisted Installer via a bundle
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/cloud-root.local ansible/rhacm-assisted-installer-bundle.yml
+#
+
+- name: Install RHACM Assisted Installer via a Bundle
+  hosts: orchestration
+  vars_files:
+    - vars/all.yml
+  roles:
+    - rhacm-assisted-installer-bundle
+    - rhacm_add_clusterimagesets
