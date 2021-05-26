@@ -10,8 +10,8 @@ bigip_worker:
   - worker001
 
 bigip_licenses:
-  - SGJVQ-MWRFS-UVBWU-NFKCX-NMDOIMF
-  - UVFIT-RVTVT-NAPUX-DPIVS-LNPEMYB
+  - LHMZY-DAOPK-GGMYG-PNDYM-RZTEGVT
+  - IDJSW-NXHWB-JTLJI-HTQAB-DTZWQSP
 
 bigip_sriov_int: "ens2f1"   # Preferrably baremetal network interface
 bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface
