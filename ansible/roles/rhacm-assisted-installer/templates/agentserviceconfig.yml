@@ -1,22 +1,22 @@
 apiVersion: agent-install.openshift.io/v1beta1
 kind: AgentServiceConfig
 metadata:
- annotations:
-  unsupported.agent-install.openshift.io/assisted-service-configmap: assisted-service-cpu-memory
- namespace: open-cluster-management
- name: agent
+  annotations:
+    unsupported.agent-install.openshift.io/assisted-service-configmap: assisted-service-cpu-memory
+  namespace: open-cluster-management
+  name: agent
 spec:
- databaseStorage:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: localstorage-sc
-  resources:
-   requests:
-    storage: 20Gi
- filesystemStorage:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: localstorage-sc
-  resources:
-   requests:
-    storage: 100Gi
+  databaseStorage:
+    accessModes:
+    - ReadWriteOnce
+    storageClassName: localstorage-sc
+    resources:
+      requests:
+        storage: 20Gi
+  filesystemStorage:
+    accessModes:
+    - ReadWriteOnce
+    storageClassName: localstorage-sc
+    resources:
+      requests:
+        storage: 100Gi
