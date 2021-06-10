@@ -2,18 +2,10 @@
 # Install assisted-installer onto a cluster with RHACM
 
 # Current workarounds:
-# * If assisted-installer namespace already exists, delete it and recreate
-#   * https://bugzilla.redhat.com/show_bug.cgi?id=1951812
 # * Patch provisioning configuration
 # * Patch Hive configuration
-# * Apply assisted-installer-crb-lease-fix.yml
-# * Disable assisted-service operator
-# * Set Assisted-service deployment image
-# * Set Assisted-service deployment env (AGENT_DOCKER_IMAGE, CONTROLLER_IMAGE, INSTALLER_IMAGE, SELF_VERSION)
-# * Set Assisted-service deployment env OPENSHIFT_VERSIONS
-# * Set Assisted-service deployment env HW_VALIDATOR_MIN_CPU_CORES_SNO=4
-# * Set Assisted-service deployment env HW_VALIDATOR_MIN_RAM_GIB_SNO=16
-# * Set Assisted-service deployment env SERVE_HTTPS=False
+# * Set Assisted-service override via configmap HW_VALIDATOR_MIN_CPU_CORES_SNO=4
+# * Set Assisted-service override via configmap HW_VALIDATOR_MIN_RAM_GIB_SNO=16
 
 - name: Create directory for rhacm assisted-installer
   file:
