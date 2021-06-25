@@ -6,6 +6,20 @@
 # time ansible-playbook -i ansible/inventory/undercloud.hosts ansible/rhacm-hub-deploy.yml
 #
 
+- name: Setup downstream RHACM ICSP
+  hosts: orchestration
+  vars_files:
+  - vars/all.yml
+  roles:
+  - rhacm-hub-icsp
+
+- name: Fix ipv6/disconnected nodes /etc/containers/registries.conf for tag mirroring
+  hosts: fix_icsp_nodes
+  vars_files:
+  - vars/all.yml
+  roles:
+  - icsp-enable-tag-mirror
+
 - name: Install downstream RHACM
   hosts: orchestration
   vars_files:

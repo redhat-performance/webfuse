@@ -1,0 +1,21 @@
+---
+# icsp-enable-tag-mirror
+#
+# Workaround to icsp only allowing mirror-by-digest
+#
+
+- name: Set mirror-by-digest-only to false
+  become: true
+  replace:
+    path: /etc/containers/registries.conf
+    regexp: "mirror-by-digest-only = true"
+    replace: "mirror-by-digest-only = false"
+
+- name: Restart Kubelet and Crio
+  become: true
+  systemd:
+    service: "{{ item }}"
+    state: restarted
+  loop:
+  - crio
+  - kubelet
