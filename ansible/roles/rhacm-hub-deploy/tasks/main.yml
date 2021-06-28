@@ -1,10 +1,5 @@
 ---
-# Install upstream/downstream RHACM hub onto a cluster
-
-- name: Create directory for rhacm deployment
-  file:
-    path: "{{ rhacm_install_directory }}/rhacm-deploy"
-    state: directory
+# rhacm-hub-deploy tasks - Install upstream/downstream RHACM hub onto a cluster
 
 - name: Checkout the latest open-cluster-management/deploy repo
   git:
@@ -17,56 +12,20 @@
     src: pull-secret.yaml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy/prereqs/pull-secret.yaml"
 
-- name: Create ImageContentSourcePolicy on hub cluster
-  copy:
-    src: icsp.yaml
-    dest: "{{ rhacm_install_directory }}/rhacm-deploy/icsp.yml"
-
 - name: Create snapshot.ver
   copy:
     dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy/snapshot.ver"
     content: "{{ rhacm_build }}"
 
-- name: Check if icsp exists
-  shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get ImageContentSourcePolicy rhacm-repo
-  ignore_errors: true
-  register: icsp_exists
-
-- name: Apply ImageContentSourcePolicy to hub cluster
-  shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f "{{ rhacm_install_directory }}/rhacm-deploy/icsp.yml"
-  when: icsp_exists.rc == 1
-
-- name: Wait until MachineConfigPools are updating
-  shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get mcp --no-headers {{ item }} | awk '{print $4}'
-  register: result
-  delay: 5
-  retries: 30
-  until: result.stdout == "True"
-  with_items:
-    - master
-    - worker
-  when: icsp_exists.rc == 1
-
-- name: Wait until MachineConfigPools are updated
-  shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get mcp --no-headers {{ item }} | awk '{print $3}'
-  register: result
-  delay: 10
-  retries: 120
-  until: result.stdout == "True"
-  with_items:
-    - master
-    - worker
-  when: icsp_exists.rc == 1
-
 - name: Run downstream deployment script
   shell: |
     export KUBECONFIG={{ hub_cluster_kubeconfig }}
     export COMPOSITE_BUNDLE=true
+    {% if rhacm_disconnected_registry|length > 1 %}
+    export CUSTOM_REGISTRY_REPO="{{ rhacm_disconnected_registry }}/acm-d"
+    {% else %}
     export CUSTOM_REGISTRY_REPO="quay.io:443/acm-d"
+    {% endif %}
     export DOWNSTREAM=true
     {{ rhacm_install_directory }}/rhacm-deploy/deploy/start.sh --silent 2>&1 | tee {{ rhacm_install_directory }}/rhacm-deploy/$(date -u +%Y%m%d-%H%M%S)-start.log
   args:
