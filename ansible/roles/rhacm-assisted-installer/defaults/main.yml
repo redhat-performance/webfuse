@@ -1,0 +1,10 @@
+---
+# rhacm-assisted-installer default vars
+
+# This will be your bastion machine (if you run setup-bastion playbook)
+http_store_host: "{{ groups['orchestration'][0] }}"
+http_store_port: 8081
+
+http_store_path: /opt/http_store
+
+registry_path: /opt/registry
