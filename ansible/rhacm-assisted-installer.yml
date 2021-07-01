@@ -5,6 +5,9 @@
 #
 # time ansible-playbook -i ansible/inventory/cloud-root.local ansible/rhacm-assisted-installer.yml
 #
+# ipv6/disconnected example run:
+# time ansible-playbook -i ansible/inventory/cloud03-root.local ansible/rhacm-assisted-installer.yml -e 'http_store_host="[fc00:1000::1]"'
+#
 
 - name: Install RHACM Assisted Installer
   hosts: orchestration
