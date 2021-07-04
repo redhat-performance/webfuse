@@ -19,6 +19,10 @@
   vars_files:
     - vars/all.yml
   roles:
+    - role: sctp-setup
+      when: sctp_enable
+      tags: sctp
+
     - role: label_node
       when: label_node_values is defined and label_node_values | length > 0
 

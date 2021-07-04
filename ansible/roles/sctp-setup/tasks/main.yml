@@ -1,0 +1,29 @@
+- name: Create MachineConfig for loading SCTP module
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'load-sctp-module.yaml.j2') }}"
+  register: sctp_mc
+
+- name: Wait for SCTP MachineConfig to be applied
+  block:
+    - name: Wait for worker MCP to start updating
+      shell: |
+        oc wait --for=condition=Updating --timeout=300s mcp worker
+      register: mcp_updating
+      changed_when: "'condition met' in mcp_updating.stdout"
+      retries: 3 # 3 minutes * 5 minutes (timeout)
+      delay: 60
+      until: mcp_updating is success
+      ignore_errors: true
+
+    - name: Wait for worker MCP to be updated
+      shell: |
+        oc wait --for=condition=Updated --timeout=1800s mcp worker
+      changed_when: false
+      register: worker_update
+      retries: 3 # 3 minutes * 30 minutes (timeout)
+      delay: 60
+      until: not worker_update.failed
+      when: mcp_updating is changed
+  when:
+    - sctp_mc is changed
