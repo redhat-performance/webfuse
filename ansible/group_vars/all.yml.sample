@@ -222,3 +222,8 @@ max_pods: 500
 # and Hugepages
 perf_mcp_selector: "pools.operator.machineconfiguration.openshift.io/master: "
 perf_node_selector: "node-role.kubernetes.io/master: "
+
+################################################################################
+# SCTP setup
+################################################################################
+sctp_enable: false
