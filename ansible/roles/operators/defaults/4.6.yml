@@ -1,6 +1,6 @@
 ---
 # Openshift Virtualization channel
-osv_channel: 2.4
+osv_channel: stable
 
 # AMQ subscription channel
 amq_channel: stable
