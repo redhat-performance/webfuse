@@ -32,7 +32,6 @@
       retries: 3 # 3 minutes * 30 minutes (timeout)
       delay: 60
       until: not worker_lb_mcp_update.failed
-      when: mcp_updating is changed
   when:
     - sriov_policy is changed
 

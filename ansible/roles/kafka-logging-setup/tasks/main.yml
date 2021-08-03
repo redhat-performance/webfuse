@@ -1,19 +1,27 @@
 ---
-- name: Create temp directory for dittybopper
-  tempfile:
-    state: directory
-  register: ditty_tempdir
+- name: Get the URL for the dittybopper / grafana API
+  shell: |
+    oc get route -n dittybopper | grep dittybopper | awk '{print $2}'
+  register: dittybopper_check
 
-- name: Download performance-dashboard
-  git:
-    repo: https://github.com/cloud-bulldozer/performance-dashboards.git
-    dest: "{{ ditty_tempdir.path }}/performance-dashboards"
-    force: true
+- block:
+    - name: Create temp directory for dittybopper
+      tempfile:
+        state: directory
+      register: ditty_tempdir
 
-- name: Install dittybopper
-  shell: ./deploy.sh
-  args:
-    chdir: "{{ ditty_tempdir.path }}/performance-dashboards/dittybopper"
+    - name: Download performance-dashboard
+      git:
+        repo: https://github.com/cloud-bulldozer/performance-dashboards.git
+        dest: "{{ ditty_tempdir.path }}/performance-dashboards"
+        force: true
+
+    - name: Install dittybopper
+      shell: ./deploy.sh
+      args:
+        chdir: "{{ ditty_tempdir.path }}/performance-dashboards/dittybopper"
+  when:
+    - "'No resources' in dittybopper_check.stderr"
 
 - name: Deploy Kafka cluster with ephemeral storage
   k8s:

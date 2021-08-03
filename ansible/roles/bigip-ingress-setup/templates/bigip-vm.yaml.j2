@@ -45,10 +45,10 @@ items:
               - name: ha
                 bridge: {}
               - name: int-sriov
-                macAddress: '{{ value.int_sriov_mac }}'
+                macAddress: {{ value.int_sriov_mac }}
                 sriov: {}
               - name: ext-sriov
-                macAddress: '{{ value.ext_sriov_mac }}'
+                macAddress: {{ value.ext_sriov_mac }}
                 sriov: {}
           volumes:
           - name: {{ key }}-volume

@@ -9,6 +9,11 @@ spec:
   pathConfig:
     path: "{{ bigip_hostpath_dir }}"
     useNamingPrefix: false
+{% if ((release_version[0]|int == 4) and (release_version[2]|int > 6)) %}
+  workload:
+    nodeSelector:
+      node-role.kubernetes.io/{{ bigip_worker_mcp | default('worker-lb') }}: ""
+{% endif %}
 
 ---
 apiVersion: storage.k8s.io/v1

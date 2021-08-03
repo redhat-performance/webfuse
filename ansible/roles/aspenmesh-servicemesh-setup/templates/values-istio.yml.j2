@@ -184,8 +184,8 @@ global:
 
 aspen-mesh-controlplane:
   enabled: true
-  image: controlplane-1.6.14-am2
-  modelruntimeImage: modelruntime-1.6.14-am2
+  image: {{ aspen_mesh_controlplane.image }}
+  modelruntimeImage: {{ aspen_mesh_controlplane.modelruntimeimage }}
 
   imagePullSecrets:
   - aspenmesh-kubernetes-pull-secret
@@ -212,7 +212,7 @@ aspen-mesh-controlplane:
       #host: aspenmesh.apps.stablrebco2.ws.vici.verizon.com
 
   openshiftOauthProxy:
-    image: openshift-oauth-proxy-1.6.14-am2
+    image: {{ openshift_oauthproxy.image }}
 
   resources:
     requests:
@@ -231,12 +231,12 @@ aspen-mesh-controlplane:
 
 aspen-mesh-dashboard:
   enabled: true
-  image: dashboard-1.6.14-am2
+  image: {{ aspen_mesh_dashboard.image }}
   replicaCount: 2
 
 aspen-mesh-secure-ingress:
   enabled: true
-  image: secure-ingress-1.6.14-am2
+  image: {{ aspen_mesh_secure_ingress.image }}
   # Email to use for Let's Encrypt registration (used for certificate expiry notices)
   # Leave blank ("") if you wish to manage your own TLS certificates.
   lets-encrypt-email: ""
@@ -245,7 +245,7 @@ aspen-mesh-secure-ingress:
   externalDnsEnabled: false
 
 aspen-mesh-metrics-collector:
-  serviceImage: metrics-collector-service-1.6.14-am2
+  serviceImage: {{ aspen_mesh_metrics_collector.serviceimage }}
   server:
     serviceResources:
       requests:
@@ -257,8 +257,8 @@ aspen-mesh-metrics-collector:
     persistentVolume:
       storageClass: "ontap-sc"
       size: 20Gi
-  alertmanagerImage: alertmanager-1.6.14-am2
-  configmapReloadImage: configmap-reloader-1.6.14-am2
+  alertmanagerImage: {{ aspen_mesh_metrics_collector.alertmanagerimage }}
+  configmapReloadImage: {{ aspen_mesh_metrics_collector.configmapreloadimage }}
   alertmanager:
     persistentVolume:
       storageClass: "ontap-sc"
@@ -277,7 +277,7 @@ aspen-mesh-event-storage:
     storageClass: "ontap-sc"
     size: 10Gi
   config:
-    cluster_size: 3
+    cluster_size: 2
     max_heap_size: 2048M
     heap_new_size: 512M
 
@@ -290,7 +290,7 @@ jaeger:
   schema:
     traceTtl: 691200
   cassandra:
-    cluster_size: 3
+    cluster_size: 2
     updateStrategy:
       type: RollingUpdate
     persistence:
@@ -312,7 +312,7 @@ jaeger:
 
 traffic-claim-enforcer:
   enabled: true
-  image: traffic-claim-enforcer-1.6.14-am2
+  image: {{ traffic_claim_enforcer.image }}
   resources: {}
 
 cert-manager:
@@ -339,5 +339,5 @@ istio_cni:
 citadel:
   # to enable this feature you must setup a root CA in the istio-system namespace
   enabled: true
-
+  replicaCount: 2
 

@@ -10,7 +10,7 @@
 
 - name: Check and wait for Trident Operator pod state
   shell: |
-    oc get pods -n trident -l app=operator.trident.netapp.io -o jsonpath='{.items[0].status.phase}'
+    oc get pods -n {{ trident_namespace }} -l app=operator.trident.netapp.io -o jsonpath='{.items[0].status.phase}'
   retries: 10
   delay: 5
   register: trident_pod
@@ -23,7 +23,7 @@
 
 - name: Check and wait for Trident Controller pod state
   shell: |
-    oc get pod -n trident -l app=controller.csi.trident.netapp.io -o jsonpath='{.items[0].status.phase}'
+    oc get pod -n {{ trident_namespace }} -l app=controller.csi.trident.netapp.io -o jsonpath='{.items[0].status.phase}'
   retries: 25
   delay: 10
   register: trident_controller_pod
@@ -36,7 +36,7 @@
 
 - name: Get Trident Controller pod
   shell: |
-    oc get pod -n trident -l app=controller.csi.trident.netapp.io -o jsonpath='{.items[0].metadata.name}'
+    oc get pod -n {{ trident_namespace }} -l app=controller.csi.trident.netapp.io -o jsonpath='{.items[0].metadata.name}'
   register: trident_controller_pod_name
 
 - name: Get base64 Encoding of ONTAP Backend Configuration
@@ -49,4 +49,4 @@
 
 - name: Create ONTAP Trident Backend
   shell: |
-    oc exec -n trident {{ trident_controller_pod_name.stdout }} -c trident-main -- tridentctl --debug --namespace trident create backend --base64 {{ backend_json_base64.stdout }}
+    oc exec -n {{ trident_namespace }} {{ trident_controller_pod_name.stdout }} -c trident-main -- tridentctl --debug --namespace {{ trident_namespace }} create backend --base64 {{ backend_json_base64.stdout }}

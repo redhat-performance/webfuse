@@ -17,9 +17,10 @@
 
     - name: Get brew registry auth token
       shell: |
-        podman login --authfile {{ cs_tempdir.path }}/authfile --username "|shared-qe-temp.zmns.153b77" --password {{ brew_reg_password }} brew.registry.redhat.io
+        podman login --authfile {{ cs_tempdir.path }}/authfile --username "|shared-qe-temp.src5.75b4d5" --password {{ brew_reg_password }} brew.registry.redhat.io
       register: login_status
       failed_when: "'Login Succeeded!' not in login_status.stdout"
+      become: true
 
     - name: Set pull secret data with new brew registry token
       shell: |

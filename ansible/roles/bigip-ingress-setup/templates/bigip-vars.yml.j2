@@ -7,7 +7,7 @@ bigip_vms:
     mgmt_gateway: "{{ bigip_mgmt_network | next_nth_usable(1) }}"
     int_sriov_ip: "{{ extcidrnet | next_nth_usable(i.value | int + ip_nth | default(0) | int) }}/{{ extcidrnet | ipaddr('prefix') }}"   # Assign an IP from baremetal external CIDR
     int_sriov_mac: "02:02:02:02:05:0{{ n | int + 1}}"
-    ext_sriov_mac: "02:02:02:02:05:0{{ n | int + 2}}"
+    ext_sriov_mac: "02:02:02:02:05:0{{ n | int + 3}}"
     license_key: "{{ bigip_licenses[n] }}"
     worker_node: "{{ bigip_worker[n] }}"
 {%- set i.value = i.value + 1 %} 

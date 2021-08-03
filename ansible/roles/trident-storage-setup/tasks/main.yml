@@ -1,36 +1,42 @@
 ---
 # tasks file for trident-storage-setup
-- name: Create {{ trident_namespace }} namespace
-  k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Namespace
-      metadata:
-        name: "{{ trident_namespace }}"
+- name: check if trident is configured
+  shell:
+    oc get sc ontap-sc --no-headers --ignore-not-found | awk '{print $1}'
+  register: trident_check
 
 - block:
-  - name: Install required packages
-    yum:
-      name: "{{ package_list }}"
-      state: present
-      update_cache: true
-      disable_gpg_check: yes
-    become: true
+    - name: Create {{ trident_namespace }} namespace
+      k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ trident_namespace }}"
 
-  - name: Cleanup existing resources
-    include_tasks: 10-cleanup-vm.yml
+    - block:
+      - name: Install required packages
+        yum:
+          name: "{{ package_list }}"
+          state: present
+          update_cache: true
+          disable_gpg_check: yes
+        become: true
 
-  - name: Create NetApp VM
-    include_tasks: 20-netapp-vm.yml
-  when: not netapp_osv
+      - name: Cleanup existing resources
+        include_tasks: 10-cleanup-vm.yml
 
-- name: Install NetApp Trident Operator and Controller
-  include_tasks: 30-netapp-trident-controller.yml
+      - name: Create NetApp VM
+        include_tasks: 20-netapp-vm.yml
+      when: not netapp_osv
 
-- name: Create test pod
-  k8s:
-    state: present
-    definition: "{{ lookup('file', 'test-pod.yaml') }}"
-    namespace: "trident"
+    - name: Install NetApp Trident Operator and Controller
+      include_tasks: 30-netapp-trident-controller.yml
 
+    - name: Create test pod
+      k8s:
+        state: present
+        definition: "{{ lookup('file', 'test-pod.yaml') }}"
+        namespace: "{{ trident_namespace }}"
+  when: "'ontap-sc' not in trident_check.stdout"

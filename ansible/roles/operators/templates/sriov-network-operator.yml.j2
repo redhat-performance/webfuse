@@ -20,7 +20,7 @@ metadata:
   name: sriov-network-operator-subsription
   namespace: openshift-sriov-network-operator
 spec:
-  channel: "{{release_version[0]|int}}.{{release_version[2]|int}}"
+  channel: "{{ sriov_channel }}"
   name: sriov-network-operator
   source: "{{ sriov_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace

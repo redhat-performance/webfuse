@@ -3,6 +3,7 @@ kind: MachineConfigPool
 metadata:
   name: "{{ bigip_worker_mcp }}"
 spec:
+  maxUnavailable: {{ 2 if node_list.resources | list | length > 2 else 1  }}
   machineConfigSelector:
     matchExpressions:
       - {key: machineconfiguration.openshift.io/role, operator: In, values: [worker, {{ bigip_worker_mcp }}]}

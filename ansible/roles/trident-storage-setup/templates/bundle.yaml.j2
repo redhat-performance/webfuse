@@ -202,6 +202,8 @@ rules:
   - tridentnodes
   - tridenttransactions
   - tridentsnapshots
+  - tridentbackendconfigs
+  - tridentbackendconfigs/status
   - tridentprovisioners # Required for Tprov
   - tridentprovisioners/status # Required to update Tprov's status section
   - tridentorchestrators # Required for Torc
@@ -279,24 +281,9 @@ rules:
   - authorization.openshift.io
   - rbac.authorization.k8s.io
   resources:
-  - clusterroles
-  - clusterrolebindings
+  - '*'
   verbs:
-  - list
-  - create
-- apiGroups:
-  - authorization.openshift.io
-  - rbac.authorization.k8s.io
-  resources:
-  - clusterroles
-  - clusterrolebindings
-  verbs:
-  - delete
-  - update
-  - patch
-  resourceNames:
-  - trident-csi
-  - trident
+  - '*'
 - apiGroups:
   - policy
   resources:
@@ -365,6 +352,8 @@ metadata:
   namespace: "{{ trident_namespace }}"
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: operator.trident.netapp.io

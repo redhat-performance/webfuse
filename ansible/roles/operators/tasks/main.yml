@@ -20,22 +20,6 @@
     - name: set operator facts
       set_fact:
         osv_channel: "{{ osv_channel }}"
-
-    - name: Create OSV hyperconverged operator
-      k8s:
-        state: present
-        definition: "{{ lookup('template', 'kubevirt-hyperconverged.yml.j2' ) }}"
-
-    # Takes few seconds to initiate installation
-    - name: Wait for few seconds before checking for status
-      wait_for:
-        timeout: 10
-
-    - include_tasks: 99_csv_status.yml
-      vars:
-        namespace: "{{ item }}"
-      with_items:
-        - openshift-cnv
   when: operators | selectattr('namespace', 'search', 'openshift-cnv') | list | length > 0
 
 - name: CLuster Logging Instance

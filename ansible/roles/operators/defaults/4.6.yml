@@ -11,6 +11,12 @@ cluster_logging_channel: 4.6
 # Elasticsearch Operator channel
 elasticsearch_channel: 4.6
 
+# SR-IOV operator channel 
+sriov_channel: 4.6
+
+# Performance add-on operator 
+pao_channel: 4.6
+
 # To enable nightly catalog source
 nightly_operator: false
 

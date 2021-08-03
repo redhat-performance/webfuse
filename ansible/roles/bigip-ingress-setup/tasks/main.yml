@@ -4,6 +4,7 @@
   template:
     src: bigip-vars.yml.j2
     dest: /tmp/bigip-vars.yml
+  delegate_to: localhost
 
 - name: Include the vars templated out
   include_vars: /tmp/bigip-vars.yml
