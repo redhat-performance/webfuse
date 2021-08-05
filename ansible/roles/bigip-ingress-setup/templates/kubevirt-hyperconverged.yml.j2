@@ -1,0 +1,18 @@
+---
+apiVersion: hco.kubevirt.io/{{ 'v1beta1' if osv_channel == 'stable' else 'v1alpha1' }}
+kind: HyperConverged
+metadata:
+  name: kubevirt-hyperconverged
+  namespace: openshift-cnv
+spec:
+  BareMetalPlatform: true
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 7)) %}
+  infra:
+    nodePlacement:
+      nodeSelector:
+        node-role.kubernetes.io/{{ bigip_worker_mcp | default('worker-lb') }}: ""
+  workloads:
+    nodePlacement:
+      nodeSelector:
+        node-role.kubernetes.io/{{ bigip_worker_mcp | default('worker-lb') }}: ""
+{% endif %}

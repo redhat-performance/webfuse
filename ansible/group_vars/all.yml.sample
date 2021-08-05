@@ -92,50 +92,27 @@ rhacm_clusterdeploy_hub_base_domain: rdu2.scalelab.redhat.com
 ################################################################################
 # Label Node vars:
 ################################################################################
-label_node_values:
-  - label: 'localstorage: "true"'
-    nodes:
-      - storagenode-0
-      - storagenode-1
-  - label: 'kafka: "true"'
-    nodes:
-      - storagenode-2
-      - storagenode-3
-      - storagenode-4
-  - label: 'prom: "true"'
-    nodes:
-      - storagenode-5
-      - storagenode-6
+# List of nodes and its labels to be added
+# label_node_values:
+#   - label: 'localstorage: "true"'
+#     nodes:
+#       - storagenode-0
+#       - storagenode-1
+
+label_node_values: []
 
 ################################################################################
 # Local-storage vars:
 ################################################################################
-local_storage_instances:
-  - key: localstorage
-    value: "true"
-    storageclassname: local-sc
-    volumes:
-    - /dev/vg_ls/lv_tv00
-    - /dev/vg_ls/lv_tv01
-    - /dev/vg_ls/lv_tv02
-    - /dev/vg_ls/lv_tv03
-    - /dev/vg_ls/lv_tv04
-    - /dev/vg_ls/lv_tv05
-  - key: kafka
-    value: "true"
-    storageclassname: kafka-local-brokers
-    volumes:
-    - /dev/nvme0n1
-  - key: kafka
-    value: "true"
-    storageclassname: kafka-local-zookeepers
-    volumes:
-    - /dev/nvme0n2
-  - key: prom
-    value: "true"
-    storageclassname: prom-sc
-    volumes:
-    - /dev/nvme0n1
+# volumes to be created on the nodes based on the nodeselector keyvalue
+# local_storage_instances:
+#   - key: kafka
+#     value: "true"
+#     storageclassname: kafka-local-brokers
+#     volumes:
+#     - /dev/nvme0n1
+
+local_storage_instances: []
 
 ################################################################################
 # Prepare Shiftstack for Local-storage vars:
@@ -186,13 +163,13 @@ ec2_tags:
 ################################################################################
 openshift_prometheus_retention_period: 15d
 openshift_prometheus_node_selector: "prom: true"
-openshift_prometheus_storage_class: prom-sc
+openshift_prometheus_storage_class: ""      # A valid storage class
 openshift_prometheus_storage_size: 50Gi
 
 ################################################################################
 # Kafka playbook vars
 ################################################################################
-kafka_storage: "persistent"   # can be either persistent or ephemeral
+kafka_storage: "ephemeral"   # can be either persistent or ephemeral
 kafka_instances:
   key: kafka
   value: "true"

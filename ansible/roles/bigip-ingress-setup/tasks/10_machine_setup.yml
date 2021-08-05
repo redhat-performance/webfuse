@@ -1,4 +1,13 @@
 ---
+- name: List Nodes Labeled as Workers
+  k8s_info:
+    api_version: v1
+    kind: Node
+    label_selectors:
+      - "node-role.kubernetes.io/worker="
+  register: node_list
+  no_log: True
+
 - name: Create temp directory for BIGIP
   tempfile:
     state: directory
@@ -49,7 +58,5 @@
       retries: 3 # 3 minutes * 30 minutes (timeout)
       delay: 60
       until: not mcp_update.failed
-      when: mcp_updating is changed
-
   when:
     - mcp is changed

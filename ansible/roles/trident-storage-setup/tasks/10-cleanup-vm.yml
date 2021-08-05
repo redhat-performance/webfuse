@@ -1,11 +1,29 @@
 - name: Delete test pod
-  shell: |
-    oc delete pod redis-test-pod -n trident --force
-  ignore_errors: true
+  k8s:
+    state: absent
+    force: yes
+    api_version: v1
+    kind: Pod
+    name: redis-test-pod
+    namespace: "{{ trident_namespace }}"
 
 - name: Delete test pvc
-  shell: |
-    oc delete pvc redis-pvc -n trident --force
+  k8s:
+    state: absent
+    force: yes
+    api_version: v1
+    kind: PersistentVolumeClaim
+    name: redis-pvc
+    namespace: "{{ trident_namespace }}"
+
+- name: Delete cr
+  k8s:
+    state: absent
+    force: yes
+    api_version: trident.netapp.io/v1
+    kind: TridentOrchestrator
+    name: trident
+    namespace: "{{ trident_namespace }}"
   ignore_errors: true
 
 - name: Delete test sc

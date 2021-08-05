@@ -3,7 +3,7 @@ kind: List
 metadata: {}
 items:
 {% for key, value in bigip_vms.items() %}
-  - apiVersion: cdi.kubevirt.io/v1alpha1
+  - apiVersion: cdi.kubevirt.io/{{ 'v1beta1' if osv_channel == 'stable' else 'v1alpha1' }}
     kind: DataVolume
     metadata:
       name: {{ key }}-volume

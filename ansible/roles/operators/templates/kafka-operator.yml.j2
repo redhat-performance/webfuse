@@ -32,3 +32,6 @@ spec:
   name: amq-streams
   source: "{{ amq_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace
+{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 7)) %}
+  startingCSV: amqstreams.v1.7.2
+{% endif %}

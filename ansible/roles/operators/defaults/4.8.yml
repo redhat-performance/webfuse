@@ -14,6 +14,12 @@ elasticsearch_channel: 5.0
 # Precision Time Protocol (ptp) Operator channel
 ptp_channel: stable
 
+# SR-IOV operator channel 
+sriov_channel: 4.8
+
+# Performance add-on operator 
+pao_channel: 4.7
+
 # To enable nightly catalog source
 nightly_operator: false
 
