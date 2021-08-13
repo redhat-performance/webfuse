@@ -1,0 +1,11 @@
+--- /usr/lib/python3.6/site-packages/ansible/modules/network/f5/bigip_device_license.py	2021-03-26 04:32:28.229934072 -0400
++++ /usr/lib/python3.6/site-packages/ansible/modules/network/f5/bigip_device_license.py.patch	2021-03-26 04:32:37.621642650 -0400
+@@ -184,7 +184,7 @@
+             return result
+         for elem in root:
+             if elem.tag == 'faultNumber':
+-                result['faultNumber'] = int(elem.text)
++                result['faultNumber'] = elem.text
+             elif elem.tag == 'faultText':
+                 tmp = elem.attrib.get('{http://www.w3.org/2001/XMLSchema-instance}nil', None)
+                 if tmp == 'true':

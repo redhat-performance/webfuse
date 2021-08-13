@@ -10,8 +10,8 @@ bigip_worker:
   - worker001
 
 bigip_licenses:
-  - LHMZY-DAOPK-GGMYG-PNDYM-RZTEGVT
-  - IDJSW-NXHWB-JTLJI-HTQAB-DTZWQSP
+  - PUBRW-HAJMU-GGVTI-BIZFO-FOMSFSC
+  - UUWKT-WEJCK-WSCAX-MMHWQ-RTLXOZO
 
 bigip_sriov_int: "ens2f1"   # Preferrably baremetal network interface
 bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface
@@ -45,4 +45,4 @@ bigip_hostpath_dir: "/var/lib/hppvolumes"
 
 bigip_vm_image_url: "docker://docker-registry.upshift.redhat.com/ocp-edge-qe/bigip:15.1.0.3-EHF"
 bigip_user: "admin"
-bigip_password: "Verizon2020"
+bigip_password: "password"

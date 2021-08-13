@@ -22,7 +22,7 @@ trident_autosupport_image: "quay.io/mukrishn/trident-autosupport:v21.01.0"
 vsim_disk_image_dir: "/var/lib/vm_storage"
 vsim_snapshot_image_src: "http://perf1.perf.lab.eng.bos.redhat.com/pub/dwilson/OntapGoldImage.tar.gz"
 
-ontap_password: "MTAweWFyZC0K"
+ontap_password: "password"
 
 ###################
 ## IP Allocation ##
