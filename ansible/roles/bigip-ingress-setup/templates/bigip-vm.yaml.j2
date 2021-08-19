@@ -27,10 +27,16 @@ items:
           nodeSelector:
             kubernetes.io/hostname: {{ value.worker_node }}
           domain:
+            memory:
+              guest: "32Gi"
+            cpu:
+              cores: 16
+              sockets: 1
+              threads: 1
             resources:
               requests:
-                memory: "8192Mi"
-                cpu: "4"
+                memory: "48Gi"
+                cpu: "16"
             devices:
               disks:
               - name: {{ key }}-volume

@@ -47,7 +47,7 @@
 
 - name: Create CIS pods
   vars:
-    cis_tunnels: ['ocp-ingress-1', 'ocp-egress-1']
+    cis_tunnels: ['ocp-ingress', 'ocp-egress']
   k8s:
     state: present
     definition: "{{ lookup('template', 'bigip_cis.yaml.j2') }}"
@@ -56,3 +56,4 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'cis_test_deployment.yaml.j2') }}"
+  with_sequence: start=1 count={{ test_namespace_count|int }}

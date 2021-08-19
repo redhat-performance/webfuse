@@ -59,7 +59,7 @@
       src:  "{{ role_path }}/files/bigip_device_license-{{ python_version.stdout.split('.')[0] }}.{{ python_version.stdout.split('.')[1] }}.patch"
       dest: "/usr/lib/python{{ python_version.stdout.split('.')[0] }}.{{ python_version.stdout.split('.')[1] }}/site-packages/ansible/modules/network/f5/bigip_device_license.py"
     become: true
-  when: 
+  when:
     - bigip_module_patch | default(true) | bool
 
 # - name: Set MCP {{ bigip_worker_mcp }} MaxUnavailable to default 1
