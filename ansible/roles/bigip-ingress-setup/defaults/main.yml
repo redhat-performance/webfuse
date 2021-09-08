@@ -41,6 +41,7 @@ ip_nth: 1100           # No of workers IP + some buffers
 bigip_namespace: "f5-lb"
 test_namespace: "f5-served-ns"
 test_namespace_count: 1
+test_service_per_ns: 5
 
 bigip_worker_mcp: "worker-lb"
 bigip_hostpath_dir: "/var/lib/hppvolumes"

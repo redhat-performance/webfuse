@@ -91,11 +91,13 @@ vxlan_tunnel_info:
 {% for n in range(0, 2) %}
 {%- set l = namespace(value=0) %}
   bigip{{ n }}:
+    - { name: 'ocp-ingress-1', local_address: '{{ tunnel_float_ip[l.value] }}', secondary_address: '{{ tunnel_self_ip[j.value] }}', key: '4097', mtu: '{{ 8872 if jumbo_mtu else 1372 }}', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+{% set l.value = l.value + 1 %}
+{% set j.value = j.value + 1 %}
 {% for name in range(1, test_namespace_count|int+1) %}
-    - { name: 'ocp-ingress-{{ name }}', local_address: '{{ tunnel_float_ip[l.value] }}', secondary_address: '{{ tunnel_self_ip[j.value] }}', key: '4097', mtu: '{{ 8872 if jumbo_mtu else 1372 }}', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
-    - { name: 'ocp-egress-{{ name }}', local_address: '{{ tunnel_float_ip[l.value+1] }}', secondary_address: '{{ tunnel_self_ip[j.value+1] }}', key: '4097', mtu: '{{ 8872 if jumbo_mtu else 1372 }}', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
-{% set l.value = l.value + 2 %}
-{% set j.value = j.value + 2 %}
+    - { name: 'ocp-egress-{{ name }}', local_address: '{{ tunnel_float_ip[l.value] }}', secondary_address: '{{ tunnel_self_ip[j.value] }}', key: '4097', mtu: '{{ 8872 if jumbo_mtu else 1372 }}', profile: 'ocp-flood' }   # Assign IPs from baremetal external CIDR
+{% set l.value = l.value + 1 %}
+{% set j.value = j.value + 1 %}
 {% endfor %}
 {% endfor %}
 
@@ -103,13 +105,13 @@ vxlan_tunnel_info:
 under_self_ips:
 {% for n in range(0, 2) %}
   bigip{{ n }}:
-{% for m in range(0, test_namespace_count|int*2) %}
+{% for m in range(0, test_namespace_count|int+1) %}
     - { type: 'self', ip: 'v4', vlan: int-sriov, address: '{{ tunnel_self_ip[k.value] }}', mask: '{{ extcidrnet | ipaddr('netmask') }}', allow: 'all' }
 {% set k.value = k.value + 1 %}
 {% endfor %}
 {% endfor %}
 
-{% for n in range(0, test_namespace_count|int*2) %}
+{% for n in range(0, test_namespace_count|int+1) %}
     - { type: 'float', ip: 'v4', vlan: int-sriov, address: '{{ tunnel_float_ip[n] }}', mask: '{{ extcidrnet | ipaddr('netmask') }}', allow: 'all' }
 {% endfor %}
 
@@ -117,21 +119,23 @@ over_self_ips:
 {% for n in range(0, 2) %}
 {%- set k = namespace(value=1) %}
   bigip{{ n }}:
+    - { type: 'self', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.{{ 10+k.value}}.{{ 100+n+1 }}', mask: '255.255.255.252', allow: 'all' }
+{% set k.value = k.value + 1 %}
 {% for name in range(1, test_namespace_count|int+1) %}
-    - { type: 'self', ip: 'v4', vlan: ocp-ingress-{{ name }}, address: '192.168.{{ 10+k.value}}.{{ 100+n+1 }}', mask: '255.255.255.252', allow: 'all' }
     - { type: 'self', ip: 'v4', vlan: ocp-egress-{{ name }}, address: '192.168.{{ 10+k.value+1}}.{{ 100+n+1 }}', mask: '255.255.255.252', allow: 'all' }
-{% set k.value = k.value + 2 %}
+{% set k.value = k.value + 1 %}
 {% endfor %}
 {% endfor %}
 
 {% set k = namespace(value=1) %}
+    - { type: 'float', ip: 'v4', vlan: ocp-ingress-1, address: '192.168.{{ 10+k.value}}.100', mask: '255.255.255.252', allow: 'all' }
+{% set k.value = k.value + 1 %}
 {% for name in range(1, test_namespace_count|int+1) %}
-    - { type: 'float', ip: 'v4', vlan: ocp-ingress-{{ name }}, address: '192.168.{{ 10+k.value}}.100', mask: '255.255.255.252', allow: 'all' }
     - { type: 'float', ip: 'v4', vlan: ocp-egress-{{ name }}, address: '192.168.{{ 10+k.value+1}}.100', mask: '255.255.255.252', allow: 'all' }
-{% set k.value = k.value + 2 %}
+{% set k.value = k.value + 1 %}
 {% endfor %}
 
-{%- for n in range(0, test_namespace_count|int) %}
+{%- for n in range(0, (test_namespace_count|int*test_service_per_ns|int)+test_service_per_ns|int) %}
 {%- if test_virtual_ip.append ( extcidrnet | next_nth_usable(i.value + 250 | int + ip_nth | default(0) | int) ) %}{% endif %}
 {%- set i.value = i.value + 1 %}
 {%- endfor %}

@@ -8,54 +8,6 @@ metadata:
     k8s.ovn.org/hybrid-overlay-vtep: '{{ (vxlan_tunnel_info['bigip1'] | selectattr("name", "equalto", "ocp-egress-" ~ item ~ "") | list)[0].local_address }}'
 
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: f5-{{ test_namespace }}-{{ item }}
-  namespace: {{ test_namespace }}-{{ item }}
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: f5-{{ test_namespace }}-{{ item }}
-  template:
-    metadata:
-      labels:
-        app: f5-{{ test_namespace }}-{{ item }}
-    spec:
-      containers:
-      - env:
-        - name: service_name
-          value: f5-{{ test_namespace }}-{{ item }}
-        image: rhscl/httpd-24-rhel7:latest
-        imagePullPolicy: Always
-        name: f5-{{ test_namespace }}-{{ item }}
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: f5-{{ test_namespace }}-{{ item }}
-  namespace: {{ test_namespace }}-{{ item }}
-  labels:
-    app: f5-{{ test_namespace }}-{{ item }}
-    cis.f5.com/as3-tenant: {{ test_namespace }}-{{ item }}
-    cis.f5.com/as3-app: f5-{{ test_namespace }}-{{ item }}
-    cis.f5.com/as3-pool: web_pool
-spec:
-  ports:
-  - name: f5-{{ test_namespace }}-{{ item }}
-    port: 8080
-    protocol: TCP
-    targetPort: 8080
-  type: NodePort
-  selector:
-    app: f5-{{ test_namespace }}-{{ item }}
-
----
 kind: ConfigMap
 apiVersion: v1
 metadata:
@@ -76,14 +28,15 @@ data:
             "remark": "AS3 Template",
             "{{ test_namespace }}-{{ item }}": {
                 "class": "Tenant",
-                "f5-{{ test_namespace }}-{{ item }}": {
+{%- for i in range(1, test_service_per_ns|int+1) %}
+                "f5-{{ test_namespace }}-{{ item }}-{{ i }}": {
                     "class": "Application",
                     "template": "generic",
-                    "service_80_vs": {
+                    "service_80_vs_{{ i }}": {
                         "class": "Service_HTTP",
                         "remark": "service f5-{{ test_namespace }}-{{ item }}",
                         "virtualAddresses": [
-                            "{{ test_virtual_ip[item|int-1] }}"
+                            "{{ test_virtual_ip[(item|int*test_service_per_ns)+i] }}"
                         ],
                         "pool": "web_pool"
                     },
@@ -99,7 +52,8 @@ data:
                             }
                         ]
                     }
-                }
+                }{{ "," if not loop.last else "" }}
+{%- endfor %}
             }
         }
     }
