@@ -3,7 +3,7 @@
 osv_channel: stable
 
 # AMQ subscription channel
-amq_channel: stable
+amq_channel: amq-streams-1.7.x
 
 # Cluster Logging Operator channel
 cluster_logging_channel: 5.0
