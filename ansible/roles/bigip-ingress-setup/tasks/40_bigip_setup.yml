@@ -34,8 +34,12 @@
 - name: Generate stablcurco1_dns46.tcl
   template:
     src: stablcurco1_dns46.tcl.j2
-    dest: "{{ role_path }}/files/stablcurco1_dns46.tcl"
-  delegate_to: localhost
+    dest: "/tmp/stablcurco1_dns46.tcl"
+
+- name: Generate stablcurco1_nat46.tcl
+  copy:
+    src: stablcurco1_nat46.tcl
+    dest: "/tmp/stablcurco1_nat46.tcl"
 
 - block:
   - name: detect python interpreter
@@ -43,22 +47,35 @@
       /usr/bin/python --version
     register: python_version
     ignore_errors: true
+    delegate_to: localhost
 
   - name: set python version
     shell: |
       {{ (python_version.stderr_lines|length > 0 and 'Python' in python_version.stderr) | ternary('/usr/bin/python', '/usr/libexec/platform-python') }} --version | awk '{print $2}'
     register: python_version
     become: true
+    delegate_to: localhost
+
+  - name: Install required packages
+    yum:
+      name: "patch"
+      state: present
+      update_cache: true
+      disable_gpg_check: yes
+    become: true
+    delegate_to: localhost
 
   - name: install galaxy module
     shell: "ansible-galaxy collection install ansible.posix"
     become: true
+    delegate_to: localhost
 
   - name: Patch ansible module
     patch:
       src:  "{{ role_path }}/files/bigip_device_license-{{ python_version.stdout.split('.')[0] }}.{{ python_version.stdout.split('.')[1] }}.patch"
       dest: "/usr/lib/python{{ python_version.stdout.split('.')[0] }}.{{ python_version.stdout.split('.')[1] }}/site-packages/ansible/modules/network/f5/bigip_device_license.py"
     become: true
+    delegate_to: localhost
   when:
     - bigip_module_patch | default(true) | bool
 

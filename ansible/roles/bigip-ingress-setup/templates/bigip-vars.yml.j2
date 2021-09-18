@@ -135,7 +135,7 @@ over_self_ips:
 {% set k.value = k.value + 1 %}
 {% endfor %}
 
-{%- for n in range(0, (test_namespace_count|int*test_service_per_ns|int)+test_service_per_ns|int) %}
+{%- for n in range(0, (test_namespace_count|int*test_service_per_ns|int)+test_service_per_ns|int+1) %}
 {%- if test_virtual_ip.append ( extcidrnet | next_nth_usable(i.value + 250 | int + ip_nth | default(0) | int) ) %}{% endif %}
 {%- set i.value = i.value + 1 %}
 {%- endfor %}

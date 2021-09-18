@@ -218,7 +218,7 @@
   bigip_irule:
     module: ltm
     name: DNS46
-    src: ./roles/bigip-ingress-setup/files/stablcurco1_dns46.tcl
+    src: /tmp/stablcurco1_dns46.tcl
   tags: dns_irule
   delegate_to: "{{ groups['orchestration'][0] }}"
 
@@ -226,7 +226,7 @@
   bigip_irule:
     module: ltm
     name: NAT46
-    src: ./roles/bigip-ingress-setup/files/stablcurco1_nat46.tcl
+    src: /tmp/stablcurco1_nat46.tcl
   tags: nat_irule
   delegate_to: "{{ groups['orchestration'][0] }}"
 
