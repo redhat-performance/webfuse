@@ -35,12 +35,19 @@ operators:
 # BigIP playbook vars
 ################################################################################
 
+bigip_password: "password" # Update this password variable
+
 bigip_worker:
   - worker002-fc640
   - worker003-fc640
 
 bigip_sriov_int: "ens2f1"   # Preferrably baremetal network interface
 bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface"
+
+################################################################################
+# Trident playbook vars
+################################################################################
+ontap_password: "password" # Update this password variable
 
 ################################################################################
 # RHACM install playbook vars

@@ -9,3 +9,4 @@ package_list:
   - python3-lxml
   - qemu-kvm
   - qemu-img
+  - patch

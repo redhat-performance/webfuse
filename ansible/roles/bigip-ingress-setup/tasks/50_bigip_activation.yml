@@ -1,5 +1,6 @@
 - name: Include vars
   include_vars: /tmp/bigip-vars.yml
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: License BIG-IP using a key
   bigip_device_license:
@@ -9,18 +10,21 @@
   retries: 5 # 3 minutes
   delay: 60
   until: bigip_activation is succeeded
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Set some defaults
   set_fact:
     lb_host: "{{ inventory_hostname.split('.')[0] }}"
     primary: false
   tags: always
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Determine if it's Primary
   set_fact:
     primary: true
   when: lb_host == "bigip1"
   tags: always
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Configure default system settings
   bigip_command:
@@ -30,12 +34,14 @@
       - modify auth user admin shell bash
       - modify sys daemon-log-settings mcpd audit verbose+
   tags: system
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Set the banner for the SSHD service from a string
   bigip_device_sshd:
     banner: "enabled"
     banner_text: "THIS IS A PRIVATE NETWORK AND COMPUTING SYSTEM FOR EXCLUSIVE USE BY AUTHORIZED PERSONNEL ONLY. If you have not been expressly authorized to access this system by Verizon Wireless, please log off immediately. NOTICE TO ALL AUTHORIZED USERS: This is a private and proprietary system owned, operated and monitored by VerizonWireless. Use of this system and any data in transit to or from or stored on this system can be accessed, intercepted, monitored, recorded, copied, audited and inspected by Verizon Wireless and disclosed to third parties and or law enforcement. By continuing to use this system you agree to comply with all applicable policies and procedures and consent to the terms and conditions contained herein. If you do not agree, please log off now."
   tags: ssh
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Disable the setup utility and enable the security banner
   bigip_sys_global:
@@ -44,6 +50,7 @@
     banner_text: "THIS IS A PRIVATE NETWORK AND COMPUTING SYSTEM FOR EXCLUSIVE USE BY AUTHORIZED PERSONNEL ONLY. If you have not been expressly authorized to access this system by Verizon Wireless, please log off immediately. NOTICE TO ALL AUTHORIZED USERS: This is a private and proprietary system owned, operated and monitored by VerizonWireless. Use of this system and any data in transit to or from or stored on this system can be accessed, intercepted, monitored, recorded, copied, audited and inspected by Verizon Wireless and disclosed to third parties and or law enforcement. By continuing to use this system you agree to comply with all applicable policies and procedures and consent to the terms and conditions contained herein. If you do not agree, please log off now."
     state: "present"
   tags: globals
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create Untagged Vlans
   bigip_vlan:
@@ -54,6 +61,7 @@
     tag: "{{ item.tag }}"
   loop: "{{ untagged_vlan_info }}"
   tags: untag_vlans
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create tagged Vlans
   bigip_vlan:
@@ -64,6 +72,7 @@
     tag: "{{ item.tag }}"
   loop: "{{ tagged_vlan_info }}"
   tags: tag_vlans
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create Self IPs
   bigip_selfip:
@@ -76,6 +85,7 @@
       - "{{ item.allow }}"
   loop: "{{ self_ips[lb_host] }}"
   tags: self_ip
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create underlay VTEP selfIP
   bigip_selfip:
@@ -88,6 +98,7 @@
       - "{{ item.allow }}"
   loop: "{{ under_self_ips[lb_host] }}"
   tags: under_self_ip
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 
 - name: Create vxlan profiles
@@ -95,6 +106,7 @@
     commands:
       - create net tunnels vxlan ocp-flood flooding-type multipoint
   tags: create vxlan profiles
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create vxlan tunnel
   bigip_tunnel:
@@ -110,6 +122,7 @@
     traffic_group: traffic-group-1
   loop: "{{ vxlan_tunnel_info[lb_host] }}"
   tags: vxlan_tunnel
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create overlay selfIP
   bigip_selfip:
@@ -122,12 +135,14 @@
       - "{{ item.allow }}"
   loop: "{{ over_self_ips[lb_host] }}"
   tags: over_self_ip
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Setup NTP servers and timezone
   bigip_device_ntp:
     ntp_servers:
       - "{{ bigip_ntp_server }}"
     timezone: UTC
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
  ## HA Configuration ##
 - name: Change Config Sync Hostname
@@ -136,6 +151,7 @@
   register: config_sync_hostname
   tags: failover
   ignore_errors: yes
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Configure device connectivity for standard HA pair
   bigip_device_connectivity:
@@ -143,6 +159,7 @@
     unicast_failover:
       - address: "{{ self_ips[lb_host][0]['address']  }}"
   tags: failover
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add trusts for all peer devices to Active device
   bigip_device_trust:
@@ -153,6 +170,7 @@
   when: primary|bool
   tags: failover
   ignore_errors: true      # To make it idempotent
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create a sync-failover device group with auto-sync enabled
   bigip_device_group:
@@ -163,6 +181,7 @@
     type: sync-failover
   when: primary|bool
   tags: failover
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add Primary BigIP to "device_trust_group"
   bigip_device_group_member:
@@ -171,6 +190,7 @@
     state: present
   when: primary|bool
   tags: failover
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add Secondary BigIP to "device_trust_group"
   bigip_device_group_member:
@@ -179,6 +199,7 @@
     state: present
   when: primary|bool
   tags: failover
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Perform an initial sync
   bigip_configsync_action:
@@ -188,6 +209,7 @@
   tags:
     - failover
     - sync
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 ####VXLAN Tunnel configuration #####
 ### DNS46 Configuration####
@@ -196,15 +218,17 @@
   bigip_irule:
     module: ltm
     name: DNS46
-    src: ./roles/bigip-ingress-setup/files/stablcurco1_dns46.tcl
+    src: /tmp/stablcurco1_dns46.tcl
   tags: dns_irule
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add NAT irules
   bigip_irule:
     module: ltm
     name: NAT46
-    src: ./roles/bigip-ingress-setup/files/stablcurco1_nat46.tcl
+    src: /tmp/stablcurco1_nat46.tcl
   tags: nat_irule
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add icall script
   uri:
@@ -221,10 +245,12 @@
       definition: "{{ icall_definition }}"
       description: Polling VS to gather destination ip:port -> VS name mapping
   ignore_errors: yes
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add icall handler
   bigip_command:
     commands: "create sys icall handler periodic DG_IP_2_VS { first-occurrence 2020-04-06:00:00:00 interval 30 script datagroup_ip_vs_v1 }"
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create DNS profile
   bigip_profile_dns:
@@ -233,18 +259,21 @@
     enable_dnssec: no
     enable_gtm: no
   tags: dns46_proilfe
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 # - name: create ipv6 SNAT pool
 #   bigip_snat_pool:
 #     name: wsn_ir_ipv6_snatpool
 #     members: "{{ bigip_ipv6_snat_pool }}"
 #   tags: wsn_ir_ipv6_snatpool
+#   delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: create upstsream DNS SNAT pool
   bigip_snat_pool:
     name: upstream_dns_snatpool
     members: "{{ bigip_upstream_dns_snat_pool }}"
   tags: upstream_dns_snatpool
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Create upstream DNS Pool
   bigip_pool:
@@ -254,6 +283,7 @@
     monitors:
       - gateway_icmp
   tags: upstream_monitor
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add member to DNS pool
   bigip_pool_member:
@@ -261,6 +291,7 @@
     address: "{{ bigip_upstream_dns }}"
     port: 53
   tags: dns46_pool_member
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 
 - name: Create Default Route for intgress
@@ -270,6 +301,7 @@
     vlan: ocp-ingress-1
     name: Ingress_Default
   tags: Ingress_route
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 # - name: Create static route to Upstream DNS
 #  bigip_static_route:
@@ -278,6 +310,7 @@
 #    gateway_address: 10.46.29.254
 #    name: upstream_dns
 #  tags: upstream_dns_route
+#  delegate_to: "{{ groups['orchestration'][0] }}"
 
 # - name: Create static route to WSN_IR network
 #   bigip_static_route:
@@ -286,6 +319,7 @@
 #     gateway_address: "{{ bigip_wsn_ir_route.gateway }}"
 #     name: WSN_IR_IPV6_Route
 #   tags: wsn_ir_ipv6_route
+#   delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add DNS46 Virtual  Server
   bigip_virtual_server:
@@ -300,6 +334,7 @@
     profiles:
       - dns46
   tags: dns_46_VS
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add UpStream Virtual  Server
   bigip_virtual_server:
@@ -313,6 +348,7 @@
     profiles:
       - dns46
   tags: upstream_dns_vs
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Add NAT46 Virtual  Server
   bigip_virtual_server:
@@ -333,16 +369,19 @@
     profiles:
       - fastL4
   tags: nat46_vs
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 #### Save The Config ####
 - name: Save system settings
   bigip_command:
     commands: save sys config
   tags: save
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Give some time to settle down before final sync
   pause:
     minutes: 1
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 ### Final Sync between HA Pair###
 - name: Perform a Final  sync on standby node
@@ -355,6 +394,7 @@
   tags:
     - failover
     - sync
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 - name: Perform a Final  sync on active node
   bigip_configsync_action:
@@ -364,6 +404,7 @@
   tags:
     - failover
     - sync
+  delegate_to: "{{ groups['orchestration'][0] }}"
 
 # Added this for performance scale environment only
 - name: Turn on auto-sync
@@ -375,3 +416,4 @@
     type: sync-failover
   when: primary|bool
   tags: failover
+  delegate_to: "{{ groups['orchestration'][0] }}"

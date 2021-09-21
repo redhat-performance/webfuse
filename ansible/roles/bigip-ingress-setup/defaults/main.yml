@@ -10,8 +10,8 @@ bigip_worker:
   - worker001
 
 bigip_licenses:
-  - LHMZY-DAOPK-GGMYG-PNDYM-RZTEGVT
-  - IDJSW-NXHWB-JTLJI-HTQAB-DTZWQSP
+  - PUBRW-HAJMU-GGVTI-BIZFO-FOMSFSC
+  - UUWKT-WEJCK-WSCAX-MMHWQ-RTLXOZO
 
 bigip_sriov_int: "ens2f1"   # Preferrably baremetal network interface
 bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface
@@ -39,10 +39,13 @@ ip_nth: 1100           # No of workers IP + some buffers
 #########################
 
 bigip_namespace: "f5-lb"
+test_namespace: "f5-served-ns"
+test_namespace_count: 1
+test_service_per_ns: 5
 
 bigip_worker_mcp: "worker-lb"
 bigip_hostpath_dir: "/var/lib/hppvolumes"
 
 bigip_vm_image_url: "docker://docker-registry.upshift.redhat.com/ocp-edge-qe/bigip:15.1.0.3-EHF"
 bigip_user: "admin"
-bigip_password: "Verizon2020"
+bigip_password: "password"
