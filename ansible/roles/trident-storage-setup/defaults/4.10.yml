@@ -1,0 +1,35 @@
+---
+netapp_osv: false
+
+trident_namespace: "trident"
+
+# Cloned from here https://hub.docker.com/r/netapp/trident-operator
+# Due to docker pull limit
+trident_operator_image: "quay.io/mukrishn/trident-operator:v21.07.1"
+
+# Cloned from here https://hub.docker.com/r/netapp/trident
+# Due to docker pull limit
+trident_image: "quay.io/mukrishn/trident:v21.07.1"
+
+# Cloned from here https://hub.docker.com/r/netapp/trident-autosupport
+# Due to docker pull limit
+trident_autosupport_image: "quay.io/mukrishn/trident-autosupport:v21.01.0"
+
+########################
+## VM Input Variables ##
+########################
+
+vsim_disk_image_dir: "/var/lib/vm_storage"
+vsim_snapshot_image_src: "http://perf1.perf.lab.eng.bos.redhat.com/pub/dwilson/OntapGoldImage.tar.gz"
+
+ontap_password: "password"
+
+###################
+## IP Allocation ##
+###################
+
+# Baremetal external CIDR
+extcidrnet: "192.168.216.0/21"
+
+# Nth IP assigned to Management LIF
+lif_ip_nth: 1330
