@@ -3,13 +3,13 @@
 osv_channel: stable
 
 # AMQ subscription channel
-amq_channel: amq-streams-1.7.x
+amq_channel: amq-streams-1.x
 
 # Cluster Logging Operator channel
-cluster_logging_channel: 5.2
+cluster_logging_channel: 5.0
 
 # Elasticsearch Operator channel
-elasticsearch_channel: 5.2
+elasticsearch_channel: 5.0
 
 # Precision Time Protocol (ptp) Operator channel
 ptp_channel: stable

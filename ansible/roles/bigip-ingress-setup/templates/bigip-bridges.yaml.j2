@@ -1,5 +1,5 @@
 ---
-apiVersion: nmstate.io/{{ 'v1beta1' if osv_channel == 'stable' and release_version[2]|int >= 7 else 'v1alpha1' }}
+apiVersion: nmstate.io/{{ 'v1beta1' if osv_channel == 'stable' and release_version.split('.')[1]|int >= 7 else 'v1alpha1' }}
 kind: NodeNetworkConfigurationPolicy
 metadata:
   name: bigip-bridges

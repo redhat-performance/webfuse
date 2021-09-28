@@ -22,7 +22,7 @@ metadata:
   name: openshift-ptp-subscription
   namespace: openshift-ptp
 spec:
-  channel: "{{release_version[0]|int}}.{{release_version[2]|int}}"
+  channel: "{{release_version.split('.')[0]|int}}.{{release_version.split('.')[1]|int}}"
   name: ptp-operator
   source: "{{ ptp_operator_source | default('redhat-operators') }}"
   sourceNamespace: openshift-marketplace

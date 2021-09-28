@@ -11,20 +11,20 @@
     - name: Include Operator installation
       include_role:
         name: operators
-        defaults_from: "{{ release_version[0]|int }}.{{ release_version[2]|int }}.yml"
+        defaults_from: "{{ release_version.split('.')[0]|int }}.{{ release_version.split('.')[1]|int }}.yml"
       when: operators is defined and operators | length > 0
       tags: always
 
     - name: Trident setup
       include_role:
         name: trident-storage-setup
-        defaults_from: "{{ release_version[0]|int }}.{{ release_version[2]|int }}.yml"
+        defaults_from: "{{ release_version.split('.')[0]|int }}.{{ release_version.split('.')[1]|int }}.yml"
       tags: trident
 
     - name: Aspenmesh servicemesh setup
       include_role:
         name: aspenmesh-servicemesh-setup
-        defaults_from: "{{ release_version[0]|int }}.{{ release_version[2]|int }}.yml"
+        defaults_from: "{{ release_version.split('.')[0]|int }}.{{ release_version.split('.')[1]|int }}.yml"
       tags: aspenmesh
 
 - hosts: orchestration
