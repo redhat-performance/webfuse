@@ -5,11 +5,11 @@ trident_namespace: "trident"
 
 # Cloned from here https://hub.docker.com/r/netapp/trident-operator
 # Due to docker pull limit
-trident_operator_image: "quay.io/mukrishn/trident-operator:v21.07.1"
+trident_operator_image: "quay.io/mukrishn/trident-operator:v21.07.2"
 
 # Cloned from here https://hub.docker.com/r/netapp/trident
 # Due to docker pull limit
-trident_image: "quay.io/mukrishn/trident:v21.07.1"
+trident_image: "quay.io/mukrishn/trident:v21.07.2"
 
 # Cloned from here https://hub.docker.com/r/netapp/trident-autosupport
 # Due to docker pull limit
