@@ -27,3 +27,11 @@
     state: present
     definition: "{{ lookup('file', 'cluster-logging-instance.yml' ) }}"
   tags: logging
+
+- name: Download and unarchive kube-burner
+  unarchive:
+    src: "https://github.com/cloud-bulldozer/kube-burner/releases/download/v0.13.2/kube-burner-0.13.2-Linux-x86_64.tar.gz"
+    dest: /usr/bin/
+    remote_src: yes
+    mode: 0700
+  become: true
