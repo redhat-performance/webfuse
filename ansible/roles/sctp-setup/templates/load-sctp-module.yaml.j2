@@ -7,7 +7,7 @@ metadata:
 spec:
   config:
     ignition:
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 6)) %} 
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 6)) %} 
       version: 3.1.0
     storage:
       files:
@@ -21,7 +21,7 @@ spec:
           overwrite: true
           contents:
             source: data:,sctp
-{% elif ((release_version[0]|int == 4) and (release_version[2]|int < 6)) %}
+{% elif ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int < 6)) %}
       version: 2.2.0
     storage:
       files:

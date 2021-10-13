@@ -9,7 +9,7 @@ spec:
   pathConfig:
     path: "{{ bigip_hostpath_dir }}"
     useNamingPrefix: false
-{% if ((release_version[0]|int == 4) and (release_version[2]|int > 6)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int > 6)) %}
   workload:
     nodeSelector:
       node-role.kubernetes.io/{{ bigip_worker_mcp | default('worker-lb') }}: ""

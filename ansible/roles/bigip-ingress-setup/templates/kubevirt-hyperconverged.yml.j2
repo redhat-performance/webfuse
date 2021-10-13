@@ -6,7 +6,7 @@ metadata:
   namespace: openshift-cnv
 spec:
   BareMetalPlatform: true
-{% if ((release_version[0]|int == 4) and (release_version[2]|int >= 7)) %}
+{% if ((release_version.split('.')[0]|int == 4) and (release_version.split('.')[1]|int >= 7)) %}
   infra:
     nodePlacement:
       nodeSelector:

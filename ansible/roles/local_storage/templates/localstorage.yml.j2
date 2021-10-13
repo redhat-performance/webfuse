@@ -21,7 +21,7 @@ metadata:
   name: local-storage-operator
   namespace: openshift-local-storage
 spec:
-  channel: "{{release_version[0]|int}}.{{release_version[2]|int}}"
+  channel: "{{release_version.split('.')[0]|int}}.{{release_version.split('.')[1]|int}}"
   installPlanApproval: Automatic 
   name: local-storage-operator
   source: redhat-operators

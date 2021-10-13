@@ -1,0 +1,31 @@
+---
+
+istio_namespace: "istio-system"
+
+
+# Helm and Aspenmesh tar file path
+
+helm_release: "https://get.helm.sh/helm-v3.5.2-linux-386.tar.gz"
+webfuse_images_path: "http://perf1.perf.lab.eng.bos.redhat.com/pub/dwilson/webfuse_files/"
+aspenmesh_release_file: "aspenmesh-carrier-grade-1.9.8-am1-linux.tar.gz"
+
+aspen_mesh_controlplane:
+  image: controlplane-1.9.8-am1
+  modelruntimeimage: modelruntime-1.9.8-am1
+
+openshift_oauthproxy:
+  image: openshift-oauth-proxy-1.9.8-am1
+
+aspen_mesh_dashboard:
+  image: dashboard-1.9.8-am1
+
+aspen_mesh_secure_ingress:
+  image: secure-ingress-1.9.8-am1
+
+aspen_mesh_metrics_collector:
+  serviceimage: metrics-collector-service-1.9.8-am1
+  alertmanagerimage: alertmanager-1.9.8-am1
+  configmapreloadimage: configmap-reloader-1.9.8-am1
+
+traffic_claim_enforcer:
+  image: traffic-claim-enforcer-1.9.8-am1
