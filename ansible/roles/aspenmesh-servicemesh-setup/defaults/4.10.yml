@@ -6,7 +6,7 @@ istio_namespace: "istio-system"
 # Helm and Aspenmesh tar file path
 
 helm_release: "https://get.helm.sh/helm-v3.5.2-linux-386.tar.gz"
-webfuse_images_path: "http://rdu-storage01.scalelab.redhat.com/murali/webfuse_images/"
+webfuse_images_path: "http://perf1.perf.lab.eng.bos.redhat.com/pub/dwilson/webfuse_files/"
 aspenmesh_release_file: "aspenmesh-carrier-grade-1.9.8-am1-linux.tar.gz"
 
 aspen_mesh_controlplane:
