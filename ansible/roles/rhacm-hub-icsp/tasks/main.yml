@@ -22,17 +22,25 @@
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f "{{ rhacm_install_directory }}/rhacm-deploy/icsp.yml"
   when: icsp_exists.rc == 1
 
+- name: Determine if we enable worker mcp
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get mcp worker --no-headers -o custom-columns=COUNT:.status.machineCount
+  register: enable_worker_mcp_count
+
 - name: Wait until MachineConfigPools are updating
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get mcp --no-headers {{ item }} | awk '{print $4}'
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get mcp --no-headers {{ item.mcp }} | awk '{print $4}'
   register: result
   delay: 5
   retries: 30
   until: result.stdout == "True"
   with_items:
-    - master
-    - worker
-  when: icsp_exists.rc == 1
+  - mcp: master
+  - mcp: worker
+    enabled: "{{ enable_worker_mcp_count.stdout|int > 0 }}"
+  when:
+  - icsp_exists.rc == 1
+  - item.enabled | default(true)
 
 - name: Wait until MachineConfigPools are updated
   shell: |
@@ -42,8 +50,8 @@
   retries: 120
   until: result.stdout == "True"
   with_items:
-    - master
-    - worker
+  - master
+  - worker
   when: icsp_exists.rc == 1
 
 - name: Obtain node ips for fixing ICSP mirroring
