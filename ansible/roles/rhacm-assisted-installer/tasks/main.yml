@@ -73,7 +73,7 @@
     dest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/agentserviceconfig.yml"
   - src: assisted-mirror-config.yml
     dest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/assisted-mirror-config.yml"
-    when: rhacm_disconnected_registry|length > 1
+    enabled: "{{ rhacm_disconnected_registry|length > 1 }}"
 
 - name: Patch provisioning configuration
   shell: |
@@ -91,7 +91,7 @@
   - manifest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/configmap-cpumemory.yml"
   - manifest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/agentserviceconfig.yml"
   - manifest: "{{ rhacm_install_directory }}/rhacm-assisted-installer/assisted-mirror-config.yml"
-    enabled: rhacm_disconnected_registry|length > 1
+    enabled: "{{ rhacm_disconnected_registry|length > 1 }}"
   register: result
   until: result.failed == false
   retries: 2
