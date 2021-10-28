@@ -30,6 +30,8 @@ operators:
     namespace: amq
   - name: elasticsearch-operator
     namespace: openshift-operators-redhat
+  - name: local-storage-operator
+    namespace: openshift-local-storage
 
 ################################################################################
 # BigIP playbook vars

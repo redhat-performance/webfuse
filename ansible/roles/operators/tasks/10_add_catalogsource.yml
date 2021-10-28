@@ -81,6 +81,7 @@
     clo_operator_source: "{{ 'redhat-operators-clo' if 'clo' in iib_id.keys() else 'redhat-operators' }}"
     amq_operator_source: "{{ 'redhat-operators-amq' if 'amq' in iib_id.keys() else 'redhat-operators' }}"
     eso_operator_source: "{{ 'redhat-operators-eso' if 'eso' in iib_id.keys() else 'redhat-operators' }}"
+    lso_operator_source: "{{ 'redhat-operators-lso' if 'lso' in iib_id.keys() else 'redhat-operators' }}"
 
 # Takes few seconds to initiate catalog source
 - name: Wait for few seconds before installing operators

@@ -122,6 +122,7 @@ iib_id:
 #  amq: 26761     #amq-operator
 #  pao: 26761     #performance-addon-operator
 #  eso: 26761     #elastic-search-operator
+#  lso: 26761     #local-storage-operator
 ```
 
 To get your access to Brew registry, you must email operator-pipeline-wg@redhat.com w/ your email address and GPG key. You will receive an encrypted file which contains your password, use that as `brew_reg_password`

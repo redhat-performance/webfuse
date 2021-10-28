@@ -1,19 +1,4 @@
 ---
-# Install and setup local-storage operator
-
-- name: Install local-storage operator
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'localstorage.yml.j2') }}"
-
-- include_role:
-    name: operators
-    tasks_from: 99_csv_status.yml
-  vars:
-    namespace: "{{ item }}"
-  with_items:
-    - openshift-local-storage
-
 # The localvolume resource will not be instantly available, thus retry for around 2 minutes
 - name: Create localvolume resource
   k8s:
