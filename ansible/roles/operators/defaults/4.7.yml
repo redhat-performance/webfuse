@@ -20,6 +20,9 @@ sriov_channel: 4.7
 # Performance add-on operator 
 pao_channel: 4.7
 
+# Local Storage operator channel
+lso_channel: 4.7
+
 # To enable nightly catalog source
 nightly_operator: false
 
