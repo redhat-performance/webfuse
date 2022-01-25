@@ -1,6 +1,6 @@
 name: ansible-lint
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -21,9 +21,11 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
-          
+
       - name: ansible-lint
         uses: ansible/ansible-lint-action@master
         with:
           targets: "ansible/*"
+          override-deps: |
+            rich>=9.5.1,<11.0.0
           args: "-x 106,204,207,208,301,303,305,306,401,601,602"

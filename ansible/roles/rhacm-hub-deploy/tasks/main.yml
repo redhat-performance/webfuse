@@ -1,9 +1,9 @@
 ---
 # rhacm-hub-deploy tasks - Install upstream/downstream RHACM hub onto a cluster
 
-- name: Checkout the latest open-cluster-management/deploy repo
+- name: Checkout the latest stolostron/deploy repo
   git:
-    repo: https://github.com/open-cluster-management/deploy.git
+    repo: https://github.com/stolostron/deploy.git
     dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
     force: true
 
@@ -27,6 +27,9 @@
     export CUSTOM_REGISTRY_REPO="quay.io:443/acm-d"
     {% endif %}
     export DOWNSTREAM=true
+    {% if rhacm_disableHubSelfManagement %}
+    echo "  disableHubSelfManagement: true" >> {{ rhacm_install_directory }}/rhacm-deploy/deploy/multiclusterhub/example-multiclusterhub-cr.yaml
+    {% endif %}
     {{ rhacm_install_directory }}/rhacm-deploy/deploy/start.sh --silent 2>&1 | tee {{ rhacm_install_directory }}/rhacm-deploy/$(date -u +%Y%m%d-%H%M%S)-start.log
   args:
     chdir: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
