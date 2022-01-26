@@ -57,24 +57,24 @@ ontap_password: "password" # Update this password variable
 # All file locations should be on orchestration host and clusters must be accessible
 # by orchestration host
 rhacm_version: 2.1
-rhacm_install_directory: /home/stack
-rhacm_disableHubSelfManagement: false
-hub_cluster_kubeconfig: /home/stack/ocp_clusters/vlan608/auth/kubeconfig
+rhacm_install_directory: /root
+rhacm_disableHubSelfManagement: true
+hub_cluster_kubeconfig: /root/bm/kubeconfig
 managed_cluster_name: shiftstack0000
 managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
 
 rhacm_quay_pullsecret: ''
-# Example: rhacm_build: '2.3.0-DOWNSTREAM-2021-07-21-06-26-02'
-rhacm_build: ''
+# Example: rhacm_build: '2.4.2-DOWNSTREAM-2022-01-24-02-35-01'
+rhacm_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
-rhacm_disconnected_registry: ''
-rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.8.1-x86_64
+rhacm_disconnected_registry:
+rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.9.15-x86_64
 
 rhacm_clusterimagesets:
-- name: openshift-4.8.1
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.8.1-x86_64
+- name: openshift-4.9.15
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.9.15-x86_64
 
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
