@@ -8,7 +8,7 @@ metadata:
     app: assisted-service
 data:
   ca-bundle.crt: |
-    {{ mirror_cert.content | b64decode | indent(width=4, indentfirst=false) }}
+    {{ mirror_cert.content | b64decode | indent(width=4) }}
 
   registries.conf: |
     unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
