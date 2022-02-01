@@ -3,15 +3,15 @@
 
 - name: Create directories for ClusterImageSets
   file:
-    path: "{{ rhacm_install_directory }}/rhacm_cis"
+    path: "{{ rhacm_install_directory }}/rhacm-cis"
     state: directory
 
 - name: Template out ClusterImageSets for SNO to RHACM Hub Cluster
   template:
     src: cis.yaml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm_cis/{{ item.name }}-cis.yaml"
+    dest: "{{ rhacm_install_directory }}/rhacm-cis/{{ item.name }}-cis.yaml"
   with_items: "{{ rhacm_clusterimagesets }}"
 
 - name: Apply ClusterImageSets to RHACM Hub Cluster
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm_cis
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm-cis

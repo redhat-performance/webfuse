@@ -14,7 +14,7 @@
   roles:
     - rhacm_get_shiftstack_cd_config
     - openstack_openshift_image
-    - rhacm_add_clusterimagesets
+    - rhacm-add-clusterimagesets
   post_tasks:
     # In order to allow this process to be more concurrent, we leverage creating an
     # inventory host per provisioned cluster to be created
