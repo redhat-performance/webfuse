@@ -1,0 +1,14 @@
+---
+# Playbook to setup ZTP process for  RHACM
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/undercloud.hosts ansible/rhacm-ztp-setup.yml
+#
+
+- name: Setup RHACM ZTP
+  hosts: orchestration
+  vars_files:
+  - vars/all.yml
+  roles:
+  - rhacm-ztp-setup

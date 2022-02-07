@@ -1,0 +1,117 @@
+---
+# rhacm-ztp-setup tasks
+
+- name: Create directories for rhacm-ztp
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - "{{ rhacm_install_directory }}/rhacm-ztp"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy"
+
+- name: Clone cnf-features-deploy
+  git:
+    repo: "{{ cnf_features_deploy_repo }}"
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy"
+    force: true
+    version: "{{ cnf_features_deploy_branch }}"
+
+# Perhaps we can detect if the repo exists already instead of ignoring errors
+- name: Create cnf-features-deploy repo in gogs
+  uri:
+    url: "http://{{ gogs_host }}:{{ gogs_port }}/api/v1/admin/users/{{ gogs_username }}/repos"
+    user: "{{ gogs_username }}"
+    password: "{{ gogs_password }}"
+    force_basic_auth: true
+    method: POST
+    headers:
+      content-type: application/json
+      Accept: application/json
+    body: {"name": "cnf-features-deploy", "description": "test repo", "private": false}
+    body_format: json
+    validate_certs: no
+    status_code: 201
+    return_content: yes
+  ignore_errors: true
+
+# The --force flag on the git push forces the gogs fork of the repo to be reset to the above "clone"
+- name: Push cnf-features-deploy into gogs
+  shell: |
+    cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
+    git remote add origin-gogs http://{{ gogs_username }}:{{ gogs_password }}@{{ gogs_host }}:{{ gogs_port }}/testadmin/cnf-features-deploy.git
+    git push -u origin-gogs --all --force
+
+- name: Patch cnf-features-deploy deployment-openshift-repo-server-patch.json
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/deployment-openshift-repo-server-patch.json"
+    replace: "{{ rhacm_disconnected_registry }}"
+    regexp: "quay.io"
+
+- name: Remove the examples/siteconfig directory from cnf-features-deploy
+  file:
+    state: absent
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/siteconfig"
+
+- name: Remove the cluster/policies app from cnf-features-deploy argocd deployment
+  file:
+    state: absent
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/{{ item }}"
+  loop:
+  - clusters-app.yaml
+  - policies-app.yaml
+
+- name: Remove clusters-app.yaml and policies-app.yaml from cnf-features-deploy argocd deployment kustomization.yaml
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/kustomization.yaml"
+    replace: ""
+    regexp: "{{ item }}"
+  loop:
+  - ".*- clusters-app.yaml"
+  - ".*- policies-app.yaml"
+
+- name: Patch common-ranGen.yaml disconnected operator-index
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/policygentemplates/common-ranGen.yaml"
+    replace: "image: {{ rhacm_disconnected_registry }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}"
+    regexp: "image: registry.example.com:5000/disconnected-redhat-operators/disconnected-redhat-operator-index:v4.9"
+
+- name: Get ImageContentSourcePolicy to append to common-ranGen.yaml
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get imagecontentsourcepolicy redhat-operator-index-0 -o yaml | awk '/repositoryDigestMirrors:/,/END_OF_FILE/'
+  register: icsp_digest_mirrors
+
+- name: Remove example ICSP mirrors from common-ranGen.yaml
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/policygentemplates/common-ranGen.yaml"
+    replace: ""
+    regexp: "{{ item }}"
+  loop:
+  - ".*repositoryDigestMirrors:"
+  - ".*- mirrors:"
+  - ".*- registry.example.com:5000"
+  - ".*source: registry.redhat.io"
+
+- name: Replace ImageContentSourcePolicy mirrors block in common-ranGen.yaml
+  blockinfile:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/policygentemplates/common-ranGen.yaml"
+    block: |
+      # Dropped in disconnected ICSP mirrors
+            {{ icsp_digest_mirrors.stdout  | indent(width=6) }}
+
+- name: Commit and push the above changes to cnf-features-deploy
+  shell: |
+    cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
+    git commit -a -m "Remove example clusters"
+    git push origin-gogs
+
+- name: Apply the ArgoCD Deployment
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -k {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment
+
+- name: Apply ArgoCD cnf-features-deploy argocd-openshift-gitops-patch.json
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch argocd openshift-gitops -n openshift-gitops --patch-file {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/argocd-openshift-gitops-patch.json --type=merge
+
+- name: Apply ArgoCD cnf-features-deploy deployment-openshift-repo-server-patch.json
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deployment openshift-gitops-repo-server -n openshift-gitops --patch-file {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/deployment-openshift-repo-server-patch.json
