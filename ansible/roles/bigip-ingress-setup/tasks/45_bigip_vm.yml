@@ -1,11 +1,11 @@
 - name: Get cluster domain
   shell: |
-    oc get routes -n openshift-cnv --no-headers | awk '{print $2}'
+    oc get routes -n openshift-authentication --no-headers | awk '{print $2}'
   register: cluster_domain
 
 - name: Set base domain
   set_fact:
-    bigip_base_domain: "{{ cluster_domain.stdout.split('openshift-cnv.')[1] }}"
+    bigip_base_domain: "{{ cluster_domain.stdout.split('.')[1:] | join('.') }}"
 
 - name: Check if VMs exist
   shell: |
