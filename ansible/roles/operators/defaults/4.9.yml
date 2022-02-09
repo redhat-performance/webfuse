@@ -1,0 +1,37 @@
+---
+# Openshift Virtualization channel
+osv_channel: stable
+
+# AMQ subscription channel
+amq_channel: amq-streams-1.x
+
+# Cluster Logging Operator channel
+cluster_logging_channel: 5.2
+
+# Elasticsearch Operator channel
+elasticsearch_channel: 5.2
+
+# Precision Time Protocol (ptp) Operator channel
+ptp_channel: stable
+
+# SR-IOV operator channel 
+sriov_channel: 4.9
+
+# Performance add-on operator 
+pao_channel: 4.9
+
+# Local Storage operator channel
+lso_channel: 4.9
+
+# To enable nightly catalog source
+nightly_operator: false
+
+brew_reg_password: ""
+
+iib_id:
+  sriov: 25944     #openshift-sriov-network-operator
+#  osv: 26761     #openshift-virtualization 
+#  clo: 26761     #cluster-logging-operator
+#  amq: 26761     #amq-operator
+#  pao: 26761     #performance-addon-operator
+#  eso: 26761     #elastic-search-operator
