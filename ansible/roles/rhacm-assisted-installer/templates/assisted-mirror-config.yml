@@ -31,6 +31,14 @@ data:
 
     [[registry]]
       prefix = ""
+      location = "registry.redhat.io/multicluster-engine"
+      mirror-by-digest-only = false
+
+      [[registry.mirror]]
+        location = "{{ rhacm_disconnected_registry }}/multicluster-engine"
+
+    [[registry]]
+      prefix = ""
       location = "quay.io/ocpmetal"
       mirror-by-digest-only = false
 

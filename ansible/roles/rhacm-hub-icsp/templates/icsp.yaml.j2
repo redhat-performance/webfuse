@@ -7,14 +7,14 @@ spec:
   repositoryDigestMirrors:
 {% if rhacm_disconnected_registry|length > 1 %}
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/multicluster-engine
-    source: registry.redhat.io/multicluster-engine
-  - mirrors:
     - {{ rhacm_disconnected_registry }}/acm-d
     source: registry.redhat.io/rhacm2
   - mirrors:
     - {{ rhacm_disconnected_registry }}/acm-d
     source: quay.io/acm-d
+  - mirrors:
+    - {{ rhacm_disconnected_registry }}/multicluster-engine
+    source: registry.redhat.io/multicluster-engine
   - mirrors:
     - {{ rhacm_disconnected_registry }}/openshift4/ose-oauth-proxy
     source: {{ rhacm_disconnected_registry }}/acm-d/ose-oauth-proxy
