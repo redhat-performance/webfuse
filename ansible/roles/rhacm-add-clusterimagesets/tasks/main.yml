@@ -1,7 +1,7 @@
 ---
 # Add ClusterImageSets for SNO to RHACM Hub Cluster
 
-- name: Create directories for ClusterImageSets
+- name: Create directory for ClusterImageSets
   file:
     path: "{{ rhacm_install_directory }}/rhacm-cis"
     state: directory
