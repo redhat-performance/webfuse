@@ -65,16 +65,16 @@ managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
 
 rhacm_quay_pullsecret: ''
-# Example: rhacm_build: '2.5.0-DOWNSTREAM-2022-02-01-23-07-31'
+# Example: rhacm_build: '2.5.0-DOWNSTREAM-2022-02-14-20-43-25'
 rhacm_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
-rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.9.15-x86_64
+rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.9.21-x86_64
 
 rhacm_clusterimagesets:
-- name: openshift-4.9.15
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.9.15-x86_64
+- name: openshift-4.9.21
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.9.21-x86_64
 
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
