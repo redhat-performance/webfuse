@@ -35,7 +35,7 @@ data:
       mirror-by-digest-only = false
 
       [[registry.mirror]]
-        location = "{{ rhacm_disconnected_registry }}/multicluster-engine"
+        location = "{{ rhacm_disconnected_registry }}/acm-d"
 
     [[registry]]
       prefix = ""
