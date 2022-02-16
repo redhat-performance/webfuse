@@ -25,7 +25,7 @@ spec:
     name: 'assisted-mirror-config'
 {% endif %}
   osImages:
-  - openshiftVersion: "{{ ocp_version_display_name.stdout[0:3] }}"
+  - openshiftVersion: "{{ ocp_version_display_name.stdout.split('.')[0:2] | join('.') }}"
     version: "{{ ocp_version_rhcos_version.stdout }}"
     url: "http://{{ http_store_host }}:{{ http_store_port }}/{{ ocp_version_display_name.stdout }}/{{ ocp_version_disk_location.stdout | basename }}"
     rootFSUrl: "http://{{ http_store_host }}:{{ http_store_port }}/{{ ocp_version_display_name.stdout }}/{{ ocp_version_rootfs_location.stdout | basename }}"
