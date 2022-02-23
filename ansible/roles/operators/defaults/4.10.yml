@@ -15,13 +15,13 @@ elasticsearch_channel: 5.0
 ptp_channel: stable
 
 # SR-IOV operator channel 
-sriov_channel: 4.8
+sriov_channel: 4.9
 
 # Performance add-on operator 
-pao_channel: 4.7
+pao_channel: 4.9
 
 # Local Storage operator channel
-lso_channel: 4.8
+lso_channel: 4.9
 
 # To enable nightly catalog source
 nightly_operator: false

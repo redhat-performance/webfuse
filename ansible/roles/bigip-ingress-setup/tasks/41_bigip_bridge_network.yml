@@ -10,7 +10,7 @@
   register: nncp_status
   retries: 36 # 3 minutes
   delay: 5
-  until: "'SuccessfullyConfigured' in nncp_status.stdout"
+  until: "'SuccessfullyConfigured' in nncp_status.stdout or 'Available' in nncp_status.stdout"
 
 - name: Patch network operator with bridge networks
   shell: |
