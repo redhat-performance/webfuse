@@ -7,6 +7,12 @@ spec:
   repositoryDigestMirrors:
 {% if rhacm_disconnected_registry|length > 1 %}
   - mirrors:
+    - {{ rhacm_disconnected_registry }}/kubebuilder
+    source: gcr.io/kubebuilder
+  - mirrors:
+    - {{ rhacm_disconnected_registry }}/openshift-kni
+    source: quay.io/openshift-kni
+  - mirrors:
     - {{ rhacm_disconnected_registry }}/acm-d
     source: registry.redhat.io/rhacm2
   - mirrors:

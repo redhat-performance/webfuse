@@ -76,6 +76,11 @@ rhacm_clusterimagesets:
 - name: openshift-4.9.21
   releaseImage: quay.io/openshift-release-dev/ocp-release:4.9.21-x86_64
 
+# Deploy Topology Aware Lifecycle Operator
+setup_talo: true
+talo_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
+talo_repo_branch: main
+
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
 ################################################################################
