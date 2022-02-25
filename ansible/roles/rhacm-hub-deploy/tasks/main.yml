@@ -56,18 +56,18 @@
   block:
   - name: Create directory for rhacm deployment
     file:
-      path: "{{ rhacm_install_directory }}/cluster-group-upgrades-operator"
+      path: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
       state: directory
 
   - name: Clone cluster-group-upgrades-operator (Topology Aware Lifecycle Operator)
     git:
       repo: "{{ talo_repo }}"
-      dest: "{{ rhacm_install_directory }}/cluster-group-upgrades-operator"
+      dest: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
       force: true
       version: "{{ talo_repo_branch }}"
 
   - name: Deploy Topology Aware Lifecycle Operator
     shell: |
-      cd {{ rhacm_install_directory }}/cluster-group-upgrades-operator
+      cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
       export KUBECONFIG={{ hub_cluster_kubeconfig }}
       make deploy IMG=quay.io/openshift-kni/cluster-group-upgrades-operator:latest

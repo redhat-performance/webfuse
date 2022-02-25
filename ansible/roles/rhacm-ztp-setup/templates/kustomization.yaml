@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+generators:
+# This is common to all RAN deployments
+- common-ranGen.yaml
+# This group policy is for all single-node deployments:
+- group-du-sno-ranGen.yaml
+# This group validator policy is for all single-node deployments:
+- group-du-sno-validator-ranGen.yaml
+
+resources:
+- ns.yaml

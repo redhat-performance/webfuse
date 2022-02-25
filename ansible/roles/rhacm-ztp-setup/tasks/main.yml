@@ -5,7 +5,7 @@
   file:
     path: "{{ item }}"
     state: directory
-  with_items:
+  loop:
   - "{{ rhacm_install_directory }}/rhacm-ztp"
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy"
 
@@ -69,39 +69,43 @@
   - ".*- clusters-app.yaml"
   - ".*- policies-app.yaml"
 
-- name: Patch common-ranGen.yaml disconnected operator-index
-  replace:
-    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/policygentemplates/common-ranGen.yaml"
-    replace: "image: {{ rhacm_disconnected_registry }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}"
-    regexp: "image: registry.example.com:5000/disconnected-redhat-operators/disconnected-redhat-operator-index:v4.9"
+- name: Create policy directories in cnf-features-deploy
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+  - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/"
 
 - name: Get ImageContentSourcePolicy to append to common-ranGen.yaml
   shell: |
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc get imagecontentsourcepolicy redhat-operator-index-0 -o yaml | awk '/repositoryDigestMirrors:/,/END_OF_FILE/'
   register: icsp_digest_mirrors
 
-- name: Remove example ICSP mirrors from common-ranGen.yaml
-  replace:
-    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/policygentemplates/common-ranGen.yaml"
-    replace: ""
-    regexp: "{{ item }}"
+- name: Template the policy manifests into cnf-features-deploy
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
   loop:
-  - ".*repositoryDigestMirrors:"
-  - ".*- mirrors:"
-  - ".*- registry.example.com:5000"
-  - ".*source: registry.redhat.io"
-
-- name: Replace ImageContentSourcePolicy mirrors block in common-ranGen.yaml
-  blockinfile:
-    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/example/policygentemplates/common-ranGen.yaml"
-    block: |
-      # Dropped in disconnected ICSP mirrors
-            {{ icsp_digest_mirrors.stdout  | indent(width=6) }}
+  - src: common-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
+  - src: group-du-sno-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-sno-ranGen.yaml"
+  - src: group-du-sno-validator-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-sno-validator-ranGen.yaml"
+  - src: kustomization.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/kustomization.yaml"
+  - src: ns.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/ns.yaml"
+  - src: common-and-group.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/common-and-group.yaml"
 
 - name: Commit and push the above changes to cnf-features-deploy
   shell: |
     cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
-    git commit -a -m "Remove example clusters"
+    git add ztp/gitops-subscriptions/argocd/policy/ ztp/gitops-subscriptions/argocd/policy-applications/
+    git commit -a -m "Remove example clusters and add common and group policies"
     git push origin-gogs
 
 - name: Apply the ArgoCD Deployment
@@ -115,3 +119,20 @@
 - name: Apply ArgoCD cnf-features-deploy deployment-openshift-repo-server-patch.json
   shell: |
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deployment openshift-gitops-repo-server -n openshift-gitops --patch-file {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/deployment-openshift-repo-server-patch.json
+
+- name: Wait for openshift-gitops-repo-server pod running
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n openshift-gitops -l app.kubernetes.io/name=openshift-gitops-repo-server -o jsonpath='{.items[0].status.phase}'
+  retries: 60
+  delay: 2
+  register: as_pod
+  until: as_pod.stdout == "Running"
+
+# It seems although we wait for the new repo-server pod to be running, we can still apply the policy application too quickly
+- name: Pause for 15s
+  pause:
+    seconds: 15
+
+- name: Apply the ArgoCD Policy Application
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/common-and-group.yaml
