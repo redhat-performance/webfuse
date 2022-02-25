@@ -2,7 +2,7 @@
 # default vars for rhacm-ztp-setup
 
 cnf_features_deploy_repo: https://github.com/openshift-kni/cnf-features-deploy.git
-cnf_features_deploy_branch: master
+cnf_features_deploy_branch: release-4.10
 
 gogs_host: "[fc00:1000::1]"
 gogs_port: 10880
