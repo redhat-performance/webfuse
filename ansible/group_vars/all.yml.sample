@@ -81,6 +81,10 @@ setup_talo: true
 talo_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
 talo_repo_branch: main
 
+# Apply ZTP argocd patches and create the policy argocd application
+setup_rhacm_ztp_patches: true
+setup_ztp_policy_application: true
+
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
 ################################################################################

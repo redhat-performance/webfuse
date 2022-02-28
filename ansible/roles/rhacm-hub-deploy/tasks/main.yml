@@ -71,3 +71,36 @@
       cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
       export KUBECONFIG={{ hub_cluster_kubeconfig }}
       make deploy IMG=quay.io/openshift-kni/cluster-group-upgrades-operator:latest
+
+- name: Deploy RHACM/ZTP Patches
+  when: setup_rhacm_ztp_patches
+  block:
+  - name: Apply the ArgoCD Deployment
+    shell: |
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -k {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment
+
+  - name: Apply ArgoCD cnf-features-deploy argocd-openshift-gitops-patch.json
+    shell: |
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch argocd openshift-gitops -n openshift-gitops --patch-file {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/argocd-openshift-gitops-patch.json --type=merge
+
+  - name: Apply ArgoCD cnf-features-deploy deployment-openshift-repo-server-patch.json
+    shell: |
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch deployment openshift-gitops-repo-server -n openshift-gitops --patch-file {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/deployment-openshift-repo-server-patch.json
+
+  - name: Wait for openshift-gitops-repo-server pod running
+    shell: |
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n openshift-gitops -l app.kubernetes.io/name=openshift-gitops-repo-server -o jsonpath='{.items[0].status.phase}'
+    retries: 60
+    delay: 2
+    register: as_pod
+    until: as_pod.stdout == "Running"
+
+  # It seems although we wait for the new repo-server pod to be running, we can still apply the policy application too quickly
+  - name: Pause for 15s
+    pause:
+      seconds: 15
+
+- name: Apply the ArgoCD Policy Application
+  when: setup_ztp_policy_application
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/common-and-group.yaml

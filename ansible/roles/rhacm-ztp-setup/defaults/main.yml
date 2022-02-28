@@ -11,3 +11,5 @@ gogs_password: testadmin
 
 disconnected_operator_index_name: olm-mirror/redhat-operator-index
 disconnected_operator_index_tag: v4.9
+
+mirrored_operator_icsp: /root/bm/olm-mirror/imageContentSourcePolicy.yaml
