@@ -3,9 +3,10 @@
 
 - name: Checkout the latest stolostron/deploy repo
   git:
-    repo: https://github.com/stolostron/deploy.git
+    repo: "{{ rhacm_deploy_repo }}"
     dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
     force: true
+    version: "{{ rhacm_deploy_repo_branch }}"
 
 - name: Create deploy/prereq/pull-secret.yaml
   template:
@@ -54,7 +55,7 @@
 - name: Deploy Topology Aware Lifecycle Operator
   when: setup_talo
   block:
-  - name: Create directory for rhacm deployment
+  - name: Create directory for TALO
     file:
       path: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
       state: directory

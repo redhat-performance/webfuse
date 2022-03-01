@@ -6,7 +6,11 @@ generators:
 # This group policy is for all single-node deployments:
 - group-du-sno-ranGen.yaml
 # This group validator policy is for all single-node deployments:
+{% if setup_ztp_enable_performanceprofile %}
 - group-du-sno-validator-ranGen.yaml
+{% else %}
+# - group-du-sno-validator-ranGen.yaml
+{% endif %}
 
 resources:
 - ns.yaml

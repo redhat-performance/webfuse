@@ -48,11 +48,16 @@
     git remote add origin-gogs http://{{ gogs_username }}:{{ gogs_password }}@{{ gogs_host }}:{{ gogs_port }}/testadmin/cnf-features-deploy.git
     git push -u origin-gogs --all --force
 
-- name: Patch cnf-features-deploy argocd-openshift-gitops-patch.json
+- name: Patches for cnf-features-deploy argocd-openshift-gitops-patch.json
   replace:
     path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment/argocd-openshift-gitops-patch.json"
-    replace: "{{ rhacm_disconnected_registry }}"
+    replace: "{{ item.replace }}"
+    regexp: "{{ item.regexp }}"
+  loop:
+  - replace: "{{ rhacm_disconnected_registry }}"
     regexp: "quay.io"
+  - replace: "openshift-kni"
+    regexp: "redhat_emp1"
 
 - name: Remove the examples/siteconfig directory from cnf-features-deploy
   file:
