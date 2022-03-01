@@ -23,6 +23,6 @@
 - name: Install downstream RHACM
   hosts: orchestration
   vars_files:
-    - vars/all.yml
+  - vars/all.yml
   roles:
-    - rhacm-hub-deploy
+  - rhacm-hub-deploy
