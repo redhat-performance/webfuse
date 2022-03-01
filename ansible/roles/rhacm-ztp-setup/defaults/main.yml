@@ -4,6 +4,13 @@
 cnf_features_deploy_repo: https://github.com/openshift-kni/cnf-features-deploy.git
 cnf_features_deploy_branch: release-4.10
 
+# Pre-creates manifests for the desired number of argocd cluster applications
+# It is recommended to have no more than 100 clusters per application
+cluster_applications_count: 25
+siteconfigs_per_application: 100
+
+siteconfigs_directory: /root/hv-sno/siteconfigs
+
 gogs_host: "[fc00:1000::1]"
 gogs_port: 10880
 gogs_username: testadmin
@@ -13,3 +20,6 @@ disconnected_operator_index_name: olm-mirror/redhat-operator-index
 disconnected_operator_index_tag: v4.9
 
 mirrored_operator_icsp: /root/bm/olm-mirror/imageContentSourcePolicy.yaml
+
+# Initilize the siteconfig list so it can be sorted later
+siteconfig_list: []
