@@ -18,7 +18,7 @@ ptp_channel: stable
 sriov_channel: 4.9
 
 # Performance add-on operator 
-pao_channel: 4.9
+pao_channel: "4.10"
 
 # Local Storage operator channel
 lso_channel: 4.9
