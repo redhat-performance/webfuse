@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: assisted-service-cpu-memory
-  namespace: open-cluster-management
+  namespace: {{ rhacm_assisted_service_namespace }}
 data:
   HW_VALIDATOR_REQUIREMENTS: |
     [{
