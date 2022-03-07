@@ -71,6 +71,7 @@ rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
 rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.9.21-x86_64
+rhacm_assisted_service_namespace: open-cluster-management
 
 rhacm_clusterimagesets:
 - name: openshift-4.9.21

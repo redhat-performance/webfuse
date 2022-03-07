@@ -3,7 +3,6 @@ kind: AgentServiceConfig
 metadata:
   annotations:
     unsupported.agent-install.openshift.io/assisted-service-configmap: assisted-service-cpu-memory
-  namespace: open-cluster-management
   name: agent
 spec:
   databaseStorage:
