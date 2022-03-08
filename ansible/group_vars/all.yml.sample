@@ -70,12 +70,12 @@ rhacm_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
-rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.9.21-x86_64
+rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.2-x86_64
 rhacm_assisted_service_namespace: open-cluster-management
 
 rhacm_clusterimagesets:
-- name: openshift-4.9.21
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.9.21-x86_64
+- name: openshift-4.10.2
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.2-x86_64
 
 # Deploy Topology Aware Lifecycle Operator
 setup_talo: true
@@ -86,6 +86,13 @@ talo_repo_branch: main
 setup_rhacm_ztp_patches: true
 setup_ztp_cluster_applications: true
 setup_ztp_policy_application: true
+
+# ZTP DU Profile Performance Profile Settings
+setup_ztp_enable_performanceprofile: false
+setup_ztp_perfprofile_isolated_cpus: "4-7"
+setup_ztp_perfprofile_reserved_cpus: "0-3"
+setup_ztp_perfprofile_hugepage_count: 1
+setup_ztp_perfprofile_realtime: true
 
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
