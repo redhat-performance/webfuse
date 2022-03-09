@@ -99,7 +99,7 @@
 
 - name: Wait for assisted-service pod exists
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n open-cluster-management -l app=assisted-service
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n {{ rhacm_assisted_service_namespace }} -l app=assisted-service
   retries: 150
   delay: 2
   register: as_pod
@@ -107,7 +107,7 @@
 
 - name: Wait for assisted-service pod running
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n open-cluster-management -l app=assisted-service -o jsonpath='{.items[0].status.phase}'
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n {{ rhacm_assisted_service_namespace }} -l app=assisted-service -o jsonpath='{.items[0].status.phase}'
   retries: 150
   delay: 2
   register: as_pod
