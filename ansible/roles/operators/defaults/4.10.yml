@@ -3,25 +3,25 @@
 osv_channel: stable
 
 # AMQ subscription channel
-amq_channel: amq-streams-1.x
+amq_channel: amq-streams-2.x
 
 # Cluster Logging Operator channel
-cluster_logging_channel: 5.0
+cluster_logging_channel: stable-5.3
 
 # Elasticsearch Operator channel
-elasticsearch_channel: 5.0
+elasticsearch_channel: stable-5.3
 
 # Precision Time Protocol (ptp) Operator channel
 ptp_channel: stable
 
 # SR-IOV operator channel 
-sriov_channel: 4.9
+sriov_channel: "4.10"
 
 # Performance add-on operator 
 pao_channel: "4.10"
 
 # Local Storage operator channel
-lso_channel: 4.9
+lso_channel: "4.10"
 
 # To enable nightly catalog source
 nightly_operator: false
