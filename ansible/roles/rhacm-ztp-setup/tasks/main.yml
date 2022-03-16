@@ -109,12 +109,12 @@
     paths:
     - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs"
     use_regex: true
-    patterns: ['.*.yml']
+    patterns: ['.*-siteconfig.yml']
   register: siteconfigs_find
 
 - name: Set siteconfig list
   set_fact:
-    siteconfig_list: "{{ siteconfig_list + [item.path | basename] }}"
+    siteconfig_list: "{{ siteconfig_list + [item.path | basename | replace('-siteconfig.yml', '')] }}"
   loop: "{{ siteconfigs_find.files }}"
 
 - name: Sort siteconfig list
@@ -132,7 +132,8 @@
   shell: |
     {% for sc in range((item - 1) * siteconfigs_per_application, item * siteconfigs_per_application ) %}
     {% if siteconfig_list | length > sc %}
-    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] | basename }} {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] | basename }}
+    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-siteconfig.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-siteconfig.yml
+    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-resources.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-resources.yml
     {% endif %}
     {% endfor %}
   loop: "{{ range(1, cluster_applications_count + 1) | list }}"
