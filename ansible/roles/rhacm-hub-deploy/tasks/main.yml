@@ -76,7 +76,7 @@
 - name: Deploy RHACM/ZTP Patches
   when: setup_rhacm_ztp_patches
   block:
-  - name: Apply the ArgoCD Deployment
+  - name: Apply the ArgoCD Deployment kustomization
     shell: |
       KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -k {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/deployment
 

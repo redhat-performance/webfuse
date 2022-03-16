@@ -15,6 +15,20 @@
   loop:
   - "{{ rhacm_install_directory }}/rhacm-ztp"
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/scripts"
+
+- name: Setup ZTP scripts
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: a+x
+  loop:
+  - src: deploy-ztp.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/scripts/deploy-ztp.sh"
+  - src: get-kubeconfigs.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/scripts/get-kubeconfigs.sh"
+  - src: monitor-ztp.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/scripts/monitor-ztp.sh"
 
 - name: Clone cnf-features-deploy
   git:
@@ -94,7 +108,7 @@
 
 - name: Create cluster application directories in cnf-features-deploy
   file:
-    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}"
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}"
     state: directory
   loop: "{{ range(1, cluster_applications_count + 1) | list }}"
 
@@ -124,7 +138,7 @@
 - name: Create cluster kustomization files in cnf-features-deploy
   template:
     src: cluster-kustomization.yaml
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}/kustomization.yaml"
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/kustomization.yaml"
   loop: "{{ range(1, cluster_applications_count + 1) | list }}"
 
 # Similiar to the above kustomization file template, every cluster app's directoy must contain the actual siteconfig and not just a relative path "down" to the resource
@@ -132,8 +146,8 @@
   shell: |
     {% for sc in range((item - 1) * siteconfigs_per_application, item * siteconfigs_per_application ) %}
     {% if siteconfig_list | length > sc %}
-    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-siteconfig.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-siteconfig.yml
-    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-resources.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-resources.yml
+    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-siteconfig.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-siteconfig.yml
+    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-resources.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-resources.yml
     {% endif %}
     {% endfor %}
   loop: "{{ range(1, cluster_applications_count + 1) | list }}"
@@ -142,7 +156,7 @@
 - name: Create cluster application files in cnf-features-deploy
   template:
     src: cluster-ns-application.yaml
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster-applications/cluster-{{ '%02d' | format(item) }}.yaml"
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster-applications/ztp-clusters-{{ '%02d' | format(item) }}.yaml"
   loop: "{{ range(1, cluster_applications_count + 1) | list }}"
 
 - name: Get mirrored operator index ImageContentSourcePolicy to append to common-ranGen.yaml

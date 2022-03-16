@@ -2,20 +2,20 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: clusters-{{ '%02d' | format(item) }}
+  name: ztp-clusters-{{ '%02d' | format(item) }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: clusters-{{ '%02d' | format(item) }}
+  name: ztp-clusters-{{ '%02d' | format(item) }}
   namespace: openshift-gitops
 spec:
   destination:
     server: https://kubernetes.default.svc
-    namespace: clusters-{{ '%02d' | format(item) }}
+    namespace: ztp-clusters-{{ '%02d' | format(item) }}
   project: ztp-app-project
   source:
-    path: ztp/gitops-subscriptions/argocd/cluster/cluster-{{ '%02d' | format(item) }}
+    path: ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}
     repoURL: http://{{ gogs_username }}:{{ gogs_password }}@{{ gogs_host }}:{{ gogs_port }}/testadmin/cnf-features-deploy.git
     targetRevision: {{ cnf_features_deploy_branch }}
   syncPolicy:
