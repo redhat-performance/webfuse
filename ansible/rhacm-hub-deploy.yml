@@ -26,3 +26,5 @@
   - vars/all.yml
   roles:
   - rhacm-hub-deploy
+  - rhacm-assisted-installer
+  - rhacm-add-clusterimagesets

@@ -10,7 +10,7 @@ set -o nounset
 # Start ztp-clusters-01 until ztp-clusters-25 every 2 hours
 cluster_start=${1:-'1'}
 cluster_end=${2:-'25'}
-sleep_period=${1:-'7200'}
+sleep_period=${3:-'7200'}
 
 start_dt=$(date -u +%Y%m%d-%H%M%S)
 log_file=deploy-${start_dt}.log
