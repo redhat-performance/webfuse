@@ -23,3 +23,10 @@ mirrored_operator_icsp: /root/bm/olm-mirror-v4.9/imageContentSourcePolicy.yaml
 
 # Initilize the siteconfig list so it can be sorted later
 siteconfig_list: []
+
+# These policy names were adjusted to increase the number of ztp generated policies to match as if performanceprofile
+# was enabled.  The original names are commented below.
+group_policy_logforwarder_name: "config-log-policy"
+group_policy_storage_name: "config-storage-policy"
+# group_policy_logforwarder_name: "config-policy"
+# group_policy_storage_name: "config-policy"
