@@ -15,7 +15,7 @@ spec:
       policyName: "config-policy"
     # Set ClusterLogForwarder & ClusterLogging as example might be better to create another policyTemp-Group
     - fileName: ClusterLogForwarder.yaml
-      policyName: "config-policy"
+      policyName: "{{ group_policy_logforwarder_name }}"
       spec:
         outputs:
           - type: "kafka"
@@ -59,7 +59,7 @@ spec:
       spec:
         disableDrain: true
     - fileName: StorageLV.yaml
-      policyName: "config-policy"
+      policyName: "{{ group_policy_storage_name }}"
       spec:
         storageClassDevices:
           - storageClassName: "example-storage-class-1"
