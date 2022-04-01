@@ -70,17 +70,18 @@ rhacm_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
-rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.6-x86_64
+rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.7-x86_64
 rhacm_assisted_service_namespace: multicluster-engine
 
 rhacm_clusterimagesets:
-- name: openshift-4.10.6
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.6-x86_64
+- name: openshift-4.10.7
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.7-x86_64
 
 # Deploy Topology Aware Lifecycle Operator
 setup_talo: true
 talo_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
 talo_repo_branch: main
+talo_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.10.0
 
 # Apply ZTP argocd patches and create the argocd applications
 setup_rhacm_ztp_patches: true

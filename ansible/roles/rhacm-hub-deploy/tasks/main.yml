@@ -71,7 +71,7 @@
     shell: |
       cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
       export KUBECONFIG={{ hub_cluster_kubeconfig }}
-      make deploy IMG=quay.io/openshift-kni/cluster-group-upgrades-operator:latest
+      make deploy IMG={{ talo_image }}
 
 - name: Deploy RHACM/ZTP Patches
   when: setup_rhacm_ztp_patches
