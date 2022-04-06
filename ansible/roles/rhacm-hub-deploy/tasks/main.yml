@@ -97,6 +97,12 @@
     pause:
       seconds: 15
 
+  # View the resources with oc get argocd -n openshift-gitops openshift-gitops -o json | jq '.spec.redis.resources'
+  - name: Patch openshift-gitops redis memory requests/limits
+    when: gitops_redis_mem_patch
+    shell: |
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch argocd -n openshift-gitops openshift-gitops --type json -p '[{"op": "replace", "path": "/spec/redis/resources/limits/memory", "value": "8Gi"}, {"op": "replace", "path": "/spec/redis/resources/requests/memory", "value": "256Mi"}]'
+
 - name: Apply ArgoCD Cluster Applications
   when: setup_ztp_cluster_applications
   shell: |

@@ -65,17 +65,17 @@ managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
 
 rhacm_quay_pullsecret: ''
-# Example: rhacm_build: '2.5.0-DOWNSTREAM-2022-04-05-06-20-55'
+# Example: rhacm_build: '2.5.0-DOWNSTREAM-2022-04-08-18-34-34'
 rhacm_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
-rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.8-x86_64
+rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.9-x86_64
 rhacm_assisted_service_namespace: multicluster-engine
 
 rhacm_clusterimagesets:
-- name: openshift-4.10.8
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.8-x86_64
+- name: openshift-4.10.9
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.9-x86_64
 
 # Deploy Topology Aware Lifecycle Operator
 setup_talo: true
@@ -87,6 +87,9 @@ talo_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.10.0
 setup_rhacm_ztp_patches: true
 setup_ztp_cluster_applications: true
 setup_ztp_policy_application: true
+gitops_redis_mem_patch: true
+gitops_redis_mem_requests: 256Mi
+gitops_redis_mem_limits: 4Gi
 
 # ZTP DU Profile Performance Profile Settings
 setup_ztp_enable_performanceprofile: false
