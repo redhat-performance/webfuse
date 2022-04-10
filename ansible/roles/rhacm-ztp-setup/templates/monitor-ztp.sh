@@ -33,7 +33,7 @@ while true; do
   sno_install_completed=$(echo "${aci_completed}" | grep -c InstallationCompleted | tr -d " ")
 
   managed=$(oc get managedcluster -A --no-headers -o custom-columns=JOINED:'.status.conditions[?(@.type=="ManagedClusterJoined")].status',AVAILABLE:'.status.conditions[?(@.type=="ManagedClusterConditionAvailable")].status' | grep -v none | grep -i true | grep -v Unknown | wc -l | tr -d " ")
-  policy_init=$(echo "$cgu_ready" | wc -l | tr -d " ")
+  policy_init=$(echo "$cgu_ready" | grep sno -i -c | tr -d " ")
   policy_notstarted=$(echo "$cgu_ready" | grep -c UpgradeNotStarted | tr -d " ")
   policy_applying=$(echo "$cgu_ready" | grep -c UpgradeNotCompleted | tr -d " ")
   policy_timedout=$(echo "$cgu_ready" | grep -c UpgradeTimedOut | tr -d " ")
