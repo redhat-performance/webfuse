@@ -3,3 +3,5 @@
 
 rhacm_deploy_repo: https://github.com/stolostron/deploy.git
 rhacm_deploy_repo_branch: master
+
+rhacm_observability_storageclass: localstorage-sc

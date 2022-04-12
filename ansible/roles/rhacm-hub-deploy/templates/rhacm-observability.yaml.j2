@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: open-cluster-management-observability
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: multiclusterhub-operator-pull-secret
+  namespace: open-cluster-management-observability
+data:
+  .dockerconfigjson: "{{ rhacm_quay_pullsecret | b64encode }}"
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: thanos-object-storage
+  namespace: open-cluster-management-observability
+data:
+  thanos.yaml: "{{ lookup('template', './thanos.yaml.j2') | b64encode }}"
+type: Opaque
+---
+apiVersion: observability.open-cluster-management.io/v1beta2
+kind: MultiClusterObservability
+metadata:
+  name: observability
+spec:
+  enableDownsampling: true
+  imagePullPolicy: Always
+  observabilityAddonSpec:
+    enableMetrics: true
+    interval: 300
+  storageConfig:
+    alertmanagerStorageSize: 1Gi
+    compactStorageSize: 100Gi
+    metricObjectStorage:
+      key: thanos.yaml
+      name: thanos-object-storage
+    receiveStorageSize: 200Gi
+    ruleStorageSize: 1Gi
+    storageClass: {{ rhacm_observability_storageclass }}
+    storeStorageSize: 10Gi

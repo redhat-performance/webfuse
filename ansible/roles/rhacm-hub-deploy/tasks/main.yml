@@ -52,6 +52,17 @@
   retries: 300
   delay: 2
 
+- name: Template out RHACM Observability
+  when: setup_rhacm_observability
+  template:
+    src: rhacm-observability.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/rhacm-observability.yaml"
+
+- name: Apply RHACM Observability
+  when: setup_rhacm_observability
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm-deploy/rhacm-observability.yaml
+
 - name: Deploy Topology Aware Lifecycle Operator
   when: setup_talo
   block:

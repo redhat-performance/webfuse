@@ -70,9 +70,13 @@ rhacm_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
+
+# RHACM observability settings
+setup_rhacm_observability: false
+
+# RHACM Assisted-installer items
 rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.9-x86_64
 rhacm_assisted_service_namespace: multicluster-engine
-
 rhacm_clusterimagesets:
 - name: openshift-4.10.9
   releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.9-x86_64
