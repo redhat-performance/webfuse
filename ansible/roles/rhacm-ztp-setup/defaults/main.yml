@@ -21,6 +21,8 @@ disconnected_operator_index_tag: v4.9
 
 mirrored_operator_icsp: /root/bm/olm-mirror-v4.9/imageContentSourcePolicy.yaml
 
+ztp_site_generator_image_tag: v4.10.0
+
 # Initilize the siteconfig list so it can be sorted later
 siteconfig_list: []
 
