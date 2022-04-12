@@ -72,6 +72,8 @@
     regexp: "quay.io"
   - replace: "openshift-kni"
     regexp: "redhat_emp1"
+  - replace: "{{ ztp_site_generator_image_tag }}"
+    regexp: "latest"
 
 - name: Remove the examples/siteconfig directory from cnf-features-deploy
   file:
