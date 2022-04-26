@@ -33,12 +33,12 @@ spec:
     enableMetrics: true
     interval: 300
   storageConfig:
-    alertmanagerStorageSize: 1Gi
-    compactStorageSize: 100Gi
+    alertmanagerStorageSize: {{ observability_alertmanagerStorageSize }}
+    compactStorageSize: {{ observability_compactStorageSize }}
     metricObjectStorage:
       key: thanos.yaml
       name: thanos-object-storage
-    receiveStorageSize: 200Gi
-    ruleStorageSize: 1Gi
+    receiveStorageSize: {{ observability_receiveStorageSize }}
+    ruleStorageSize: {{ observability_ruleStorageSize }}
     storageClass: {{ rhacm_observability_storageclass }}
-    storeStorageSize: 10Gi
+    storeStorageSize: {{ observability_storeStorageSize }}
