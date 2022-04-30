@@ -12,12 +12,16 @@ spec:
     # Create operators policies that will be installed in all clusters
     - fileName: SriovSubscription.yaml
       policyName: "subscriptions-policy"
+      spec:
+        source: {{ common_catalogsource_name }}
     - fileName: SriovSubscriptionNS.yaml
       policyName: "subscriptions-policy"
     - fileName: SriovSubscriptionOperGroup.yaml
       policyName: "subscriptions-policy"
     - fileName: PtpSubscription.yaml
       policyName: "subscriptions-policy"
+      spec:
+        source: {{ common_catalogsource_name }}
     - fileName: PtpSubscriptionNS.yaml
       policyName: "subscriptions-policy"
     - fileName: PtpSubscriptionOperGroup.yaml
@@ -25,6 +29,7 @@ spec:
     - fileName: PaoSubscription.yaml
       policyName: "subscriptions-policy"
       spec:
+        source: {{ common_catalogsource_name }}
       # Changing the channel value will upgrade/downgrade the operator installed version.
         channel: "4.9"
     - fileName: PaoSubscriptionNS.yaml
@@ -37,12 +42,16 @@ spec:
       policyName: "subscriptions-policy"
     - fileName: ClusterLogSubscription.yaml
       policyName: "subscriptions-policy"
+      spec:
+        source: {{ common_catalogsource_name }}
     - fileName: StorageNS.yaml
       policyName: "subscriptions-policy"
     - fileName: StorageOperGroup.yaml
       policyName: "subscriptions-policy"
     - fileName: StorageSubscription.yaml
       policyName: "subscriptions-policy"
+      spec:
+        source: {{ common_catalogsource_name }}
     - fileName: ReduceMonitoringFootprint.yaml
       policyName: "config-policy"
     #
@@ -57,7 +66,7 @@ spec:
       # CatalogSource pointing to the disconnected registry. Including both of
       # these in the same policy orders their application to the cluster.
       metadata:
-        name: redhat-operators
+        name: {{ common_catalogsource_name }}
       spec:
         displayName: disconnected-redhat-operators
         image: {{ rhacm_disconnected_registry }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}

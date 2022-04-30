@@ -26,6 +26,10 @@ ztp_site_generator_image_tag: v4.10.0
 # Initilize the siteconfig list so it can be sorted later
 siteconfig_list: []
 
+# Adjust the name of the du profile catalog source so it does not conflict with default names
+# https://bugzilla.redhat.com/show_bug.cgi?id=2074612
+common_catalogsource_name: rh-du-operators
+
 # These policy names were adjusted to increase the number of ztp generated policies to match as if performanceprofile
 # was enabled.  The original names are commented below.
 group_policy_logforwarder_name: "config-log-policy"
