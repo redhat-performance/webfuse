@@ -4,9 +4,12 @@
 package_list:
   - tar
   - libvirt
+  - libvirt-devel
   - virt-manager
   - python3-libvirt
   - python3-lxml
   - qemu-kvm
   - qemu-img
   - patch
+  - gcc
+  - python38-devel
