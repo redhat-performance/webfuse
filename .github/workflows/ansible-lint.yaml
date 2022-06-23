@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: ansible-lint
-        uses: ansible/ansible-lint-action@master
+        uses: ansible/ansible-lint-action@main
         with:
           targets: "ansible/*"
           override-deps: |
