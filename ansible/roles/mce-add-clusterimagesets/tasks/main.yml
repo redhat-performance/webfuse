@@ -1,0 +1,22 @@
+---
+# mce-add-clusterimagesets tasks
+
+- name: Clean directory with ClusterImageSets
+  file:
+    path: "{{ rhacm_install_directory }}/mce-clusterimageset"
+    state: absent
+
+- name: Create directory for ClusterImageSets
+  file:
+    path: "{{ rhacm_install_directory }}/mce-clusterimageset"
+    state: directory
+
+- name: Template out ClusterImageSets for MCE
+  template:
+    src: cis.yaml.j2
+    dest: "{{ rhacm_install_directory }}/mce-clusterimageset/{{ item.name }}-cis.yaml"
+  with_items: "{{ mce_clusterimagesets }}"
+
+- name: Apply ClusterImageSets to RHACM Hub Cluster
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/mce-clusterimageset

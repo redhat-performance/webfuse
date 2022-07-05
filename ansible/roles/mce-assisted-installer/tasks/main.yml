@@ -1,0 +1,129 @@
+---
+# mce-assisted-installer tasks
+
+# Current workarounds:
+# * Patch provisioning configuration
+# * Patch Hive configuration
+
+- name: Create directory for MCE assisted-installer
+  file:
+    path: "{{ rhacm_install_directory }}/mce-assisted-installer"
+    state: directory
+
+- name: Extract/Download the openshift-install binary for the specific release
+  shell: |
+    cd {{ rhacm_install_directory }}/mce-assisted-installer
+    rm -rf openshift-install-linux-*.tar.gz openshift-client-linux-*.tar.gz
+    oc adm release extract --tools {{ mce_assisted_ocp_version }}
+    tar -xvf openshift-install-linux-*.tar.gz openshift-install
+    tar -xvf openshift-client-linux-*.tar.gz oc kubectl
+
+- name: Get display/release name/version
+  shell: |
+    {{ rhacm_install_directory }}/mce-assisted-installer/oc version -o json | jq -r .releaseClientVersion
+  register: ocp_version_display_name
+
+- name: Get rhcos version
+  shell: |
+    {{ rhacm_install_directory }}/mce-assisted-installer/openshift-install coreos print-stream-json | jq -r .architectures.x86_64.artifacts.metal.release
+  register: ocp_version_rhcos_version
+
+- name: Get iso disk image location
+  shell: |
+    {{ rhacm_install_directory }}/mce-assisted-installer/openshift-install coreos print-stream-json | jq -r .architectures.x86_64.artifacts.metal.formats.iso.disk.location
+  register: ocp_version_disk_location
+
+- name: Get rootfs image location
+  shell: |
+    {{ rhacm_install_directory }}/mce-assisted-installer/openshift-install coreos print-stream-json | jq -r .architectures.x86_64.artifacts.metal.formats.pxe.rootfs.location
+  register: ocp_version_rootfs_location
+
+- name: Make directory for image and rootfs for bastion http server
+  file:
+    path: "{{ http_store_path }}/data/{{ ocp_version_display_name.stdout }}"
+    state: directory
+
+- name: Download OpenShift RHCOS Image
+  get_url:
+    url: "{{ ocp_version_disk_location.stdout }}"
+    dest: "{{ http_store_path }}/data/{{ ocp_version_display_name.stdout }}/{{ ocp_version_disk_location.stdout | basename }}"
+
+- name: Download OpenShift rootfs
+  get_url:
+    url: "{{ ocp_version_rootfs_location.stdout }}"
+    dest: "{{ http_store_path }}/data/{{ ocp_version_display_name.stdout }}/{{ ocp_version_rootfs_location.stdout | basename }}"
+
+- name: Get disconnected registry certificate
+  slurp:
+    src: "{{ registry_path }}/certs/domain.crt"
+  register: mirror_cert
+  when: rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1
+
+- name: Template files for mce/rhacm assisted-installer
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  when: item.enabled | default(true)
+  loop:
+  - src: configmap-cpumemory.yml
+    dest: "{{ rhacm_install_directory }}/mce-assisted-installer/configmap-cpumemory.yml"
+  - src: agentserviceconfig.yml
+    dest: "{{ rhacm_install_directory }}/mce-assisted-installer/agentserviceconfig.yml"
+  - src: assisted-mirror-config.yml
+    dest: "{{ rhacm_install_directory }}/mce-assisted-installer/assisted-mirror-config.yml"
+    enabled: "{{ rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 }}"
+  - src: agent-install.openshift.io_agentclassifications-crd.yaml
+    dest: "{{ rhacm_install_directory }}/mce-assisted-installer/agent-install.openshift.io_agentclassifications-crd.yaml"
+    enabled: "{{ mce_2_1_patch }}"
+  - src: clusterrole-patch.yaml
+    dest: "{{ rhacm_install_directory }}/mce-assisted-installer/clusterrole-patch.yaml"
+    enabled: "{{ mce_2_1_patch }}"
+
+- name: Patch provisioning configuration
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch provisioning provisioning-configuration --type merge -p '{"spec":{"watchAllNamespaces": true }}'
+
+- name: Patch hive configuration
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch hiveconfig hive  --type merge -p '{"spec":{"targetNamespace":"hive","logLevel":"debug","featureGates":{"custom":{"enabled":["AlphaAgentInstallStrategy"]},"featureSet":"Custom"} }}'
+
+- name: Apply assisted-service manifests
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ item.manifest }}
+  when: item.enabled | default(true)
+  loop:
+  - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/configmap-cpumemory.yml"
+  - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/agentserviceconfig.yml"
+  - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/assisted-mirror-config.yml"
+    enabled: "{{ rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 }}"
+  - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/agent-install.openshift.io_agentclassifications-crd.yaml"
+    enabled: "{{ mce_2_1_patch }}"
+  register: result
+  until: result.failed == false
+  retries: 2
+  delay: 3
+
+- name: Apply clusterroles patch for MCE 2.1
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch clusterrole open-cluster-management:assisted-service:assisted-service --type=json --patch "$(cat {{ rhacm_install_directory }}/mce-assisted-installer/clusterrole-patch.yaml)"
+  when: mce_2_1_patch
+  # register: result
+  # until: result.failed == false
+  # retries: 2
+  # delay: 3
+
+- name: Wait for assisted-service pod exists
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n {{ mce_assisted_service_namespace }} -l app=assisted-service
+  retries: 150
+  delay: 2
+  register: as_pod
+  until: as_pod.failed == false
+
+- name: Wait for assisted-service pod running
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get pods -n {{ mce_assisted_service_namespace }} -l app=assisted-service -o jsonpath='{.items[0].status.phase}'
+  retries: 150
+  delay: 2
+  register: as_pod
+  until: as_pod.stdout == "Running"

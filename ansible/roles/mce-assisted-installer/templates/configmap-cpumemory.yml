@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: assisted-service-cpu-memory
-  namespace: {{ rhacm_assisted_service_namespace }}
+  namespace: {{ mce_assisted_service_namespace }}
 data:
   HW_VALIDATOR_REQUIREMENTS: |
     [{

@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: assisted-mirror-config
-  namespace: {{ rhacm_assisted_service_namespace }}
+  namespace: {{ mce_assisted_service_namespace }}
   labels:
     app: assisted-service
 data:
