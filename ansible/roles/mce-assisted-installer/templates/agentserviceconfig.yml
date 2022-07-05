@@ -19,7 +19,7 @@ spec:
     resources:
       requests:
         storage: 100Gi
-{% if rhacm_disconnected_registry|length > 1 %}
+{% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
   mirrorRegistryRef:
     name: 'assisted-mirror-config'
 {% endif %}

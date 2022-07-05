@@ -1,12 +1,12 @@
 ---
-# Playbook to install RHACM Upstream/Downstream Build
+# Playbook to install MCE Build
 #
 # Example Usage:
 #
-# time ansible-playbook -i ansible/inventory/undercloud.hosts ansible/rhacm-hub-deploy.yml
+# time ansible-playbook -i ansible/inventory/cloud42.local ansible/mce-deploy.yml
 #
 
-- name: Setup downstream RHACM ICSP
+- name: Setup downstream MCE/RHACM ICSP
   hosts: orchestration
   vars_files:
   - vars/all.yml
@@ -20,11 +20,11 @@
   roles:
   - icsp-enable-tag-mirror
 
-- name: Install downstream RHACM
+- name: Install MCE
   hosts: orchestration
   vars_files:
   - vars/all.yml
   roles:
-  - rhacm-hub-deploy
+  - mce-deploy
   - mce-assisted-installer
   - mce-add-clusterimagesets

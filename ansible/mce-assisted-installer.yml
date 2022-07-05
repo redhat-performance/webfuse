@@ -1,0 +1,18 @@
+---
+# Playbook to install MCE/RHACM Assisted Installer
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/cloud-root.local ansible/mce-assisted-installer.yml
+#
+# ipv6/disconnected example run:
+# time ansible-playbook -i ansible/inventory/cloud03-root.local ansible/mce-assisted-installer.yml -e 'http_store_host="[fc00:1000::1]"'
+#
+
+- name: Install MCE/RHACM Assisted Installer
+  hosts: orchestration
+  vars_files:
+    - vars/all.yml
+  roles:
+    - mce-assisted-installer
+    - mce-add-clusterimagesets
