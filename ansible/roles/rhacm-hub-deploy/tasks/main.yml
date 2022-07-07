@@ -22,7 +22,7 @@
   shell: |
     export KUBECONFIG={{ hub_cluster_kubeconfig }}
     export COMPOSITE_BUNDLE=true
-    {% if rhacm_disconnected_registry|length > 1 %}
+    {% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
     export CUSTOM_REGISTRY_REPO="{{ rhacm_disconnected_registry }}/acm-d"
     {% else %}
     export CUSTOM_REGISTRY_REPO="quay.io:443/acm-d"

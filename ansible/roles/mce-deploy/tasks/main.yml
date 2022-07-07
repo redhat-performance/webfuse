@@ -1,0 +1,35 @@
+---
+# mce-deploy tasks
+
+- name: Checkout the latest stolostron/deploy repo
+  git:
+    repo: "{{ rhacm_deploy_repo }}"
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
+    force: true
+    version: "{{ rhacm_deploy_repo_branch }}"
+
+- name: Create deploy/prereq/pull-secret.yaml
+  template:
+    src: pull-secret.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy/prereqs/pull-secret.yaml"
+
+- name: Create snapshot.ver
+  copy:
+    dest: "{{ rhacm_install_directory }}/rhacm-deploy/deploy/snapshot.ver"
+    content: "{{ mce_build }}"
+
+- name: Run MCE deployment script
+  shell: |
+    export KUBECONFIG={{ hub_cluster_kubeconfig }}
+    export DOWNSTREAM=true
+    {{ rhacm_install_directory }}/rhacm-deploy/deploy/multiclusterengine/start.sh --silent 2>&1 | tee {{ rhacm_install_directory }}/rhacm-deploy/$(date -u +%Y%m%d-%H%M%S)-mce-start.log
+  args:
+    chdir: "{{ rhacm_install_directory }}/rhacm-deploy/deploy"
+
+- name: Wait until MultiClusterEngine is Available status
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} {%raw%}oc get multiclusterengine multiclusterengine-sample -o go-template='{{ .status.phase }}'{%endraw%}
+  register: mce_available
+  until: mce_available.stdout == "Available"
+  retries: 300
+  delay: 2

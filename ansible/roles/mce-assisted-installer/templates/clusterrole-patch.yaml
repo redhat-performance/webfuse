@@ -1,0 +1,10 @@
+- op: add
+  path: /rules/0
+  value:
+    apiGroups:
+      - agent-install.openshift.io
+    resources:
+      - agentclassifications
+    verbs:
+      - list
+      - watch

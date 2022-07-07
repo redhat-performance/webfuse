@@ -5,7 +5,7 @@ metadata:
   name: rhacm-repo
 spec:
   repositoryDigestMirrors:
-{% if rhacm_disconnected_registry|length > 1 %}
+{% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
   - mirrors:
     - {{ rhacm_disconnected_registry }}/kubebuilder
     source: gcr.io/kubebuilder

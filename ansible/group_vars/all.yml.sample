@@ -52,7 +52,7 @@ bigip_bridge_int: "ens2f1"    # Preferrably baremetal network interface"
 ontap_password: "password" # Update this password variable
 
 ################################################################################
-# RHACM install playbook vars
+# RHACM/MCE install playbook vars
 ################################################################################
 # All file locations should be on orchestration host and clusters must be accessible
 # by orchestration host
@@ -64,9 +64,14 @@ managed_cluster_name: shiftstack0000
 managed_cluster_vendor: OpenShift
 managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/auth/kubeconfig"
 
+# When installing RHACM or MCE in a connected environment this pull secret must be populated
+# RHACM 2.5 includes MCE, and MCE can be installed separately from RHACM
+# If installing RHACM, only populate rhacm_build, likewise if only installing MCE, only populate mce_build
 rhacm_quay_pullsecret: ''
 # Example: rhacm_build: '2.5.0-DOWNSTREAM-2022-04-08-18-34-34'
 rhacm_build:
+# Example: mce_build: '2.1.0-DOWNANDBACK-2022-07-05-06-55-15'
+mce_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
@@ -74,12 +79,12 @@ rhacm_disconnected_registry:
 # RHACM observability settings
 setup_rhacm_observability: false
 
-# RHACM Assisted-installer items
-rhacm_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.9-x86_64
-rhacm_assisted_service_namespace: multicluster-engine
-rhacm_clusterimagesets:
-- name: openshift-4.10.9
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.9-x86_64
+# MCE Assisted-installer items
+mce_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.21-x86_64
+mce_assisted_service_namespace: multicluster-engine
+mce_clusterimagesets:
+- name: openshift-4.10.21
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.21-x86_64
 
 # Deploy Topology Aware Lifecycle Operator
 setup_talo: true
