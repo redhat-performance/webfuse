@@ -72,7 +72,6 @@
     dest: "{{ rhacm_install_directory }}/mce-assisted-installer/agentserviceconfig.yml"
   - src: assisted-mirror-config.yml
     dest: "{{ rhacm_install_directory }}/mce-assisted-installer/assisted-mirror-config.yml"
-    enabled: "{{ rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 }}"
   - src: agent-install.openshift.io_agentclassifications-crd.yaml
     dest: "{{ rhacm_install_directory }}/mce-assisted-installer/agent-install.openshift.io_agentclassifications-crd.yaml"
     enabled: "{{ mce_2_1_patch }}"
@@ -96,7 +95,6 @@
   - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/configmap-cpumemory.yml"
   - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/agentserviceconfig.yml"
   - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/assisted-mirror-config.yml"
-    enabled: "{{ rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 }}"
   - manifest: "{{ rhacm_install_directory }}/mce-assisted-installer/agent-install.openshift.io_agentclassifications-crd.yaml"
     enabled: "{{ mce_2_1_patch }}"
   register: result
