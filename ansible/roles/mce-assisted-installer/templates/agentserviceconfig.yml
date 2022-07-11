@@ -19,10 +19,8 @@ spec:
     resources:
       requests:
         storage: 100Gi
-{% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
   mirrorRegistryRef:
-    name: 'assisted-mirror-config'
-{% endif %}
+    name: "assisted-mirror-config"
   osImages:
   - openshiftVersion: "{{ ocp_version_display_name.stdout.split('.')[0:2] | join('.') }}"
     version: "{{ ocp_version_rhcos_version.stdout }}"

@@ -7,12 +7,16 @@ metadata:
   labels:
     app: assisted-service
 data:
+
+{% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
   ca-bundle.crt: |
     {{ mirror_cert.content | b64decode | indent(width=4) }}
+{% endif %}
 
   registries.conf: |
     unqualified-search-registries = ["registry.access.redhat.com", "docker.io"]
 
+{% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
     [[registry]]
       prefix = ""
       location = "{{ rhacm_disconnected_registry }}/acm-d/ose-oauth-proxy"
@@ -68,3 +72,12 @@ data:
 
       [[registry.mirror]]
         location = "{{ rhacm_disconnected_registry }}/acm-d"
+{% endif %}
+
+    [[registry]]
+      prefix = ""
+      location = "registry.redhat.io/multicluster-engine"
+      mirror-by-digest-only = false
+
+      [[registry.mirror]]
+        location = "quay.io:443/acm-d"
