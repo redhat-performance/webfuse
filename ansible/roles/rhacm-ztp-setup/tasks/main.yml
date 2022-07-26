@@ -111,10 +111,10 @@
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/"
 
 - name: Create cluster application directories in cnf-features-deploy
-  file:
-    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}"
-    state: directory
-  loop: "{{ range(1, cluster_applications_count + 1) | list }}"
+  shell: |
+    {% for item in range(1, cluster_applications_count + 1) %}
+    mkdir -p "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}"
+    {% endfor %}
 
 - name: Copy siteconfigs
   copy:

@@ -68,7 +68,7 @@ managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/a
 # RHACM 2.5 includes MCE, and MCE can be installed separately from RHACM
 # If installing RHACM, only populate rhacm_build, likewise if only installing MCE, only populate mce_build
 rhacm_quay_pullsecret: ''
-# Example: rhacm_build: '2.5.0-DOWNSTREAM-2022-04-08-18-34-34'
+# Example: rhacm_build: '2.6.0-DOWNSTREAM-2022-07-28-23-21-09'
 rhacm_build:
 # Example: mce_build: '2.1.0-DOWNANDBACK-2022-07-05-06-55-15'
 mce_build:
@@ -80,11 +80,11 @@ rhacm_disconnected_registry:
 setup_rhacm_observability: false
 
 # MCE Assisted-installer items
-mce_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.21-x86_64
+mce_assisted_ocp_version: quay.io/openshift-release-dev/ocp-release:4.10.24-x86_64
 mce_assisted_service_namespace: multicluster-engine
 mce_clusterimagesets:
-- name: openshift-4.10.21
-  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.21-x86_64
+- name: openshift-4.10.24
+  releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.24-x86_64
 
 # Deploy Topology Aware Lifecycle Operator
 setup_talo: true
