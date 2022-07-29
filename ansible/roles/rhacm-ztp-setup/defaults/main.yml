@@ -6,10 +6,10 @@ cnf_features_deploy_branch: release-4.10
 
 # Pre-creates manifests for the desired number of argocd cluster applications
 # It is recommended to have no more than 100 clusters per application
-cluster_applications_count: 25
+cluster_applications_count: 35
 siteconfigs_per_application: 100
 
-siteconfigs_directory: /root/hv-sno/siteconfigs
+siteconfigs_directory: /root/hv-vm/sno/siteconfigs
 
 gogs_host: "[fc00:1000::1]"
 gogs_port: 10880
