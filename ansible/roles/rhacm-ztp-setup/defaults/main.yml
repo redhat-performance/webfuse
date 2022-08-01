@@ -2,7 +2,7 @@
 # default vars for rhacm-ztp-setup
 
 cnf_features_deploy_repo: https://github.com/openshift-kni/cnf-features-deploy.git
-cnf_features_deploy_branch: release-4.10
+cnf_features_deploy_branch: release-4.11
 
 # Pre-creates manifests for the desired number of argocd cluster applications
 # It is recommended to have no more than 100 clusters per application
@@ -21,7 +21,7 @@ disconnected_operator_index_tag: v4.9
 
 mirrored_operator_icsp: /root/bm/olm-mirror-v4.9/imageContentSourcePolicy.yaml
 
-ztp_site_generator_image_tag: v4.10.0
+ztp_site_generator_image_tag: 4.11.0
 
 # Initilize the siteconfig list so it can be sorted later
 siteconfig_list: []
