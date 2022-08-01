@@ -70,10 +70,12 @@
   loop:
   - replace: "{{ rhacm_disconnected_registry }}"
     regexp: "quay.io"
-  - replace: "openshift-kni"
-    regexp: "redhat_emp1"
-  # - replace: "{{ ztp_site_generator_image_tag }}"
-  #   regexp: "latest"
+  # - replace: "openshift-kni"
+  #   regexp: "redhat_emp1"
+  # release-4.11 cnf-features-deploy
+  - replace: "{{ ztp_site_generator_image_tag }}"
+    regexp: "latest"
+  # release-4.10 cnf-features-deploy
   - replace: "{{ ztp_site_generator_image_tag }}"
     regexp: "4.10.0"
 
