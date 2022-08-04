@@ -18,6 +18,8 @@ spec:
       policyName: "subscriptions-policy"
     - fileName: SriovSubscriptionOperGroup.yaml
       policyName: "subscriptions-policy"
+    - fileName: SriovOperatorStatus.yaml
+      policyName: "subscriptions-policy"
     - fileName: PtpSubscription.yaml
       policyName: "subscriptions-policy"
       spec:
@@ -26,15 +28,19 @@ spec:
       policyName: "subscriptions-policy"
     - fileName: PtpSubscriptionOperGroup.yaml
       policyName: "subscriptions-policy"
+    - fileName: PtpOperatorStatus.yaml
+      policyName: "subscriptions-policy"
     - fileName: PaoSubscription.yaml
       policyName: "subscriptions-policy"
       spec:
         source: {{ common_catalogsource_name }}
       # Changing the channel value will upgrade/downgrade the operator installed version.
-        channel: "4.9"
+      #   channel: "4.9"
     - fileName: PaoSubscriptionNS.yaml
       policyName: "subscriptions-policy"
     - fileName: PaoSubscriptionOperGroup.yaml
+      policyName: "subscriptions-policy"
+    - fileName: PaoOperatorStatus.yaml
       policyName: "subscriptions-policy"
     - fileName: ClusterLogNS.yaml
       policyName: "subscriptions-policy"
@@ -44,6 +50,8 @@ spec:
       policyName: "subscriptions-policy"
       spec:
         source: {{ common_catalogsource_name }}
+    - fileName: ClusterLogOperatorStatus.yaml
+      policyName: "subscriptions-policy"
     - fileName: StorageNS.yaml
       policyName: "subscriptions-policy"
     - fileName: StorageOperGroup.yaml
@@ -52,6 +60,8 @@ spec:
       policyName: "subscriptions-policy"
       spec:
         source: {{ common_catalogsource_name }}
+    - fileName: StorageOperatorStatus.yaml
+      policyName: "subscriptions-policy"
     - fileName: ReduceMonitoringFootprint.yaml
       policyName: "config-policy"
     #
