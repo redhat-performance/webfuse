@@ -106,6 +106,7 @@ setup_ztp_perfprofile_isolated_cpus: "4-7"
 setup_ztp_perfprofile_reserved_cpus: "0-3"
 setup_ztp_perfprofile_hugepage_count: 1
 setup_ztp_perfprofile_realtime: true
+setup_ztp_searchcollector_enabled: false
 
 ################################################################################
 # RHACM Shiftstack prepare cluster deployment vars
