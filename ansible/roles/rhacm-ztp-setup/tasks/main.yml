@@ -141,6 +141,11 @@
   set_fact:
     siteconfig_list: "{{ siteconfig_list | sort }}"
 
+- name: Create klusterletaddonconfigoverride file
+  template:
+    src: KlusterletAddonConfigOverride.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/KlusterletAddonConfigOverride.yaml"
+
 - name: Create cluster kustomization files in cnf-features-deploy
   template:
     src: cluster-kustomization.yaml
@@ -152,6 +157,7 @@
   shell: |
     {% for sc in range((item - 1) * siteconfigs_per_application, item * siteconfigs_per_application ) %}
     {% if siteconfig_list | length > sc %}
+    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/KlusterletAddonConfigOverride.yaml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/KlusterletAddonConfigOverride.yaml
     cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-siteconfig.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-siteconfig.yml
     cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-resources.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-resources.yml
     {% endif %}
