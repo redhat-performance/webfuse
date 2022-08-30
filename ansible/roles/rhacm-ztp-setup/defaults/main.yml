@@ -30,6 +30,9 @@ siteconfig_list: []
 # https://bugzilla.redhat.com/show_bug.cgi?id=2074612
 common_catalogsource_name: rh-du-operators
 
+# Allow the du profile PAO subscription channel to be overridden
+pao_subscription_channel: "4.10"
+
 # These policy names were adjusted to increase the number of ztp generated policies to match as if performanceprofile
 # was enabled.  The original names are commented below.
 group_policy_logforwarder_name: "config-log-policy"
