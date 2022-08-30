@@ -1,0 +1,50 @@
+---
+apiVersion: ran.openshift.io/v1
+kind: PolicyGenTemplate
+metadata:
+  name: "du-upgrade"
+  namespace: "ztp-group-du-sno"
+spec:
+  bindingRules:
+    group-du-sno: ""
+  mcp: "master"
+  remediationAction: inform
+  sourceFiles:
+    - fileName: ImageSignature.yaml
+      policyName: "platform-upgrade-prep"
+      binaryData:
+        {{ image_signature_data.content | b64decode }}
+    - fileName: DisconnectedICSP.yaml
+      policyName: "platform-upgrade-prep"
+      metadata:
+        name: disconnected-internal-icsp-for-ocp
+      spec:
+        repositoryDigestMirrors:
+          - mirrors:
+            - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/ocp4/openshift4
+            source: quay.io/openshift-release-dev/ocp-release
+          - mirrors:
+            - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/ocp4/openshift4
+            source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+    - fileName: ClusterVersion.yaml
+      policyName: "platform-upgrade-prep"
+      metadata:
+        name: version
+        annotations:
+          ran.openshift.io/ztp-deploy-wave: "1"
+      spec:
+        channel: "{{ du_upgrade_channel }}"
+        upstream: http://{{ rhacm_disconnected_registry }}:8081/upgrade/upgrade-graph_{{ du_upgrade_channel }}
+    - fileName: ClusterVersion.yaml
+      policyName: "platform-upgrade"
+      metadata:
+        name: version
+      spec:
+        channel: "{{ du_upgrade_channel }}"
+        upstream: http://{{ rhacm_disconnected_registry }}:8081/upgrade/upgrade-graph_{{ du_upgrade_channel }}
+        desiredUpdate:
+          version: {{ du_upgrade_version }}
+      status:
+        history:
+          - version: {{ du_upgrade_version }}
+            state: "Completed"

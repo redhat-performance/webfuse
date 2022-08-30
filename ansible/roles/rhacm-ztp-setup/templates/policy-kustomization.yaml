@@ -11,6 +11,9 @@ generators:
 {% else %}
 # - group-du-sno-validator-ranGen.yaml
 {% endif %}
+# Commented out by default for now
+# - du-upgrade.yaml
 
 resources:
 - ns.yaml
+- ns-upgrade.yaml

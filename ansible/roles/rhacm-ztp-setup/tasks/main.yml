@@ -68,7 +68,7 @@
     replace: "{{ item.replace }}"
     regexp: "{{ item.regexp }}"
   loop:
-  - replace: "{{ rhacm_disconnected_registry }}"
+  - replace: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}"
     regexp: "quay.io"
   # - replace: "openshift-kni"
   #   regexp: "redhat_emp1"

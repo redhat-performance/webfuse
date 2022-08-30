@@ -79,7 +79,7 @@ spec:
         name: {{ common_catalogsource_name }}
       spec:
         displayName: disconnected-redhat-operators
-        image: {{ rhacm_disconnected_registry }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}
+        image: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}
     - fileName: DisconnectedICSP.yaml
       policyName: "config-policy"
       spec:

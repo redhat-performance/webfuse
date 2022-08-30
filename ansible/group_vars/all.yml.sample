@@ -75,6 +75,7 @@ mce_build:
 rhacm_icsp_enable_tag_mirror: false
 # Leave blank if not doing disconnected
 rhacm_disconnected_registry:
+rhacm_disconnected_registry_port: 5000
 
 # RHACM observability settings
 setup_rhacm_observability: false

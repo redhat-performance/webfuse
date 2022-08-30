@@ -1,0 +1,18 @@
+---
+apiVersion: ran.openshift.io/v1alpha1
+kind: ClusterGroupUpgrade
+metadata:
+  name: cgu-platform-upgrade-{{ du_upgrade_version }}
+  namespace: default
+spec:
+  managedPolicies:
+  - du-upgrade-platform-upgrade
+  preCaching: false
+  clusters:
+{% for sno in ztp_done_clusters.stdout_lines %}
+  - {{ sno }}
+{% endfor %}
+  remediationStrategy:
+    maxConcurrency: {{ platform_upgrade_concurrency }}
+    timeout: {{ platform_upgrade_timeout }}
+  enable: false

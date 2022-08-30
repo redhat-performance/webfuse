@@ -1,0 +1,14 @@
+---
+# default vars for rhacm-ztp-upgrade-setup
+
+http_store_path: /opt/http_store
+
+du_upgrade_channel: "fast-4.10"
+
+du_upgrade_version: "4.10.28"
+
+platform_upgrade_prep_concurrency: 200
+platform_upgrade_concurrency: 200
+
+platform_upgrade_prep_timeout: 240
+platform_upgrade_timeout: 720
