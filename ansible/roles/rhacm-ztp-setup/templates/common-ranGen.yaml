@@ -35,7 +35,7 @@ spec:
       spec:
         source: {{ common_catalogsource_name }}
       # Changing the channel value will upgrade/downgrade the operator installed version.
-      #   channel: "4.9"
+        channel: "{{ pao_subscription_channel }}"
     - fileName: PaoSubscriptionNS.yaml
       policyName: "subscriptions-policy"
     - fileName: PaoSubscriptionOperGroup.yaml
