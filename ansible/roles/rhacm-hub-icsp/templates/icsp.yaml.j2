@@ -7,23 +7,23 @@ spec:
   repositoryDigestMirrors:
 {% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/kubebuilder
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/kubebuilder
     source: gcr.io/kubebuilder
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/openshift-kni
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni
     source: quay.io/openshift-kni
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/acm-d
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/acm-d
     source: registry.redhat.io/rhacm2
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/acm-d
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/acm-d
     source: quay.io/acm-d
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/acm-d
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/acm-d
     source: registry.redhat.io/multicluster-engine
   - mirrors:
-    - {{ rhacm_disconnected_registry }}/openshift4/ose-oauth-proxy
-    source: {{ rhacm_disconnected_registry }}/acm-d/ose-oauth-proxy
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift4/ose-oauth-proxy
+    source: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/acm-d/ose-oauth-proxy
 {% else %}
   - mirrors:
     - quay.io:443/acm-d
