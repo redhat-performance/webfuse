@@ -92,6 +92,8 @@ setup_talo: true
 talo_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
 talo_repo_branch: main
 talo_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.11.0
+talm_precache_image: quay.io/openshift-kni/cluster-group-upgrades-operator-precache:4.10.0
+
 
 # Apply ZTP argocd patches and create the argocd applications
 setup_rhacm_ztp_patches: true

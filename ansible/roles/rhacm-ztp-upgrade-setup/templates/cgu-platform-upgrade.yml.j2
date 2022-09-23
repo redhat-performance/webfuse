@@ -1,18 +1,23 @@
+{% for cgu in range(((ztp_done_clusters.stdout_lines | length) / snos_per_cgu) | round(0, 'ceil') | int) %}
 ---
 apiVersion: ran.openshift.io/v1alpha1
 kind: ClusterGroupUpgrade
 metadata:
-  name: cgu-platform-upgrade-{{ du_upgrade_version }}
+  name: cgu-platform-upgrade-{{ du_upgrade_version }}-{{ '%04d' | format(cgu) }}
   namespace: default
 spec:
   managedPolicies:
+  - du-upgrade-platform-upgrade-prep
   - du-upgrade-platform-upgrade
-  preCaching: false
+  preCaching: {{ platform_upgrade_precache }}
   clusters:
-{% for sno in ztp_done_clusters.stdout_lines %}
-  - {{ sno }}
+{% for sno in range(cgu * snos_per_cgu, (cgu + 1) * snos_per_cgu) %}
+{% if ztp_done_clusters.stdout_lines | length > sno %}
+  - {{ ztp_done_clusters.stdout_lines[sno] }}
+{% endif %}
 {% endfor %}
   remediationStrategy:
     maxConcurrency: {{ platform_upgrade_concurrency }}
     timeout: {{ platform_upgrade_timeout }}
   enable: false
+{% endfor %}

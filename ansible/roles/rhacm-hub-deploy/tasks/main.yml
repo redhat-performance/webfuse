@@ -78,11 +78,16 @@
       force: true
       version: "{{ talo_repo_branch }}"
 
-  - name: Deploy Topology Aware Lifecycle Operator
+  - name: Deploy Topology Aware Lifecycle Manager
     shell: |
       cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
       export KUBECONFIG={{ hub_cluster_kubeconfig }}
       make deploy IMG={{ talo_image }}
+
+  - name: Patch TALM pre-cache image environment variable
+    shell: |
+      export KUBECONFIG={{ hub_cluster_kubeconfig }}
+      oc get deploy -n openshift-cluster-group-upgrades cluster-group-upgrades-controller-manager -o json | jq '.spec.template.spec.containers[] |= (select(.name=="manager").env[] |= (select(.value=="{{ talm_precache_image_to_replace }}").value = "{{ talm_precache_image }}"))' | oc replace -f -
 
 - name: Deploy RHACM/ZTP Patches
   when: setup_rhacm_ztp_patches
