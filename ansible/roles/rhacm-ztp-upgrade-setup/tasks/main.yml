@@ -25,20 +25,17 @@
     name: upgrade-graph_fast-4.10
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.11
     name: upgrade-graph_fast-4.11
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=candidate-4.11
+    name: upgrade-graph_candidate-4.11
 
 - name: Get list of clusters for upgrade
   shell: |
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters  -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
   register: ztp_done_clusters
 
-- name: Template CGU objects
+- name: Template CGU object(s) into single file
   template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  loop:
-  - src: cgu-platform-upgrade-prep.yml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-prep-{{ du_upgrade_version }}.yml"
-  - src: cgu-platform-upgrade.yml.j2
+    src: cgu-platform-upgrade.yml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-{{ du_upgrade_version }}.yml"
 
 - name: Template the gen_checksum.sh script
