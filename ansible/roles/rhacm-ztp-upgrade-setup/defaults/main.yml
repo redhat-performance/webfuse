@@ -12,9 +12,5 @@ du_upgrade_version: "4.10.28"
 snos_per_cgu: 5000
 
 platform_upgrade_precache: false
-
-platform_upgrade_prep_concurrency: 200
 platform_upgrade_concurrency: 200
-
-platform_upgrade_prep_timeout: 240
 platform_upgrade_timeout: 720
