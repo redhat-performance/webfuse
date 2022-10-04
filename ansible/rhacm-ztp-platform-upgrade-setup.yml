@@ -1,0 +1,14 @@
+---
+# Playbook to setup ZTP Platform upgrade process for RHACM
+#
+# Example Usage:
+#
+# time ansible-playbook -i ansible/inventory/cloud26.local ansible/rhacm-ztp-platform-upgrade-setup.yml
+#
+
+- name: Setup RHACM ZTP Platform Upgrade
+  hosts: orchestration
+  vars_files:
+  - vars/all.yml
+  roles:
+  - rhacm-ztp-platform-upgrade-setup
