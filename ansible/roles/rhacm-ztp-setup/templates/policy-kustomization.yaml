@@ -13,6 +13,7 @@ generators:
 {% endif %}
 # Commented out by default for now
 # - du-upgrade.yaml
+# - du-operator-upgrade.yaml
 
 resources:
 - ns.yaml

@@ -1,5 +1,5 @@
 ---
-# default vars for rhacm-ztp-upgrade-setup
+# default vars for rhacm-ztp-platform-upgrade-setup
 
 http_store_path: /opt/http_store
 

@@ -30,6 +30,7 @@ spec:
       policyName: "subscriptions-policy"
     - fileName: PtpOperatorStatus.yaml
       policyName: "subscriptions-policy"
+# Start PAO
     - fileName: PaoSubscription.yaml
       policyName: "subscriptions-policy"
       spec:
@@ -42,6 +43,7 @@ spec:
       policyName: "subscriptions-policy"
     - fileName: PaoOperatorStatus.yaml
       policyName: "subscriptions-policy"
+# End PAO
     - fileName: ClusterLogNS.yaml
       policyName: "subscriptions-policy"
     - fileName: ClusterLogOperGroup.yaml

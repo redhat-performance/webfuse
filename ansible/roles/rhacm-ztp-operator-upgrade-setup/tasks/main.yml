@@ -1,0 +1,54 @@
+---
+# rhacm-ztp-operator-upgrade-setup tasks
+
+- name: Create directories for rhacm-ztp
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+  - "{{ rhacm_install_directory }}/rhacm-ztp"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/upgrade"
+
+- name: Get list of clusters for operator upgrade by ocp version
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedcluster --no-headers -l ztp-done= -l openshiftVersion={{ cluster_version_label }} -o custom-columns=NAME:'.metadata.name'
+  register: operator_update_clusters
+
+- name: Template CGU object and patch script
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
+  loop:
+  - src: cgu-operator-upgrade-prep.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-operator-upgrade-prep-{{ disconnected_operator_index_tag }}.yml"
+  - src: cgu-operator-upgrade.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-operator-upgrade-{{ disconnected_operator_index_tag }}.yml"
+  - src: patch-cgu-operator.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-operator-{{ disconnected_operator_index_tag }}.sh"
+    mode: "0744"
+
+- name: Template the operator upgrade PGT
+  template:
+    src: du-operator-upgrade.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-operator-upgrade.yaml"
+
+- name: Enable operator upgrade PGT in the kustomization.yaml file
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/kustomization.yaml"
+    replace: "- du-operator-upgrade.yaml"
+    regexp: "# - du-operator-upgrade.yaml"
+
+- name: Remove PAO configuration from original common-ranGen.yaml
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
+    replace: ""
+    regexp: '^# Start PAO[\s\S]*# End PAO'
+
+- name: Commit and push the above changes to cnf-features-deploy
+  shell: |
+    cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
+    git add ztp/gitops-subscriptions/argocd/cluster/ ztp/gitops-subscriptions/argocd/cluster-applications/
+    git add ztp/gitops-subscriptions/argocd/policy/ ztp/gitops-subscriptions/argocd/policy-applications/
+    git commit -a -m "Add Operator Upgrade PGT"
+    git push origin-gogs

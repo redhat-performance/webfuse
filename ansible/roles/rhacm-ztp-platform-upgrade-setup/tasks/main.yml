@@ -1,5 +1,5 @@
 ---
-# rhacm-ztp-upgrade-upgrade-setup tasks
+# rhacm-ztp-platform-upgrade-setup tasks
 
 - name: Create directories for rhacm-ztp
   file:
@@ -30,10 +30,10 @@
 
 - name: Get list of clusters for upgrade
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters  -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
   register: ztp_done_clusters
 
-- name: Template CGU object(s) and patch script into single file
+- name: Template CGU object(s) and patch script
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -41,8 +41,8 @@
   loop:
   - src: cgu-platform-upgrade.yml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-{{ du_upgrade_version }}.yml"
-  - src: patch-cgu.sh
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-{{ du_upgrade_version }}.sh"
+  - src: patch-cgu-platform.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-platform-{{ du_upgrade_version }}.sh"
     mode: "0744"
 
 - name: Template the gen_checksum.sh script
@@ -61,12 +61,12 @@
     src: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/checksum-{{ du_upgrade_version }}.yaml"
   register: image_signature_data
 
-- name: Template the du-upgrade policy
+- name: Template the platform upgrade PGT
   template:
     src: du-upgrade.yaml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-upgrade.yaml"
 
-- name: Enable du-upgrade in the kustomization.yaml file
+- name: Enable platform upgrade PGT in the kustomization.yaml file
   replace:
     path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/kustomization.yaml"
     replace: "- du-upgrade.yaml"
@@ -77,5 +77,5 @@
     cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
     git add ztp/gitops-subscriptions/argocd/cluster/ ztp/gitops-subscriptions/argocd/cluster-applications/
     git add ztp/gitops-subscriptions/argocd/policy/ ztp/gitops-subscriptions/argocd/policy-applications/
-    git commit -a -m "Add du-upgrade.yaml"
+    git commit -a -m "Add Platform Upgrade PGT"
     git push origin-gogs

@@ -1,0 +1,20 @@
+---
+# default vars for rhacm-ztp-upgrade-setup
+
+disconnected_operator_index_name: olm-mirror/redhat-operator-index
+disconnected_operator_index_tag: v4.11
+
+# Clusters selected for operator upgrade must have this openshift version
+cluster_version_label: 4.11.5
+
+# Needs to match original used in common-ranGen.yaml PGT
+common_catalogsource_name: rh-du-operators
+
+# For precaching you will want a small sno count per cgu
+# Without precaching, we can support many more snos per cgu
+snos_per_cgu: 5000
+
+operator_upgrade_precache: false
+operator_upgrade_concurrency: 2000
+operator_upgrade_prep_timeout: 30
+operator_upgrade_timeout: 60
