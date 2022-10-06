@@ -17,9 +17,9 @@ gogs_username: testadmin
 gogs_password: testadmin
 
 disconnected_operator_index_name: olm-mirror/redhat-operator-index
-disconnected_operator_index_tag: v4.10
+disconnected_operator_index_tag: v4.11
 
-mirrored_operator_icsp: /root/bm/olm-mirror-v4.10/imageContentSourcePolicy.yaml
+mirrored_operator_icsp: /root/bm/olm-mirror-v4.11/imageContentSourcePolicy.yaml
 
 ztp_site_generator_image_tag: v4.11.0
 
