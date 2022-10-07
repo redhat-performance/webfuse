@@ -141,10 +141,15 @@
   set_fact:
     siteconfig_list: "{{ siteconfig_list | sort }}"
 
-- name: Create klusterletaddonconfigoverride file
+- name: Create override files
   template:
-    src: KlusterletAddonConfigOverride.yaml.j2
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - src: KlusterletAddonConfigOverride.yaml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/KlusterletAddonConfigOverride.yaml"
+  - src: BareMetalHostOverride.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/BareMetalHostOverride.yaml"
 
 - name: Create cluster kustomization files in cnf-features-deploy
   template:
@@ -157,6 +162,7 @@
   shell: |
     {% for sc in range((item - 1) * siteconfigs_per_application, item * siteconfigs_per_application ) %}
     {% if siteconfig_list | length > sc %}
+    cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/BareMetalHostOverride.yaml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/BareMetalHostOverride.yaml
     cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/KlusterletAddonConfigOverride.yaml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/KlusterletAddonConfigOverride.yaml
     cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-siteconfig.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-siteconfig.yml
     cp {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/siteconfigs/{{ siteconfig_list[sc] }}-resources.yml {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}/{{ siteconfig_list[sc] }}-resources.yml
