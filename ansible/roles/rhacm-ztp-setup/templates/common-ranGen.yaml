@@ -31,6 +31,20 @@ spec:
     - fileName: PtpOperatorStatus.yaml
       policyName: "subscriptions-policy"
 # Start PAO
+{% if disconnected_operator_index_tag == "v4.11" %}
+    # - fileName: PaoSubscription.yaml
+    #   policyName: "subscriptions-policy"
+    #   spec:
+    #     source: {{ common_catalogsource_name }}
+    #   # Changing the channel value will upgrade/downgrade the operator installed version.
+    #     channel: "{{ pao_subscription_channel }}"
+    # - fileName: PaoSubscriptionNS.yaml
+    #   policyName: "subscriptions-policy"
+    # - fileName: PaoSubscriptionOperGroup.yaml
+    #   policyName: "subscriptions-policy"
+    # - fileName: PaoOperatorStatus.yaml
+    #   policyName: "subscriptions-policy"
+{% else %}
     - fileName: PaoSubscription.yaml
       policyName: "subscriptions-policy"
       spec:
@@ -43,6 +57,7 @@ spec:
       policyName: "subscriptions-policy"
     - fileName: PaoOperatorStatus.yaml
       policyName: "subscriptions-policy"
+{% endif %}
 # End PAO
     - fileName: ClusterLogNS.yaml
       policyName: "subscriptions-policy"
