@@ -12,3 +12,6 @@ registry_path: /opt/registry
 # Patch to address - https://bugzilla.redhat.com/show_bug.cgi?id=2101987
 # Remove or default to false after fix is merged into MCE
 mce_2_1_patch: true
+
+# Enables Converged Flow in Assisted-Installer
+enable_converged_flow: false

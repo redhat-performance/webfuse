@@ -4,6 +4,9 @@ metadata:
   name: assisted-service-cpu-memory
   namespace: {{ mce_assisted_service_namespace }}
 data:
+{% if enable_converged_flow %}
+  ALLOW_CONVERGED_FLOW: "true"
+{% endif %}
   HW_VALIDATOR_REQUIREMENTS: |
     [{
       "version": "default",
