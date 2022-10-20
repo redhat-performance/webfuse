@@ -63,26 +63,40 @@
   shell: |
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm-deploy/rhacm-observability.yaml
 
-- name: Deploy Topology Aware Lifecycle Operator
-  when: setup_talo
+- name: Deploy Topology Aware Lifecycle Manager via Subscription
+  when: setup_talm_operator
   block:
-  - name: Create directory for TALO
-    file:
-      path: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
-      state: directory
-
-  - name: Clone cluster-group-upgrades-operator (Topology Aware Lifecycle Operator)
-    git:
-      repo: "{{ talo_repo }}"
-      dest: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
-      force: true
-      version: "{{ talo_repo_branch }}"
+  - name: Create TALM subscription file
+    template:
+      src: talm-operator.yaml.j2
+      dest: "{{ rhacm_install_directory }}/rhacm-deploy/talm-operator.yaml"
 
   - name: Deploy Topology Aware Lifecycle Manager
     shell: |
       cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
       export KUBECONFIG={{ hub_cluster_kubeconfig }}
-      make deploy IMG={{ talo_image }}
+      oc apply -f {{ rhacm_install_directory }}/rhacm-deploy/talm-operator.yaml
+
+- name: Deploy Topology Aware Lifecycle Manager via Repo
+  when: setup_talm
+  block:
+  - name: Create directory for TALM
+    file:
+      path: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
+      state: directory
+
+  - name: Clone cluster-group-upgrades-operator (Topology Aware Lifecycle manager)
+    git:
+      repo: "{{ talm_repo }}"
+      dest: "{{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator"
+      force: true
+      version: "{{ talm_repo_branch }}"
+
+  - name: Deploy Topology Aware Lifecycle Manager
+    shell: |
+      cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
+      export KUBECONFIG={{ hub_cluster_kubeconfig }}
+      make deploy IMG={{ talm_image }}
 
   - name: Patch TALM pre-cache image environment variable
     shell: |
