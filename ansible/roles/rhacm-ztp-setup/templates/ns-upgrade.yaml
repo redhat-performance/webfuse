@@ -6,6 +6,11 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: ztp-platform-upgrade-prep
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: ztp-platform-upgrade
 ---
 apiVersion: v1
