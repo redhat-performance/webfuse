@@ -1,0 +1,22 @@
+---
+# default vars for rhacm-ztp-complete-upgrade-setup
+
+http_store_path: /opt/http_store
+
+du_upgrade_channel: "fast-4.10"
+
+du_upgrade_version: "4.10.28"
+
+disconnected_operator_index_name: olm-mirror/redhat-operator-index
+disconnected_operator_index_tag: v4.11
+
+# Needs to match original used in common-ranGen.yaml PGT
+common_catalogsource_name: rh-du-operators
+
+# For precaching you will want a small sno count per cgu
+# Without precaching, we can support many more snos per cgu
+snos_per_cgu: 5000
+
+complete_upgrade_precache: false
+complete_upgrade_concurrency: 200
+complete_upgrade_timeout: 720

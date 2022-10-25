@@ -1,0 +1,99 @@
+---
+# rhacm-ztp-complete-upgrade-setup tasks
+
+- name: Create directories for rhacm-ztp
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+  - "{{ http_store_path }}/data/upgrade"
+  - "{{ rhacm_install_directory }}/rhacm-ztp"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/upgrade"
+
+- name: Download upgrade graphs
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ http_store_path }}/data/upgrade/{{ item.name }}"
+  loop:
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-4.9
+    name: upgrade-graph_stable-4.9
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-4.10
+    name: upgrade-graph_stable-4.10
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-4.11
+    name: upgrade-graph_stable-4.11
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.10
+    name: upgrade-graph_fast-4.10
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.11
+    name: upgrade-graph_fast-4.11
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=candidate-4.11
+    name: upgrade-graph_candidate-4.11
+
+- name: Get list of clusters for upgrade
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
+  register: ztp_done_clusters
+
+- name: Template CGU object(s) and patch script
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode | default('0644') }}"
+  loop:
+  - src: cgu-complete-upgrade-prep.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-prep-{{ disconnected_operator_index_tag }}.yml"
+  - src: cgu-complete-upgrade.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-{{ du_upgrade_version }}.yml"
+  - src: patch-cgu-complete.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-complete-{{ du_upgrade_version }}.sh"
+    mode: "0744"
+
+- name: Template the gen_checksum.sh script
+  template:
+    src: gen_checksum.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/gen_checksum.sh"
+    mode: 0744
+
+- name: Run the generate checksum script
+  shell: |
+    cd {{ rhacm_install_directory }}/rhacm-ztp/upgrade
+    {{ rhacm_install_directory }}/rhacm-ztp/upgrade/gen_checksum.sh
+
+- name: Get generate checksum script output
+  slurp:
+    src: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/checksum-{{ du_upgrade_version }}.yaml"
+  register: image_signature_data
+
+- name: Template the platform and operator upgrade PGTs
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - src: du-upgrade.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-upgrade.yaml"
+  - src: du-operator-upgrade.yaml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-operator-upgrade.yaml"
+
+- name: Enable platform and operator upgrade PGT in the kustomization.yaml file
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/kustomization.yaml"
+    replace: "{{ item.replace }}"
+    regexp: "{{ item.regexp }}"
+  loop:
+  - replace: "- du-upgrade.yaml"
+    regexp: "# - du-upgrade.yaml"
+  - replace: "- du-operator-upgrade.yaml"
+    regexp: "# - du-operator-upgrade.yaml"
+
+- name: Remove PAO configuration from original common-ranGen.yaml
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
+    replace: ""
+    regexp: '^# Start PAO[\s\S]*# End PAO'
+
+- name: Commit and push the above changes to cnf-features-deploy
+  shell: |
+    cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
+    git add ztp/gitops-subscriptions/argocd/cluster/ ztp/gitops-subscriptions/argocd/cluster-applications/
+    git add ztp/gitops-subscriptions/argocd/policy/ ztp/gitops-subscriptions/argocd/policy-applications/
+    git commit -a -m "Add Platform Upgrade PGT"
+    git push origin-gogs

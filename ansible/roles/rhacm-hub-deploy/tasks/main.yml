@@ -73,9 +73,20 @@
 
   - name: Deploy Topology Aware Lifecycle Manager
     shell: |
-      cd {{ rhacm_install_directory }}/rhacm-deploy/cluster-group-upgrades-operator
-      export KUBECONFIG={{ hub_cluster_kubeconfig }}
-      oc apply -f {{ rhacm_install_directory }}/rhacm-deploy/talm-operator.yaml
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc apply -f {{ rhacm_install_directory }}/rhacm-deploy/talm-operator.yaml
+
+  - name: Get TALM installPlan name
+    shell: |
+      set -o pipefail
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc get subs -n openshift-operators openshift-topology-aware-lifecycle-manager -o json | jq -r '.status.installplan.name'
+    register: installplan_name
+    until: installplan_name.stdout | length > 5
+    retries: 60
+    delay: 1
+
+  - name: Approve TALM installPlan
+    shell: |
+      KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch installPlan {{ installplan_name.stdout }} -n openshift-operators --type merge --patch '{"spec": {"approved": true }}'
 
 - name: Deploy Topology Aware Lifecycle Manager via Repo
   when: setup_talm
