@@ -88,15 +88,15 @@ mce_clusterimagesets:
   releaseImage: quay.io/openshift-release-dev/ocp-release:4.10.24-x86_64
 
 # Deploy Topology Aware Lifecycle Operator
-setup_talm_operator: true
+setup_talm_operator: false
 # redhat-operator-index = disconnected setup, redhat-operators = connected setup
 talm_operator_source: redhat-operator-index
 # Follow vars are used instead of setting up the talm operator from the operator catalog
-setup_talm: false
+setup_talm: true
 talm_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
 talm_repo_branch: main
 talm_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.11.0
-talm_precache_image: quay.io/openshift-kni/cluster-group-upgrades-operator-precache:4.10.0
+talm_precache_image: quay.io/openshift-kni/cluster-group-upgrades-operator-precache:4.11.0
 
 
 # Apply ZTP argocd patches and create the argocd applications
