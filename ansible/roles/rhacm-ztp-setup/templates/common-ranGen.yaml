@@ -97,6 +97,9 @@ spec:
       spec:
         displayName: disconnected-redhat-operators
         image: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}
+      status:
+        connectionState:
+          lastObservedState: READY
     - fileName: DisconnectedICSP.yaml
       policyName: "config-policy"
       spec:

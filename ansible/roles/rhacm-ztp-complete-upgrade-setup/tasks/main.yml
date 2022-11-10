@@ -39,8 +39,6 @@
     dest: "{{ item.dest }}"
     mode: "{{ item.mode | default('0644') }}"
   loop:
-  - src: cgu-complete-upgrade-prep.yml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-prep-{{ disconnected_operator_index_tag }}.yml"
   - src: cgu-complete-upgrade.yml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-{{ du_upgrade_version }}.yml"
   - src: patch-cgu-complete.sh
@@ -63,37 +61,51 @@
     src: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/checksum-{{ du_upgrade_version }}.yaml"
   register: image_signature_data
 
-- name: Template the platform and operator upgrade PGTs
+- name: Template the platform upgrade PGT
   template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-  loop:
-  - src: du-upgrade.yaml.j2
+    src: du-upgrade.yaml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-upgrade.yaml"
-  - src: du-operator-upgrade.yaml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-operator-upgrade.yaml"
 
-- name: Enable platform and operator upgrade PGT in the kustomization.yaml file
+- name: Enable platform upgrade PGT in the kustomization.yaml file
   replace:
     path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/kustomization.yaml"
-    replace: "{{ item.replace }}"
-    regexp: "{{ item.regexp }}"
-  loop:
-  - replace: "- du-upgrade.yaml"
+    replace: "- du-upgrade.yaml"
     regexp: "# - du-upgrade.yaml"
-  - replace: "- du-operator-upgrade.yaml"
-    regexp: "# - du-operator-upgrade.yaml"
 
-- name: Remove PAO configuration from original common-ranGen.yaml
+- name: Replace PAO configuration from original common-ranGen.yaml
   replace:
     path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
-    replace: ""
+    replace: |-
+      # Start PAO
+          - fileName: PaoSubscription.yaml
+            policyName: "subscriptions-policy"
+            complianceType: mustnothave
+            spec:
+              source: {{ common_catalogsource_name }}
+            # Changing the channel value will upgrade/downgrade the operator installed version.
+              channel: "4.10"
+          - fileName: PaoSubscriptionNS.yaml
+            policyName: "subscriptions-policy"
+            complianceType: mustnothave
+          - fileName: PaoSubscriptionOperGroup.yaml
+            policyName: "subscriptions-policy"
+            complianceType: mustnothave
+          - fileName: PaoOperatorStatus.yaml
+            policyName: "subscriptions-policy"
+            complianceType: mustnothave
+      # End PAO
     regexp: '^# Start PAO[\s\S]*# End PAO'
+
+- name: Replace catalogsource image configuration from original common-ranGen.yaml
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
+    replace: "image: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}"
+    regexp: "image: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/{{ disconnected_operator_index_name }}:{{ original_disconnected_operator_index_tag }}"
 
 - name: Commit and push the above changes to cnf-features-deploy
   shell: |
     cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
     git add ztp/gitops-subscriptions/argocd/cluster/ ztp/gitops-subscriptions/argocd/cluster-applications/
     git add ztp/gitops-subscriptions/argocd/policy/ ztp/gitops-subscriptions/argocd/policy-applications/
-    git commit -a -m "Add Platform Upgrade PGT"
+    git commit -a -m "Setup Complete Upgrade"
     git push origin-gogs

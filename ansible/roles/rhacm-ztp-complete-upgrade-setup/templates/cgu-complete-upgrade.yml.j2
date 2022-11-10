@@ -3,12 +3,13 @@
 apiVersion: ran.openshift.io/v1alpha1
 kind: ClusterGroupUpgrade
 metadata:
-  name: cgu-complete-upgrade-{{ du_upgrade_version }}-{{ '%04d' | format(cgu) }}
+  name: complete-upgrade-{{ du_upgrade_version }}-{{ '%04d' | format(cgu) }}
   namespace: ztp-platform-upgrade
 spec:
   managedPolicies:
+  - du-upgrade-platform-upgrade-prep
   - du-upgrade-platform-upgrade
-  - du-operator-upgrade-operator-catsrc-policy
+  - common-config-policy
   - common-subscriptions-policy
   preCaching: {{ complete_upgrade_precache }}
   clusters:
