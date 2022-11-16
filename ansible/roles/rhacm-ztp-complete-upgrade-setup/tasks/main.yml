@@ -90,9 +90,9 @@
           - fileName: PaoSubscriptionOperGroup.yaml
             policyName: "subscriptions-policy"
             complianceType: mustnothave
-          - fileName: PaoOperatorStatus.yaml
-            policyName: "subscriptions-policy"
-            complianceType: mustnothave
+          # - fileName: PaoOperatorStatus.yaml
+          #   policyName: "subscriptions-policy"
+          #   complianceType: mustnothave
       # End PAO
     regexp: '^# Start PAO[\s\S]*# End PAO'
 
