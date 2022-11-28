@@ -14,3 +14,4 @@ snos_per_cgu: 5000
 platform_upgrade_precache: false
 platform_upgrade_concurrency: 200
 platform_upgrade_timeout: 720
+platform_upgrade_enable: true

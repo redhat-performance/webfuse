@@ -22,3 +22,4 @@ complete_upgrade_precache: false
 complete_upgrade_concurrency: 1000
 # 720 = 12 hours
 complete_upgrade_timeout: 720
+complete_upgrade_enable: true

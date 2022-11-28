@@ -19,5 +19,5 @@ spec:
   remediationStrategy:
     maxConcurrency: {{ platform_upgrade_concurrency }}
     timeout: {{ platform_upgrade_timeout }}
-  enable: false
+  enable: {{ platform_upgrade_enable }}
 {% endfor %}
