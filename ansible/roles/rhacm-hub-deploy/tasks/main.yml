@@ -52,6 +52,10 @@
   retries: 300
   delay: 2
 
+- name: Enable ACM backup
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} {%raw%}oc -n open-cluster-management patch mch multiclusterhub -p '{"spec":{"overrides":{"components":[{"name":"cluster-backup","enabled":true}]}}}' --type=merge{%endraw%}
+
 - name: Template out RHACM Observability
   when: setup_rhacm_observability
   template:
