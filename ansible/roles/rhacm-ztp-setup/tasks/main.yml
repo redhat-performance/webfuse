@@ -177,11 +177,6 @@
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster-applications/ztp-clusters-{{ '%02d' | format(item) }}.yaml"
   loop: "{{ range(1, cluster_applications_count + 1) | list }}"
 
-- name: Get mirrored operator index ImageContentSourcePolicy to append to common-ranGen.yaml
-  shell: |
-    cat {{ mirrored_operator_icsp }} | awk '/repositoryDigestMirrors:/,/END_OF_FILE/'
-  register: icsp_digest_mirrors
-
 - name: Template the policy manifests into cnf-features-deploy
   template:
     src: "{{ item.src }}"

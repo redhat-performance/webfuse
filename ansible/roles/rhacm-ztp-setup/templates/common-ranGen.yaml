@@ -103,4 +103,7 @@ spec:
     - fileName: DisconnectedICSP.yaml
       policyName: "config-policy"
       spec:
-      {{ icsp_digest_mirrors.stdout  | indent(width=6) }}
+        repositoryDigestMirrors:
+        - mirrors:
+          - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}
+          source: registry.redhat.io
