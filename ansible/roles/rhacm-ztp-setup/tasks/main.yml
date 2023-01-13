@@ -110,6 +110,7 @@
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster-applications/"
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/"
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/"
+  - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/source-crs"
   - "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/"
 
 - name: Create cluster application directories in cnf-features-deploy
@@ -196,6 +197,8 @@
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/ns-upgrade.yaml"
   - src: policy-common-and-group.yaml
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy-applications/common-and-group.yaml"
+  - src: logging-openshift-io_elasticsearches.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/source-crs/logging-openshift-io_elasticsearches.yaml"
 
 - name: Commit and push the above changes to cnf-features-deploy
   shell: |

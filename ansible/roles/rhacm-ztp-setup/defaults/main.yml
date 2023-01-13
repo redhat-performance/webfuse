@@ -5,7 +5,6 @@ cnf_features_deploy_repo: https://github.com/openshift-kni/cnf-features-deploy.g
 cnf_features_deploy_branch: release-4.11
 
 # Pre-creates manifests for the desired number of argocd cluster applications
-# It is recommended to have no more than 100 clusters per application
 cluster_applications_count: 35
 siteconfigs_per_application: 100
 
@@ -21,12 +20,17 @@ disconnected_operator_index_tag: v4.11
 
 ztp_site_generator_image_tag: v4.11.0
 
-# Initilize the siteconfig list so it can be sorted later
+# Initialize the siteconfig list so it can be sorted later
 siteconfig_list: []
 
 # Adjust the name of the du profile catalog source so it does not conflict with default names
 # https://bugzilla.redhat.com/show_bug.cgi?id=2074612
 common_catalogsource_name: rh-du-operators
+
+# https://issues.redhat.com/browse/LOG-3406
+# https://access.redhat.com/solutions/6990588
+# Prevents CLO on SNO from crashlooping over missing CRD
+include_clo_fix: true
 
 # Allow the du profile PAO subscription channel to be overridden
 pao_subscription_channel: "4.10"

@@ -69,6 +69,13 @@ spec:
         source: {{ common_catalogsource_name }}
     - fileName: ClusterLogOperatorStatus.yaml
       policyName: "subscriptions-policy"
+{% if include_clo_fix %}
+    - fileName: logging-openshift-io_elasticsearches.yaml
+      policyName: "subscriptions-policy"
+{% else %}
+    #- fileName: logging-openshift-io_elasticsearches.yaml
+    #  policyName: "subscriptions-policy"
+{% endif %}
     - fileName: StorageNS.yaml
       policyName: "subscriptions-policy"
     - fileName: StorageOperGroup.yaml
