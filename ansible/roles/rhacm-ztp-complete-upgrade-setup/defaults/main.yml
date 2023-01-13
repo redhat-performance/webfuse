@@ -23,3 +23,6 @@ complete_upgrade_concurrency: 1000
 # 720 = 12 hours
 complete_upgrade_timeout: 720
 complete_upgrade_enable: true
+
+# Extra 10 minutes between timeout of complete upgrade CGUs
+complete_upgrade_apply_offset: 10

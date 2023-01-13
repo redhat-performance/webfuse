@@ -33,17 +33,22 @@
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
   register: ztp_done_clusters
 
-- name: Template CGU object(s) and patch script
+- name: Template CGU object(s)
+  template:
+    src: cgu-complete-upgrade.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-{{ du_upgrade_version | replace('.', '-') }}-{{ '%04d' | format(item) }}.yml"
+  loop: "{{ range(((ztp_done_clusters.stdout_lines | length) / snos_per_cgu) | round(0, 'ceil') | int) | list }}"
+
+- name: Template CGU apply/patch scripts
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    mode: "{{ item.mode | default('0644') }}"
-  loop:
-  - src: cgu-complete-upgrade.yml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-{{ du_upgrade_version }}.yml"
-  - src: patch-cgu-complete.sh
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-complete-{{ du_upgrade_version }}.sh"
     mode: "0744"
+  loop:
+  - src: apply-cgu-complete.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/apply-cgu-complete-{{ du_upgrade_version | replace('.', '-') }}.sh"
+  - src: patch-cgu-complete.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-complete-{{ du_upgrade_version | replace('.', '-') }}.sh"
 
 - name: Template the gen_checksum.sh script
   template:

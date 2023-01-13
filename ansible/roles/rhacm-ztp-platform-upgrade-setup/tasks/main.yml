@@ -40,9 +40,9 @@
     mode: "{{ item.mode | default('0644') }}"
   loop:
   - src: cgu-platform-upgrade.yml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-{{ du_upgrade_version }}.yml"
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-{{ du_upgrade_version | replace('.', '-')  }}.yml"
   - src: patch-cgu-platform.sh
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-platform-{{ du_upgrade_version }}.sh"
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-platform-{{ du_upgrade_version | replace('.', '-')  }}.sh"
     mode: "0744"
 
 - name: Template the gen_checksum.sh script
