@@ -3,7 +3,7 @@
 apiVersion: ran.openshift.io/v1alpha1
 kind: ClusterGroupUpgrade
 metadata:
-  name: cgu-platform-upgrade-{{ du_upgrade_version }}-{{ '%04d' | format(cgu) }}
+  name: cgu-platform-upgrade-{{ du_upgrade_version | replace('.', '-')  }}-{{ '%04d' | format(cgu) }}
   namespace: ztp-platform-upgrade
 spec:
   managedPolicies:
