@@ -3,8 +3,6 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     ran.openshift.io/ztp-deploy-wave: "2"
-    controller-gen.kubebuilder.io/version: v0.9.0
-  creationTimestamp: null
   labels:
     name: elasticsearch-operator
   name: elasticsearches.logging.openshift.io
@@ -699,9 +697,3 @@ spec:
     storage: true
     subresources:
       status: {}
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: null
-  storedVersions: null
