@@ -71,10 +71,10 @@ spec:
       policyName: "subscriptions-policy"
 {% if include_clo_fix %}
     - fileName: logging-openshift-io_elasticsearches.yaml
-      policyName: "subscriptions-policy"
+      policyName: "config-policy"
 {% else %}
     #- fileName: logging-openshift-io_elasticsearches.yaml
-    #  policyName: "subscriptions-policy"
+    #  policyName: "config-policy"
 {% endif %}
     - fileName: StorageNS.yaml
       policyName: "subscriptions-policy"
