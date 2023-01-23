@@ -97,6 +97,7 @@ talm_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
 talm_repo_branch: release-4.12
 talm_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.12.0
 talm_precache_image: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni/cluster-group-upgrades-operator-precache:4.12.0"
+talm_recovery_image: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni/cluster-group-upgrades-operator-recovery:4.12.0"
 
 
 # Apply ZTP argocd patches and create the argocd applications

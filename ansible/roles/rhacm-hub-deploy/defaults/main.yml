@@ -13,3 +13,4 @@ observability_ruleStorageSize: 1Gi
 observability_storeStorageSize: 10Gi
 
 talm_precache_image_to_replace: quay.io/openshift-kni/cluster-group-upgrades-operator-precache:4.12.0
+talm_recovery_image_to_replace: quay.io/openshift-kni/cluster-group-upgrades-operator-recovery:4.12.0
