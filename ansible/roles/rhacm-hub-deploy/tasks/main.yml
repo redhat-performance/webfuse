@@ -52,6 +52,16 @@
   retries: 300
   delay: 2
 
+- name: Create RHACM searchscale configmap
+  when: setup_rhacm_search
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc create cm -n open-cluster-management searchscale --from-literal POSTGRESQL_SHARED_BUFFERS=128MB --from-literal POSTGRESQL_EFFECTIVE_CACHE_SIZE=512MB --from-literal WORK_MEM=64MB
+
+- name: Configure RHACM search with a PV
+  when: setup_rhacm_search
+  shell: |
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc patch search -n open-cluster-management search-v2-operator --type json -p '[{"op": "replace", "path": "/spec/dbConfig", "value": "searchscale"}, {"op": "replace", "path": "/spec/dbStorage/size", "value": "{{ rhacm_search_storagesize }}"}, {"op": "replace", "path": "/spec/dbStorage/storageClassName", "value": "{{ rhacm_search_storageclassname }}"}]'
+
 - name: Template out RHACM Observability
   when: setup_rhacm_observability
   template:
