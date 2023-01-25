@@ -77,6 +77,9 @@ rhacm_icsp_enable_tag_mirror: false
 rhacm_disconnected_registry:
 rhacm_disconnected_registry_port: 5000
 
+# RHACM search settings
+setup_rhacm_search: false
+
 # RHACM observability settings
 setup_rhacm_observability: false
 
