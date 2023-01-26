@@ -79,6 +79,7 @@ rhacm_disconnected_registry_port: 5000
 
 # RHACM search settings
 setup_rhacm_search: false
+setup_rhacm_search_pv: false
 
 # RHACM observability settings
 setup_rhacm_observability: false
