@@ -31,7 +31,7 @@ spec:
     - fileName: PtpOperatorStatus.yaml
       policyName: "subscriptions-policy"
 # Start PAO
-{% if disconnected_operator_index_tag == "v4.11" %}
+{% if disconnected_operator_index_tag == "v4.11" or disconnected_operator_index_tag == "v4.12" %}
     # - fileName: PaoSubscription.yaml
     #   policyName: "subscriptions-policy"
     #   spec:
