@@ -3,26 +3,32 @@
 
 http_store_path: /opt/http_store
 
-du_upgrade_channel: "fast-4.10"
+du_upgrade_channel: "fast-4.12"
 
-du_upgrade_version: "4.10.28"
+du_upgrade_version: "4.12.1"
 
 disconnected_operator_index_name: olm-mirror/redhat-operator-index
-disconnected_operator_index_tag: v4.11
+disconnected_operator_index_tag: v4.12
 
 # Must match the original used in common-ranGen.yaml PGT
-original_disconnected_operator_index_tag: v4.10
+original_disconnected_operator_index_tag: v4.11
 
 # Must match the original used in common-ranGen.yaml PGT
 common_catalogsource_name: rh-du-operators
 
-snos_per_cgu: 5000
+snos_per_cgu: 1000
 
+complete_upgrade_backup: false
 complete_upgrade_precache: false
 complete_upgrade_concurrency: 1000
-# 720 = 12 hours
-complete_upgrade_timeout: 720
-complete_upgrade_enable: true
+# 180 = 3 hours
+complete_upgrade_timeout: 180
+complete_upgrade_enable: false
 
-# Extra 10 minutes between timeout of complete upgrade CGUs
-complete_upgrade_apply_offset: 10
+# Amount of time to sleep between applying CGUs for upgrade (that are not enabled)
+# Allows offsetting of the backup and precache steps before an actual upgrade
+complete_upgrade_apply_sleep: 180
+complete_upgrade_patch_sleep: 180
+
+# Extra 10 minutes between timeout of complete upgrade CGUs during apply and patch scripts
+complete_upgrade_apply_patch_offset: 10

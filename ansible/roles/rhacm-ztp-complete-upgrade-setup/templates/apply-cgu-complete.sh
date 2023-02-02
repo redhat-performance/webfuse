@@ -3,6 +3,6 @@
 date -u
 oc apply -f {{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-complete-upgrade-{{ du_upgrade_version | replace('.', '-') }}-{{ '%04d' | format(cgu) }}.yml
 {% if not loop.last %}
-# sleep {{ (complete_upgrade_timeout + complete_upgrade_apply_offset) * 60 }}
+sleep {{ (complete_upgrade_apply_sleep + complete_upgrade_apply_patch_offset) * 60 }}
 {% endif %}
 {% endfor %}

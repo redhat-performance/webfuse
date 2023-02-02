@@ -10,6 +10,8 @@
   - "{{ rhacm_install_directory }}/rhacm-ztp"
   - "{{ rhacm_install_directory }}/rhacm-ztp/upgrade"
 
+# View Upgrade graphs
+# https://access.redhat.com/labs/ocpupgradegraph
 - name: Download upgrade graphs
   get_url:
     url: "{{ item.url }}"
@@ -27,6 +29,8 @@
     name: upgrade-graph_fast-4.11
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=candidate-4.11
     name: upgrade-graph_candidate-4.11
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.12
+    name: upgrade-graph_fast-4.12
 
 - name: Get list of clusters for upgrade
   shell: |
@@ -100,6 +104,7 @@
           #   complianceType: mustnothave
       # End PAO
     regexp: '^# Start PAO[\s\S]*# End PAO'
+  when: original_disconnected_operator_index_tag == "v4.10"
 
 - name: Replace catalogsource image configuration from original common-ranGen.yaml
   replace:
