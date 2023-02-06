@@ -5,6 +5,7 @@ metadata:
   name: complete-upgrade-{{ du_upgrade_version | replace('.', '-') }}-{{ '%04d' | format(item) }}
   namespace: ztp-platform-upgrade
 spec:
+  backup: {{ complete_upgrade_backup }}
   managedPolicies:
   - du-upgrade-platform-upgrade-prep
   - du-upgrade-platform-upgrade
