@@ -18,7 +18,7 @@ gogs_password: testadmin
 disconnected_operator_index_name: olm-mirror/redhat-operator-index
 disconnected_operator_index_tag: v4.11
 
-ztp_site_generator_image_tag: v4.11.0
+ztp_site_generator_image_tag: v4.12.1-1
 
 # Initialize the siteconfig list so it can be sorted later
 siteconfig_list: []
