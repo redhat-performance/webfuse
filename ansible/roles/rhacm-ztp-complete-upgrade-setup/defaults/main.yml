@@ -7,6 +7,9 @@ du_upgrade_channel: "fast-4.12"
 
 du_upgrade_version: "4.12.1"
 
+# For 4.11 to 4.12 Y-stream upgrade an admin ack is required to permit the upgrade
+include_admin_ack: true
+
 disconnected_operator_index_name: olm-mirror/redhat-operator-index
 disconnected_operator_index_tag: v4.12
 

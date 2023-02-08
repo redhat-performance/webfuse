@@ -70,10 +70,15 @@
     src: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/checksum-{{ du_upgrade_version }}.yaml"
   register: image_signature_data
 
-- name: Template the platform upgrade PGT
+- name: Template the platform upgrade PGT and 4.12 admin-ack
   template:
-    src: du-upgrade.yaml.j2
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - src: du-upgrade.yaml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-upgrade.yaml"
+  - src: admin-ack-4_12.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/source-crs/admin-ack-4_12.yaml"
 
 - name: Enable platform upgrade PGT in the kustomization.yaml file
   replace:

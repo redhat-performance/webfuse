@@ -14,6 +14,13 @@ spec:
       policyName: "platform-upgrade-prep"
       binaryData:
         {{ image_signature_data.content | b64decode }}
+{% if include_admin_ack %}
+    - fileName: admin-ack-4_12.yaml
+      policyName: "platform-upgrade-prep"
+{% else %}
+    #- fileName: admin-ack-4_12.yaml
+    #  policyName: "platform-upgrade-prep"
+{% endif %}
     - fileName: DisconnectedICSP.yaml
       policyName: "platform-upgrade-prep"
       metadata:
