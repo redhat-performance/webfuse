@@ -29,8 +29,8 @@ common_catalogsource_name: rh-du-operators
 
 # https://issues.redhat.com/browse/LOG-3406
 # https://access.redhat.com/solutions/6990588
-# Prevents CLO on SNO from crashlooping over missing CRD
-include_clo_fix: true
+# Prevents CLO on SNO from crashlooping over missing CRD (Fixed in v5.6.0 of CLO)
+include_clo_fix: false
 
 # Allow the du profile PAO subscription channel to be overridden
 pao_subscription_channel: "4.10"
