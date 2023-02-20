@@ -7,11 +7,23 @@ du_upgrade_channel: "fast-4.10"
 
 du_upgrade_version: "4.10.28"
 
-# For precaching you will want a small sno count per cgu
-# Without precaching, we can support many more snos per cgu
-snos_per_cgu: 5000
+# For 4.11 to 4.12 Y-stream upgrade an admin ack is required to permit the upgrade
+include_admin_ack: true
 
+snos_per_cgu: 1000
+
+platform_upgrade_backup: false
 platform_upgrade_precache: false
-platform_upgrade_concurrency: 200
-platform_upgrade_timeout: 720
-platform_upgrade_enable: true
+platform_upgrade_concurrency: 1000
+# 180 = 3 hours
+platform_upgrade_timeout: 180
+platform_upgrade_enable: false
+
+# Amount of time to sleep between applying CGUs for upgrade (that are not enabled)
+# Allows offsetting of the backup and precache steps before an actual upgrade
+platform_upgrade_apply_sleep: 180
+platform_upgrade_patch_sleep: 180
+
+# Extra minutes between timeout of platform upgrade CGUs during either apply or patch scripts
+platform_upgrade_apply_offset: 0
+platform_upgrade_patch_offset: 30
