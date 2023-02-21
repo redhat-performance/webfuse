@@ -34,7 +34,7 @@
 
 - name: Get list of clusters for upgrade
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l {{ clusters_label }} --no-headers -o custom-columns=NAME:'.metadata.name'
   register: ztp_done_clusters
 
 - name: Template CGU object(s)

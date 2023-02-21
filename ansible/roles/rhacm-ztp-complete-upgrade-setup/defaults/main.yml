@@ -3,6 +3,8 @@
 
 http_store_path: /opt/http_store
 
+clusters_label: "ztp-done="
+
 du_upgrade_channel: "fast-4.12"
 
 du_upgrade_version: "4.12.1"
