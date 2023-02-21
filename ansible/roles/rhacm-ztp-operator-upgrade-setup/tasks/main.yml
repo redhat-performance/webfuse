@@ -11,7 +11,7 @@
 
 - name: Get list of clusters for operator upgrade by ocp version
   shell: |
-    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedcluster --no-headers -l ztp-done= -l openshiftVersion={{ cluster_version_label }} -o custom-columns=NAME:'.metadata.name'
+    KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l {{ clusters_label }} --no-headers -o custom-columns=NAME:'.metadata.name'
   register: operator_update_clusters
 
 - name: Template CGU object and patch script

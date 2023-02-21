@@ -3,7 +3,7 @@
 apiVersion: ran.openshift.io/v1alpha1
 kind: ClusterGroupUpgrade
 metadata:
-  name: cgu-operator-upgrade-{{ disconnected_operator_index_tag | replace('.', '') }}-{{ '%04d' | format(cgu) }}
+  name: operator-upgrade-{{ disconnected_operator_index_tag | replace('.', '') }}-{{ '%04d' | format(cgu) }}
   namespace: ztp-operator-upgrade
 spec:
   managedPolicies:
