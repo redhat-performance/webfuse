@@ -10,6 +10,8 @@
   - "{{ rhacm_install_directory }}/rhacm-ztp"
   - "{{ rhacm_install_directory }}/rhacm-ztp/upgrade"
 
+# View Upgrade graphs
+# https://access.redhat.com/labs/ocpupgradegraph
 - name: Download upgrade graphs
   get_url:
     url: "{{ item.url }}"
@@ -27,23 +29,30 @@
     name: upgrade-graph_fast-4.11
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=candidate-4.11
     name: upgrade-graph_candidate-4.11
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.12
+    name: upgrade-graph_fast-4.12
 
 - name: Get list of clusters for upgrade
   shell: |
     KUBECONFIG={{ hub_cluster_kubeconfig }} oc get managedclusters -l ztp-done= --no-headers -o custom-columns=NAME:'.metadata.name'
   register: ztp_done_clusters
 
-- name: Template CGU object(s) and patch script
+- name: Template CGU object(s)
+  template:
+    src: cgu-platform-upgrade.yml.j2
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-{{ du_upgrade_version | replace('.', '-') }}-{{ '%04d' | format(item) }}.yml"
+  loop: "{{ range(((ztp_done_clusters.stdout_lines | length) / snos_per_cgu) | round(0, 'ceil') | int) | list }}"
+
+- name: Template CGU apply/patch scripts
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
-    mode: "{{ item.mode | default('0644') }}"
-  loop:
-  - src: cgu-platform-upgrade.yml.j2
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/cgu-platform-upgrade-{{ du_upgrade_version | replace('.', '-')  }}.yml"
-  - src: patch-cgu-platform.sh
-    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-platform-{{ du_upgrade_version | replace('.', '-')  }}.sh"
     mode: "0744"
+  loop:
+  - src: apply-cgu-platform.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/apply-cgu-platform-{{ du_upgrade_version | replace('.', '-') }}.sh"
+  - src: patch-cgu-platform.sh
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/patch-cgu-platform-{{ du_upgrade_version | replace('.', '-') }}.sh"
 
 - name: Template the gen_checksum.sh script
   template:
@@ -61,10 +70,15 @@
     src: "{{ rhacm_install_directory }}/rhacm-ztp/upgrade/checksum-{{ du_upgrade_version }}.yaml"
   register: image_signature_data
 
-- name: Template the platform upgrade PGT
+- name: Template the platform upgrade PGT and 4.12 admin-ack
   template:
-    src: du-upgrade.yaml.j2
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+  - src: du-upgrade.yaml.j2
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/du-upgrade.yaml"
+  - src: admin-ack-4_12.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/source-crs/admin-ack-4_12.yaml"
 
 - name: Enable platform upgrade PGT in the kustomization.yaml file
   replace:

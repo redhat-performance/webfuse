@@ -33,5 +33,6 @@ complete_upgrade_enable: false
 complete_upgrade_apply_sleep: 180
 complete_upgrade_patch_sleep: 180
 
-# Extra 10 minutes between timeout of complete upgrade CGUs during apply and patch scripts
-complete_upgrade_apply_patch_offset: 10
+# Extra minutes between timeout of complete upgrade CGUs during either apply or patch scripts
+complete_upgrade_apply_offset: 0
+complete_upgrade_patch_offset: 30
