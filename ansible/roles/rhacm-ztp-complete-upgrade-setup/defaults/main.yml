@@ -19,7 +19,11 @@ disconnected_operator_index_tag: v4.12
 original_disconnected_operator_index_tag: v4.11
 
 # Must match the original used in common-ranGen.yaml PGT
-common_catalogsource_name: rh-du-operators
+original_common_catalogsource_name: rh-du-operators
+
+# Replace catalogsource with a new catalogsource name (Avoid OLM catalogsource status race condition)
+replace_catalogsource: true
+common_catalogsource_name: rh-du-operators0
 
 snos_per_cgu: 1000
 

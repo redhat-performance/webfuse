@@ -111,11 +111,32 @@
     regexp: '^# Start PAO[\s\S]*# End PAO'
   when: original_disconnected_operator_index_tag == "v4.10"
 
-- name: Replace catalogsource image configuration from original common-ranGen.yaml
+- name: Replace catalogsource image configuration in common-ranGen.yaml
   replace:
     path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
     replace: "image: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/{{ disconnected_operator_index_name }}:{{ disconnected_operator_index_tag }}"
     regexp: "image: {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/{{ disconnected_operator_index_name }}:{{ original_disconnected_operator_index_tag }}"
+
+- name: Replace catalogsource name in common-ranGen.yaml
+  replace:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
+    replace: "{{ common_catalogsource_name }}"
+    regexp: "{{ original_common_catalogsource_name }}"
+  when: replace_catalogsource
+
+- name: Append removing old catalogsource in common-ranGen.yaml
+  blockinfile:
+    path: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/common-ranGen.yaml"
+    block: |
+      # Remove the old catalogsource
+          - fileName: DefaultCatsrc.yaml
+            policyName: "config-policy"
+            complianceType: mustnothave
+            metadata:
+              name: {{ original_common_catalogsource_name }}
+    insertafter: "EOF"
+    marker: "# {mark} {{ original_common_catalogsource_name }} removal"
+  when: replace_catalogsource
 
 - name: Commit and push the above changes to cnf-features-deploy
   shell: |
