@@ -189,6 +189,14 @@
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-sno-ranGen.yaml"
   - src: group-du-sno-validator-ranGen.yaml
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-sno-validator-ranGen.yaml"
+  - src: group-du-3node-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-3node-ranGen.yaml"
+  - src: group-du-3node-validator-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-3node-validator-ranGen.yaml"
+  - src: group-du-standard-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-standard-ranGen.yaml"
+  - src: group-du-standard-validator-ranGen.yaml
+    dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/group-du-standard-validator-ranGen.yaml"
   - src: policy-kustomization.yaml
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/policy/common-and-group/kustomization.yaml"
   - src: ns.yaml
