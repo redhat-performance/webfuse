@@ -8,7 +8,10 @@ cnf_features_deploy_branch: release-4.11
 cluster_applications_count: 35
 siteconfigs_per_application: 100
 
-siteconfigs_directory: /root/hv-vm/sno/siteconfigs
+siteconfigs_directories:
+- /root/hv-vm/sno/siteconfigs
+- /root/hv-vm/compact/siteconfigs
+- /root/hv-vm/standard/siteconfigs
 
 gogs_host: "[fc00:1000::1]"
 gogs_port: 10880

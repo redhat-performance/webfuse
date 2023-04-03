@@ -119,11 +119,14 @@
     mkdir -p "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/ztp-clusters-{{ '%02d' | format(item) }}"
     {% endfor %}
 
+# ignore_errors because not all directories will exist
 - name: Copy siteconfigs
   copy:
-    src: "{{ siteconfigs_directory }}"
+    src: "{{ item }}"
     dest: "{{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy/ztp/gitops-subscriptions/argocd/cluster/"
     remote_src: true
+  loop: "{{ siteconfigs_directories }}"
+  ignore_errors: true
 
 - name: Get siteconfig manifest names
   find:
