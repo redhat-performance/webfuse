@@ -68,7 +68,7 @@ managed_cluster_kubeconfig: "/home/stack/ocp_clusters/{{managed_cluster_name}}/a
 # RHACM 2.5 includes MCE, and MCE can be installed separately from RHACM
 # If installing RHACM, only populate rhacm_build, likewise if only installing MCE, only populate mce_build
 rhacm_quay_pullsecret: ''
-# Example: rhacm_build: '2.6.0-DOWNSTREAM-2022-07-28-23-21-09'
+# Example: rhacm_build: '2.8.0-DOWNSTREAM-2023-04-25-22-18-13'
 rhacm_build:
 # Example: mce_build: '2.1.0-DOWNANDBACK-2022-07-05-06-55-15'
 mce_build:
@@ -98,10 +98,10 @@ talm_operator_source: redhat-operator-index
 # Follow vars are used instead of setting up the talm operator from the operator catalog
 setup_talm: true
 talm_repo: https://github.com/openshift-kni/cluster-group-upgrades-operator.git
-talm_repo_branch: release-4.12
-talm_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.12.0
-talm_precache_image: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni/cluster-group-upgrades-operator-precache:4.12.0"
-talm_recovery_image: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni/cluster-group-upgrades-operator-recovery:4.12.0"
+talm_repo_branch: release-4.13
+talm_image: quay.io/openshift-kni/cluster-group-upgrades-operator:4.13.0
+talm_precache_image: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni/cluster-group-upgrades-operator-precache:4.13.0"
+talm_recovery_image: "{{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift-kni/cluster-group-upgrades-operator-recovery:4.13.0"
 
 
 # Apply ZTP argocd patches and create the argocd applications
