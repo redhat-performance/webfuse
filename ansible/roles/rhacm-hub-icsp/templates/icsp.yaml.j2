@@ -7,6 +7,9 @@ spec:
   repositoryDigestMirrors:
 {% if rhacm_disconnected_registry and rhacm_disconnected_registry|length > 1 %}
   - mirrors:
+    - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/openshift
+    source: quay.io/openshift
+  - mirrors:
     - {{ rhacm_disconnected_registry }}:{{ rhacm_disconnected_registry_port }}/kubebuilder
     source: gcr.io/kubebuilder
   - mirrors:
