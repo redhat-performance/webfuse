@@ -91,5 +91,5 @@
     cd {{ rhacm_install_directory }}/rhacm-ztp/cnf-features-deploy
     git add ztp/gitops-subscriptions/argocd/cluster/ ztp/gitops-subscriptions/argocd/cluster-applications/
     git add ztp/gitops-subscriptions/argocd/policy/ ztp/gitops-subscriptions/argocd/policy-applications/
-    git commit -a -m "Add Platform Upgrade PGT"
+    git commit -a -m "Add Platform Upgrade PGT to {{ du_upgrade_version }}"
     git push origin-gogs
