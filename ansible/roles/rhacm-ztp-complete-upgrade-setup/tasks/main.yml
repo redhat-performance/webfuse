@@ -12,6 +12,7 @@
 
 # View Upgrade graphs
 # https://access.redhat.com/labs/ocpupgradegraph
+# Also https://ctron.github.io/openshift-update-graph/#stable-4.12
 - name: Download upgrade graphs
   get_url:
     url: "{{ item.url }}"
@@ -23,14 +24,16 @@
     name: upgrade-graph_stable-4.10
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-4.11
     name: upgrade-graph_stable-4.11
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=stable-4.12
+    name: upgrade-graph_stable-4.12
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.10
     name: upgrade-graph_fast-4.10
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.11
     name: upgrade-graph_fast-4.11
-  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=candidate-4.11
-    name: upgrade-graph_candidate-4.11
   - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=fast-4.12
     name: upgrade-graph_fast-4.12
+  - url: https://api.openshift.com/api/upgrades_info/v1/graph?channel=candidate-4.13
+    name: upgrade-graph_candidate-4.13
 
 - name: Get list of clusters for upgrade
   shell: |
