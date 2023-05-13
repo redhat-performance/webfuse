@@ -15,7 +15,7 @@ spec:
       binaryData:
         {{ image_signature_data.content | b64decode }}
 {% if include_admin_ack %}
-    - fileName: admin-ack-4_12.yaml
+    - fileName: admin-ack.yaml
       policyName: "platform-upgrade-prep"
 {% else %}
     #- fileName: admin-ack-4_12.yaml
